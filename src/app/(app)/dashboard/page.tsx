@@ -5,6 +5,7 @@ import {
   filterLeaderboardToCrew,
 } from "@/lib/data/crew";
 import { mapLeaderboardRows } from "@/lib/data/leaderboard";
+import { fetchSessionCounts } from "@/lib/data/sessionBadges";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/app";
 
@@ -16,10 +17,12 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const [{ data: currentProfile }, { data: leaderboard }] = await Promise.all([
-    supabase.from("profiles").select("*").eq("id", user.id).single(),
-    supabase.from("leaderboard_7d").select("*"),
-  ]);
+  const [{ data: currentProfile }, { data: leaderboard }, sessionCounts] =
+    await Promise.all([
+      supabase.from("profiles").select("*").eq("id", user.id).single(),
+      supabase.from("leaderboard_7d").select("*"),
+      fetchSessionCounts(supabase, user.id),
+    ]);
 
   if (!currentProfile) redirect("/login");
 
@@ -50,6 +53,7 @@ export default async function DashboardPage() {
       membership={membership}
       crewProfiles={crewProfiles}
       initialLeaderboard={initialLeaderboard}
+      sessionCounts={sessionCounts}
     />
   );
 }

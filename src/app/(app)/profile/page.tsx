@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { ProfileClient } from "@/components/profile/ProfileClient";
+import { fetchSessionCounts } from "@/lib/data/sessionBadges";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/app";
 
@@ -19,5 +20,9 @@ export default async function ProfilePage() {
 
   if (!profile) redirect("/login");
 
-  return <ProfileClient profile={profile as Profile} />;
+  const sessionCounts = await fetchSessionCounts(supabase, user.id);
+
+  return (
+    <ProfileClient profile={profile as Profile} sessionCounts={sessionCounts} />
+  );
 }

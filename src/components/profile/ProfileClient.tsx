@@ -2,14 +2,18 @@
 
 import { useState } from "react";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
+import { BadgeGallery } from "@/components/profile/BadgeGallery";
+import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import type { SessionCounts } from "@/lib/data/sessionBadges";
 import type { Profile } from "@/types/app";
 
 interface ProfileClientProps {
   profile: Profile;
+  sessionCounts: SessionCounts;
 }
 
-export function ProfileClient({ profile: initial }: ProfileClientProps) {
+export function ProfileClient({ profile: initial, sessionCounts }: ProfileClientProps) {
   const [profile, setProfile] = useState(initial);
 
   return (
@@ -20,6 +24,8 @@ export function ProfileClient({ profile: initial }: ProfileClientProps) {
           setProfile((p) => ({ ...p, avatar_url: avatarUrl }))
         }
       />
+      <BadgeShowcase counts={sessionCounts} max={8} size="md" />
+      <BadgeGallery counts={sessionCounts} />
       <ProfileForm profile={profile} />
       <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-sm text-muted-foreground">
         <p>
@@ -27,8 +33,9 @@ export function ProfileClient({ profile: initial }: ProfileClientProps) {
           {profile.current_pump_score.toLocaleString()} pts
         </p>
         <p className="mt-1">
-          Your avatar frame grows with lifetime score. Weekly rank is separate on
-          the dashboard.
+          Badges unlock at 10, 25, 50, 100, 500 & 1000 logs per category (hangboard
+          → Fingers of Zeus, board → Boardlord, etc.). Avatar frame still grows with
+          lifetime score.
         </p>
       </div>
     </div>

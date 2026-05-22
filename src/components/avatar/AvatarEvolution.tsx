@@ -2,13 +2,16 @@
 
 import { motion } from "framer-motion";
 import { AvatarFrame } from "@/components/avatar/AvatarFrame";
+import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
+import type { SessionCounts } from "@/lib/data/sessionBadges";
 import type { Profile } from "@/types/app";
 
 interface AvatarEvolutionProps {
   profile: Profile;
+  sessionCounts?: SessionCounts;
 }
 
-export function AvatarEvolution({ profile }: AvatarEvolutionProps) {
+export function AvatarEvolution({ profile, sessionCounts }: AvatarEvolutionProps) {
   return (
     <motion.section
       className="flex flex-col items-center gap-3 rounded-2xl border border-orange-500/30 bg-gradient-to-b from-orange-500/10 to-transparent p-6"
@@ -38,6 +41,14 @@ export function AvatarEvolution({ profile }: AvatarEvolutionProps) {
             pts
           </span>
         </motion.p>
+        {sessionCounts && (
+          <div className="mt-3 w-full">
+            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Badges
+            </p>
+            <BadgeShowcase counts={sessionCounts} max={5} />
+          </div>
+        )}
       </div>
     </motion.section>
   );

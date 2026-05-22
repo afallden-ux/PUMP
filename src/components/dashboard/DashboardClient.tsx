@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import { useWorkoutHistory } from "@/lib/hooks/useWorkoutHistory";
+import type { SessionCounts } from "@/lib/data/sessionBadges";
 import type { CrewMembership, LeaderboardEntry, Profile } from "@/types/app";
 
 type DashboardTab = "feed" | "stats";
@@ -29,6 +30,7 @@ interface DashboardClientProps {
   membership: CrewMembership | null;
   crewProfiles: Profile[];
   initialLeaderboard: LeaderboardEntry[];
+  sessionCounts: SessionCounts;
 }
 
 export function DashboardClient({
@@ -36,6 +38,7 @@ export function DashboardClient({
   membership,
   crewProfiles,
   initialLeaderboard,
+  sessionCounts,
 }: DashboardClientProps) {
   const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
@@ -94,7 +97,7 @@ export function DashboardClient({
 
       {membership && <CrewBanner membership={membership} />}
 
-      <AvatarEvolution profile={currentProfile} />
+      <AvatarEvolution profile={currentProfile} sessionCounts={sessionCounts} />
 
       <div className="hidden md:block">
         <LogWorkoutModal userId={currentProfile.id} onLogged={handleLogged} />

@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
+import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
+import type { SessionCounts } from "@/lib/data/sessionBadges";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { formatRelativeTime } from "@/lib/utils/dates";
 import type { CrewMembership } from "@/types/app";
@@ -17,9 +19,14 @@ import type { CrewMembership } from "@/types/app";
 interface CrewPageClientProps {
   membership: CrewMembership;
   currentUserId: string;
+  sessionCounts: SessionCounts;
 }
 
-export function CrewPageClient({ membership, currentUserId }: CrewPageClientProps) {
+export function CrewPageClient({
+  membership,
+  currentUserId,
+  sessionCounts,
+}: CrewPageClientProps) {
   const sortedMembers = [...membership.members].sort((a, b) => {
     if (a.id === currentUserId) return -1;
     if (b.id === currentUserId) return 1;
@@ -44,6 +51,13 @@ export function CrewPageClient({ membership, currentUserId }: CrewPageClientProp
       </div>
 
       <CrewBanner membership={membership} />
+
+      <div className="rounded-xl border border-orange-500/25 bg-orange-500/5 p-3 text-center">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
+          Your badges
+        </p>
+        <BadgeShowcase counts={sessionCounts} max={6} size="md" />
+      </div>
 
       <section className="space-y-3">
         <SectionHeader
