@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, RefreshCw, Shield, LogOut, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { Copy, RefreshCw, Shield, LogOut, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import type { CrewMembership } from "@/types/app";
@@ -100,6 +102,13 @@ export function CrewBanner({ membership }: CrewBannerProps) {
             {code}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
+            <Link
+              href="/crew"
+              className={cn(buttonVariants({ size: "sm" }), "bg-orange-600 text-white")}
+            >
+              <Users className="size-3.5" />
+              Crew page
+            </Link>
             <Button type="button" size="sm" variant="outline" onClick={copyCode}>
               <Copy className="size-3.5" />
               Copy
