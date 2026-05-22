@@ -33,9 +33,9 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
           {profile.current_pump_score.toLocaleString()} pts
         </p>
         <p className="mt-1">
-          Badges unlock at 10, 25, 50, 100, 500 & 1000 logs per category (hangboard
-          → Fingers of Zeus, board → Boardlord, etc.). Avatar frame still grows with
-          lifetime score.
+          Badges unlock at 10–1000 logs per track — hangboard glory, stretching shame,
+          outdoors Jug-Hugger → 9A Downgrader, gym mirror energy. Avatar frame still
+          grows with lifetime score.
         </p>
       </div>
     </div>

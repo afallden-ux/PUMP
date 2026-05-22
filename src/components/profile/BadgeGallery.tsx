@@ -22,7 +22,7 @@ export function BadgeGallery({ counts }: BadgeGalleryProps) {
       <SectionHeader
         icon={Award}
         title="Pump badges"
-        subtitle={`${totalEarned} earned across hangboard, climbing, board, outdoors, gym, stretching & total logs. Milestones at 10 · 25 · 50 · 100 · 500 · 1000.`}
+        subtitle={`${totalEarned} earned. Stretching badges get more shameful; outdoors goes Jug-Hugger → 9A Downgrader. Milestones: 10 · 25 · 50 · 100 · 500 · 1000.`}
       />
 
       <div className="space-y-4">
