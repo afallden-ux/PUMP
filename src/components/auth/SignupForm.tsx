@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/siteUrl";
 
 export function SignupForm() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export function SignupForm() {
       password,
       options: {
         data: { username: username.trim() },
+        emailRedirectTo: getAuthCallbackUrl(),
       },
     });
     setLoading(false);
@@ -35,9 +37,10 @@ export function SignupForm() {
     }
 
     toast.success("Welcome to PUMP!", {
-      description: "Check email if confirmation is enabled, then log a session.",
+      description:
+        "Check your email to confirm — the link goes to this app, not localhost (if SITE_URL is set in production).",
     });
-    router.push("/dashboard");
+    router.push("/login");
     router.refresh();
   }
 

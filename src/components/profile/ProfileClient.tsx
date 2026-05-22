@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { BadgeGallery } from "@/components/profile/BadgeGallery";
 import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
+import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import type { SessionCounts } from "@/lib/data/sessionBadges";
 import type { Profile } from "@/types/app";
@@ -42,6 +43,7 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
           board from Home.
         </p>
       </div>
+      <DeleteAccountSection />
     </div>
   );
 }

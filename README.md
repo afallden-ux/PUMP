@@ -31,7 +31,10 @@ Fill in:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
+
+On **Vercel**, set `NEXT_PUBLIC_SITE_URL` to your live URL (e.g. `https://pump.yourdomain.se`).
 
 ### 3. Run locally
 
@@ -102,12 +105,17 @@ DNS can take 5 minutes–48 hours; Vercel shows **Valid** when ready and issues 
 
 ### D. Supabase Auth (required)
 
-[Supabase](https://supabase.com/dashboard/project/yvvoubtmciphgynuahnn/auth/url-configuration) → **Authentication** → **URL configuration**:
+[Supabase](https://supabase.com/dashboard) → **Authentication** → **URL configuration**:
 
-- **Site URL:** `https://pump.yourdomain.se`
+- **Site URL:** `https://pump.yourdomain.se` (your production URL — **not** `http://localhost:3000`)
 - **Redirect URLs** (add both while testing):
   - `https://pump.yourdomain.se/**`
+  - `https://pump.yourdomain.se/auth/callback`
   - `https://*.vercel.app/**` (optional, for preview deploys)
+
+Vercel env: `NEXT_PUBLIC_SITE_URL=https://pump.yourdomain.se` (same as Site URL).
+
+Confirmation emails use `/auth/callback` on that domain. If links still show localhost, the Supabase **Site URL** was left on localhost — update it and redeploy with `NEXT_PUBLIC_SITE_URL` set.
 
 Share `https://pump.yourdomain.se` with your crew.
 

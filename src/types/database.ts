@@ -341,6 +341,7 @@ export interface Database {
       };
       get_public_crew_detail: { Args: { p_crew_id: string }; Returns: Json };
       get_my_crew_memberships: { Args: Record<string, never>; Returns: Json };
+      delete_my_account: { Args: Record<string, never>; Returns: undefined };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
