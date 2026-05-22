@@ -4,6 +4,7 @@ import {
   fetchCrewMembership,
   filterLeaderboardToCrew,
 } from "@/lib/data/crew";
+import { mapLeaderboardRows } from "@/lib/data/leaderboard";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/app";
 
@@ -23,13 +24,25 @@ export default async function DashboardPage() {
   if (!currentProfile) redirect("/login");
 
   const membership = await fetchCrewMembership(supabase, user.id);
-  const memberIds = membership?.members.map((m) => m.id) ?? [];
-  const crewProfiles = membership?.members ?? [];
 
-  const initialLeaderboard =
-    memberIds.length > 0
-      ? filterLeaderboardToCrew(leaderboard ?? [], memberIds)
-      : [];
+  let crewProfiles: Profile[];
+  if (membership) {
+    crewProfiles = membership.members;
+  } else {
+    const { data: allProfiles } = await supabase
+      .from("profiles")
+      .select("*")
+      .order("username");
+    crewProfiles = (allProfiles ?? []) as Profile[];
+  }
+
+  const memberIds = membership
+    ? membership.members.map((m) => m.id)
+    : crewProfiles.map((p) => p.id);
+
+  const initialLeaderboard = membership
+    ? filterLeaderboardToCrew(leaderboard ?? [], memberIds)
+    : mapLeaderboardRows(leaderboard ?? []);
 
   return (
     <DashboardClient

@@ -10,7 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 
-export function CrewOnboarding() {
+interface CrewOnboardingProps {
+  onLoneWolf?: () => void;
+  compact?: boolean;
+}
+
+export function CrewOnboarding({ onLoneWolf, compact }: CrewOnboardingProps) {
   const router = useRouter();
   const [mode, setMode] = useState<"choose" | "create" | "join">("choose");
   const [crewName, setCrewName] = useState("");
@@ -34,6 +39,7 @@ export function CrewOnboarding() {
       description: `Invite code: ${(data as { invite_code: string }).invite_code}`,
     });
     router.refresh();
+    window.location.reload();
   }
 
   async function handleJoin(e: React.FormEvent) {
@@ -51,6 +57,7 @@ export function CrewOnboarding() {
     }
     toast.success(`Welcome to ${(data as { name: string }).name}!`);
     router.refresh();
+    window.location.reload();
   }
 
   if (mode === "create") {
@@ -121,13 +128,22 @@ export function CrewOnboarding() {
   }
 
   return (
-    <Card className="border-orange-500/40 bg-gradient-to-b from-orange-500/10 to-transparent">
-      <CardHeader className="text-center">
-        <Shield className="mx-auto size-10 text-orange-400" />
-        <CardTitle className="text-xl font-black">Private crew required</CardTitle>
+    <Card
+      className={
+        compact
+          ? "border-orange-500/30"
+          : "border-orange-500/40 bg-gradient-to-b from-orange-500/10 to-transparent"
+      }
+    >
+      <CardHeader className={compact ? "pb-2" : "text-center"}>
+        {!compact && <Shield className="mx-auto size-10 text-orange-400" />}
+        <CardTitle className={compact ? "text-lg font-black" : "text-xl font-black"}>
+          {compact ? "Join a private crew" : "Optional: private crew"}
+        </CardTitle>
         <p className="text-sm text-muted-foreground">
-          PUMP is invite-only. Create a crew for your gym squad or join with a code
-          from a friend.
+          {compact
+            ? "Crew feed, battles, and crew-only boards unlock when you join."
+            : "Track sessions solo, or create/join a crew for your gym squad."}
         </p>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
@@ -141,6 +157,16 @@ export function CrewOnboarding() {
         <Button variant="outline" className="w-full font-bold" onClick={() => setMode("join")}>
           I have an invite code
         </Button>
+        {onLoneWolf && (
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full text-muted-foreground"
+            onClick={onLoneWolf}
+          >
+            Continue as lone wolf
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

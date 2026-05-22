@@ -248,6 +248,12 @@ create policy "Crews visible to members"
     )
   );
 
+-- Own row first — avoids circular RLS on the crew-mates policy below.
+create policy "Users can view own crew membership"
+  on public.crew_members for select
+  to authenticated
+  using (user_id = auth.uid());
+
 create policy "Crew members visible to same crew"
   on public.crew_members for select
   to authenticated

@@ -34,6 +34,7 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [crewPromptDismissed, setCrewPromptDismissed] = useState(false);
   const memberIds = crewProfiles.map((p) => p.id);
 
   const { entries, refresh } = useLeaderboard(initialLeaderboard, memberIds);
@@ -51,29 +52,26 @@ export function DashboardClient({
     router.refresh();
   }
 
-  if (!membership) {
-    return (
-      <div className="mx-auto max-w-lg space-y-6 px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-black text-orange-400">PUMP</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Private bouldering accountability
-          </p>
-        </div>
-        <CrewOnboarding />
-      </div>
-    );
-  }
+  const showCrewPrompt = !membership && !crewPromptDismissed;
 
   return (
     <div className="mx-auto max-w-lg space-y-6 px-4 pb-28 pt-4">
-      <CrewBanner membership={membership} />
+      {showCrewPrompt && (
+        <CrewOnboarding
+          compact
+          onLoneWolf={() => setCrewPromptDismissed(true)}
+        />
+      )}
 
-      <CrewBattlesPanel
-        membership={membership}
-        isOwner={membership.role === "owner"}
-        refreshKey={refreshKey}
-      />
+      {membership && <CrewBanner membership={membership} />}
+
+      {membership && (
+        <CrewBattlesPanel
+          membership={membership}
+          isOwner={membership.role === "owner"}
+          refreshKey={refreshKey}
+        />
+      )}
 
       <AvatarEvolution profile={currentProfile} />
 
@@ -81,12 +79,19 @@ export function DashboardClient({
         <LogWorkoutModal userId={currentProfile.id} onLogged={handleLogged} />
       </div>
 
-      <CrewFeed
-        currentUserId={currentProfile.id}
-        memberIds={memberIds}
-        crewName={membership.crew.name}
-        refreshKey={refreshKey}
-      />
+      {membership ? (
+        <CrewFeed
+          currentUserId={currentProfile.id}
+          memberIds={memberIds}
+          crewName={membership.crew.name}
+          refreshKey={refreshKey}
+        />
+      ) : (
+        <section className="rounded-xl border border-dashed border-orange-500/30 p-4 text-center text-sm text-muted-foreground">
+          Lone wolf mode — global leaderboard below. Join a crew for private feed and
+          battles.
+        </section>
+      )}
 
       <HoursComparisonChart
         currentUser={currentProfile}
@@ -97,7 +102,8 @@ export function DashboardClient({
       <Leaderboard
         entries={entries}
         currentUserId={currentProfile.id}
-        crewName={membership.crew.name}
+        crewName={membership?.crew.name}
+        global={!membership}
       />
 
       <TrainingHistoryChart logs={logs} loading={historyLoading} />
@@ -108,7 +114,9 @@ export function DashboardClient({
           Still climbing ({activeClimbers.length})
         </h3>
         <p className="text-xs text-muted-foreground">
-          Lifetime pump scores — {membership.crew.name} only on the boards above.
+          {membership
+            ? `Lifetime pump scores — ${membership.crew.name} only on the boards above.`
+            : "Everyone on PUMP — log a session to leave the couch."}
         </p>
       </section>
 

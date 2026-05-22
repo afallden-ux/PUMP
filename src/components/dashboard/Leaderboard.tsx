@@ -9,9 +9,15 @@ interface LeaderboardProps {
   entries: LeaderboardEntry[];
   currentUserId: string;
   crewName?: string;
+  global?: boolean;
 }
 
-export function Leaderboard({ entries, currentUserId, crewName }: LeaderboardProps) {
+export function Leaderboard({
+  entries,
+  currentUserId,
+  crewName,
+  global,
+}: LeaderboardProps) {
   const active = entries.filter((e) => e.points_7d > 0);
   const display = active.length > 0 ? active : entries;
 
@@ -22,7 +28,9 @@ export function Leaderboard({ entries, currentUserId, crewName }: LeaderboardPro
         <h3 className="text-lg font-black">
           {crewName ? `${crewName} — week` : "Winner of the Week"}
         </h3>
-        <span className="text-xs text-muted-foreground">(last 7 days · crew only)</span>
+        <span className="text-xs text-muted-foreground">
+          {global ? "(last 7 days · everyone)" : "(last 7 days · crew only)"}
+        </span>
       </div>
 
       {display.length === 0 ? (

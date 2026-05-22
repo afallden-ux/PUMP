@@ -295,6 +295,11 @@ create policy "Crews visible to members" on public.crews for select to authentic
     where cm.crew_id = crews.id and cm.user_id = auth.uid()
   ));
 
+drop policy if exists "Users can view own crew membership" on public.crew_members;
+create policy "Users can view own crew membership"
+  on public.crew_members for select to authenticated
+  using (user_id = auth.uid());
+
 drop policy if exists "Crew members visible to same crew" on public.crew_members;
 create policy "Crew members visible to same crew" on public.crew_members for select to authenticated
   using (crew_id in (select crew_id from public.crew_members where user_id = auth.uid()));
