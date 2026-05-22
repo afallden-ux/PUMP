@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { CrewPageClient } from "@/components/crew/CrewPageClient";
 import { CrewOnboarding } from "@/components/crew/CrewOnboarding";
-import { fetchCrewMembership } from "@/lib/data/crew";
+import { fetchAllCrewMemberships } from "@/lib/data/crew";
 import { fetchSessionCountsMap } from "@/lib/data/sessionBadges";
 import { createClient } from "@/lib/supabase/server";
 
@@ -13,15 +13,15 @@ export default async function CrewPage() {
 
   if (!user) redirect("/login");
 
-  const membership = await fetchCrewMembership(supabase, user.id);
+  const memberships = await fetchAllCrewMemberships(supabase, user.id);
 
-  if (!membership) {
+  if (memberships.length === 0) {
     return (
       <div className="mx-auto max-w-lg space-y-6 px-4 py-6">
         <div>
-          <h1 className="text-2xl font-black text-orange-400">Your crew</h1>
+          <h1 className="text-2xl font-black text-orange-400">Your crews</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create or join a crew — or browse every squad on PUMP.
+            Join multiple crews — create one or use invite codes.
           </p>
         </div>
         <CrewOnboarding />
@@ -34,12 +34,14 @@ export default async function CrewPage() {
     );
   }
 
-  const memberIds = membership.members.map((m) => m.id);
-  const memberCountsMap = await fetchSessionCountsMap(supabase, memberIds);
+  const allMemberIds = [
+    ...new Set(memberships.flatMap((m) => m.members.map((p) => p.id))),
+  ];
+  const memberCountsMap = await fetchSessionCountsMap(supabase, allMemberIds);
 
   return (
     <CrewPageClient
-      membership={membership}
+      memberships={memberships}
       currentUserId={user.id}
       memberCountsMap={memberCountsMap}
     />

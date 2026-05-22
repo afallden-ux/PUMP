@@ -305,19 +305,29 @@ export interface Database {
       };
       create_crew: { Args: { p_name: string }; Returns: Json };
       join_crew_by_code: { Args: { p_code: string }; Returns: Json };
-      leave_crew: { Args: Record<string, never>; Returns: undefined };
-      delete_crew: { Args: Record<string, never>; Returns: undefined };
-      regenerate_invite_code: { Args: Record<string, never>; Returns: string };
+      leave_crew: { Args: { p_crew_id: string }; Returns: undefined };
+      delete_crew: { Args: { p_crew_id: string }; Returns: undefined };
+      regenerate_invite_code: { Args: { p_crew_id: string }; Returns: string };
       challenge_crew_battle: {
-        Args: { p_opponent_code: string; p_duration_days?: number };
+        Args: {
+          p_crew_id: string;
+          p_opponent_code: string;
+          p_duration_days?: number;
+        };
         Returns: Json;
       };
       accept_crew_battle: { Args: { p_battle_id: string }; Returns: Json };
       decline_crew_battle: { Args: { p_battle_id: string }; Returns: undefined };
       compute_battle_scores: { Args: { p_battle_id: string }; Returns: Json };
       finalize_expired_battles: { Args: Record<string, never>; Returns: undefined };
-      update_crew_location: { Args: { p_location: string }; Returns: undefined };
-      update_crew_banner_url: { Args: { p_url: string }; Returns: undefined };
+      update_crew_location: {
+        Args: { p_crew_id: string; p_location: string };
+        Returns: undefined;
+      };
+      update_crew_banner_url: {
+        Args: { p_crew_id: string; p_url: string };
+        Returns: undefined;
+      };
       list_public_crews: {
         Args: Record<string, never>;
         Returns: {

@@ -142,8 +142,8 @@ export function CrewOnboarding({ onLoneWolf, compact }: CrewOnboardingProps) {
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           {compact
-            ? "Crew feed, battles, and crew-only boards unlock when you join."
-            : "Track sessions solo, or create/join a crew for your gym squad."}
+            ? "Join as many crews as you want — feed & battles per crew."
+            : "Track sessions solo, or create/join one or more gym squads."}
         </p>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">

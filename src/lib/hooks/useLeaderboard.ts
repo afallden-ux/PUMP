@@ -1,27 +1,35 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { mapLeaderboardRows } from "@/lib/data/leaderboard";
-import { filterLeaderboardToCrew } from "@/lib/data/crew";
+import {
+  mapLeaderboardRows,
+  mapLifetimeLeaderboard,
+} from "@/lib/data/leaderboard";
 import { createClient } from "@/lib/supabase/client";
 import type { LeaderboardEntry } from "@/types/app";
 
 export function useLeaderboard(
-  initial: LeaderboardEntry[],
+  initialWeekly: LeaderboardEntry[],
+  initialLifetime: LeaderboardEntry[],
   memberIds: string[]
 ) {
-  const [entries, setEntries] = useState(initial);
+  const [weeklyEntries, setWeeklyEntries] = useState(initialWeekly);
+  const [lifetimeEntries, setLifetimeEntries] = useState(initialLifetime);
   const supabase = createClient();
 
   const refresh = useCallback(async () => {
     const { data } = await supabase.from("leaderboard_7d").select("*");
     if (data) {
-      const rows = memberIds.length > 0
-        ? filterLeaderboardToCrew(data, memberIds)
-        : mapLeaderboardRows(data);
-      setEntries(rows);
+      const ids = memberIds.length > 0 ? memberIds : undefined;
+      setWeeklyEntries(mapLeaderboardRows(data, ids));
+      setLifetimeEntries(mapLifetimeLeaderboard(data, ids));
     }
   }, [memberIds.join(",")]);
+
+  useEffect(() => {
+    setWeeklyEntries(initialWeekly);
+    setLifetimeEntries(initialLifetime);
+  }, [initialWeekly, initialLifetime]);
 
   useEffect(() => {
     const channel = supabase
@@ -38,5 +46,5 @@ export function useLeaderboard(
     };
   }, [supabase, refresh]);
 
-  return { entries, refresh };
+  return { weeklyEntries, lifetimeEntries, refresh };
 }

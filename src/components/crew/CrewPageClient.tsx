@@ -1,40 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Shield, Swords, Users } from "lucide-react";
-import { AvatarFrame } from "@/components/avatar/AvatarFrame";
+import { ArrowLeft, Users } from "lucide-react";
 import { CrewBanner } from "@/components/crew/CrewBanner";
 import { CrewBattlesPanel } from "@/components/crew/CrewBattlesPanel";
-import { SectionHeader } from "@/components/ui/SectionHeader";
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { CrewBadgesBoard } from "@/components/crew/CrewBadgesBoard";
 import { CrewBannerUpload } from "@/components/crew/CrewBannerUpload";
 import { CrewLocationForm } from "@/components/crew/CrewLocationForm";
+import { CrewOnboarding } from "@/components/crew/CrewOnboarding";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { SessionCountsMap } from "@/lib/data/sessionBadges";
-import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
-import { formatRelativeTime } from "@/lib/utils/dates";
 import type { CrewMembership } from "@/types/app";
 
 interface CrewPageClientProps {
-  membership: CrewMembership;
+  memberships: CrewMembership[];
   currentUserId: string;
   memberCountsMap: SessionCountsMap;
 }
 
 export function CrewPageClient({
-  membership,
+  memberships,
   currentUserId,
   memberCountsMap,
 }: CrewPageClientProps) {
-  const sortedMembers = [...membership.members].sort((a, b) => {
-    if (a.id === currentUserId) return -1;
-    if (b.id === currentUserId) return 1;
-    return b.current_pump_score - a.current_pump_score;
-  });
-
   return (
     <div className="mx-auto max-w-lg space-y-6 px-4 pb-10 pt-4">
       <div className="flex items-center gap-2">
@@ -46,115 +35,77 @@ export function CrewPageClient({
           <ArrowLeft className="size-4" />
         </Link>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-black">{membership.crew.name}</h1>
-          <p className="text-xs text-muted-foreground">Crew HQ</p>
+          <h1 className="text-xl font-black">Your crews</h1>
+          <p className="text-xs text-muted-foreground">
+            {memberships.length} crew{memberships.length === 1 ? "" : "s"} — join
+            more anytime
+          </p>
         </div>
-        <Shield className="size-6 text-orange-400" />
+        <Users className="size-6 text-orange-400" />
       </div>
 
-      <CrewBannerUpload
-        crewId={membership.crew.id}
-        crewName={membership.crew.name}
-        bannerUrl={membership.crew.banner_url ?? null}
-        isOwner={membership.role === "owner"}
-      />
+      {memberships.map((membership) => (
+        <section
+          key={membership.crew.id}
+          className="space-y-4 rounded-2xl border border-orange-500/25 bg-card/30 p-4"
+        >
+          <h2 className="text-lg font-black">{membership.crew.name}</h2>
+
+          <CrewBannerUpload
+            crewId={membership.crew.id}
+            crewName={membership.crew.name}
+            bannerUrl={membership.crew.banner_url ?? null}
+            isOwner={membership.role === "owner"}
+          />
+
+          <Link
+            href={`/crews/${membership.crew.id}`}
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "w-full"
+            )}
+          >
+            Public crew page
+          </Link>
+
+          <CrewBanner membership={membership} />
+
+          <CrewLocationForm
+            crewId={membership.crew.id}
+            location={membership.crew.location}
+            isOwner={membership.role === "owner"}
+          />
+
+          <CrewBadgesBoard
+            members={membership.members}
+            countsMap={memberCountsMap}
+            crewName={membership.crew.name}
+            currentUserId={currentUserId}
+          />
+
+          {membership.role === "owner" && (
+            <CrewBattlesPanel
+              membership={membership}
+              isOwner
+            />
+          )}
+        </section>
+      ))}
+
+      <section className="space-y-3 rounded-xl border border-dashed border-orange-500/30 p-4">
+        <h3 className="font-bold">Join another crew</h3>
+        <p className="text-xs text-muted-foreground">
+          You can be in multiple crews. Create a new one or use an invite code.
+        </p>
+        <CrewOnboarding compact />
+      </section>
 
       <Link
-        href={`/crews/${membership.crew.id}`}
-        className={cn(
-          buttonVariants({ variant: "outline", size: "sm" }),
-          "w-full text-center"
-        )}
+        href="/crews"
+        className={cn(buttonVariants({ variant: "outline" }), "w-full")}
       >
-        View public crew page (badges & roster)
+        Browse all crews on PUMP
       </Link>
-
-      <CrewBanner membership={membership} />
-
-      <CrewLocationForm
-        location={membership.crew.location}
-        isOwner={membership.role === "owner"}
-      />
-
-      <CrewBadgesBoard
-        members={membership.members}
-        countsMap={memberCountsMap}
-        crewName={membership.crew.name}
-        currentUserId={currentUserId}
-      />
-
-      <section className="space-y-3">
-        <SectionHeader
-          icon={Users}
-          title={`Members (${membership.members.length})`}
-          subtitle="Lifetime pump score and last session — tap Board for the weekly race."
-        />
-        <ul className="space-y-2">
-          {sortedMembers.map((member) => {
-            const isYou = member.id === currentUserId;
-            const onCouch = isOnCouchOfShame(member);
-            return (
-              <li key={member.id}>
-                <Card
-                  className={
-                    isYou
-                      ? "border-orange-500/50 bg-orange-500/5"
-                      : "border-border/60 bg-card/80"
-                  }
-                >
-                  <CardContent className="flex items-center gap-3 py-3">
-                    <AvatarFrame
-                      username={member.username}
-                      avatarUrl={member.avatar_url}
-                      lifetimeScore={member.current_pump_score}
-                      size="md"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <p className="font-bold">{member.username}</p>
-                        {isYou && (
-                          <Badge variant="secondary" className="text-[10px]">
-                            You
-                          </Badge>
-                        )}
-                        {membership.crew.created_by === member.id && (
-                          <Badge className="bg-orange-600/80 text-[10px]">Owner</Badge>
-                        )}
-                        {onCouch && (
-                          <Badge variant="outline" className="text-[10px] text-zinc-400">
-                            Couch
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-orange-400/90">
-                        {member.current_pump_score.toLocaleString()} lifetime pts
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {member.home_crag ? `${member.home_crag} · ` : ""}
-                        {member.last_logged_at
-                          ? `Last log ${formatRelativeTime(member.last_logged_at)}`
-                          : "Never logged — drag them to the wall"}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
-      <section className="space-y-3">
-        <SectionHeader
-          icon={Swords}
-          title="Crew battles"
-          subtitle="Challenge another crew by their invite code."
-        />
-        <CrewBattlesPanel
-          membership={membership}
-          isOwner={membership.role === "owner"}
-        />
-      </section>
 
       <Link
         href="/dashboard"
@@ -163,7 +114,7 @@ export function CrewPageClient({
           "w-full bg-orange-600 font-bold text-white"
         )}
       >
-        Back to board & feed
+        Back to board
       </Link>
     </div>
   );

@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { PublicCrewDetailClient } from "@/components/crew/PublicCrewDetailClient";
-import { fetchCrewMembership } from "@/lib/data/crew";
+import { fetchAllCrewMemberships } from "@/lib/data/crew";
 import { fetchPublicCrewDetail } from "@/lib/data/publicCrews";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,8 +20,8 @@ export default async function PublicCrewPage({
   const crew = await fetchPublicCrewDetail(supabase, crewId);
   if (!crew) notFound();
 
-  const membership = await fetchCrewMembership(supabase, user.id);
-  const isYourCrew = membership?.crew.id === crewId;
+  const memberships = await fetchAllCrewMemberships(supabase, user.id);
+  const isYourCrew = memberships.some((m) => m.crew.id === crewId);
 
   return (
     <PublicCrewDetailClient

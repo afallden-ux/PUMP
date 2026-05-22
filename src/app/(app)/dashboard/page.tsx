@@ -1,10 +1,13 @@
 import { redirect } from "next/navigation";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import {
-  fetchCrewMembership,
-  filterLeaderboardToCrew,
+  fetchAllCrewMemberships,
+  unionCrewMembers,
 } from "@/lib/data/crew";
-import { mapLeaderboardRows } from "@/lib/data/leaderboard";
+import {
+  mapLeaderboardRows,
+  mapLifetimeLeaderboard,
+} from "@/lib/data/leaderboard";
 import {
   fetchSessionCounts,
   fetchSessionCountsMap,
@@ -20,11 +23,12 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const membership = await fetchCrewMembership(supabase, user.id);
+  const memberships = await fetchAllCrewMemberships(supabase, user.id);
+  const activeMembership = memberships[0] ?? null;
 
   let crewProfiles: Profile[];
-  if (membership) {
-    crewProfiles = membership.members;
+  if (memberships.length > 0) {
+    crewProfiles = unionCrewMembers(memberships);
   } else {
     const { data: allProfiles } = await supabase
       .from("profiles")
@@ -33,9 +37,11 @@ export default async function DashboardPage() {
     crewProfiles = (allProfiles ?? []) as Profile[];
   }
 
-  const memberIdsForBadges = membership
-    ? membership.members.map((m) => m.id)
-    : crewProfiles.map((p) => p.id);
+  const leaderboardMemberIds = activeMembership
+    ? activeMembership.members.map((m) => m.id)
+    : undefined;
+
+  const memberIdsForBadges = crewProfiles.map((p) => p.id);
 
   const [{ data: currentProfile }, { data: leaderboard }, sessionCounts, memberCountsMap] =
     await Promise.all([
@@ -47,20 +53,19 @@ export default async function DashboardPage() {
 
   if (!currentProfile) redirect("/login");
 
-  const memberIds = membership
-    ? membership.members.map((m) => m.id)
-    : crewProfiles.map((p) => p.id);
-
-  const initialLeaderboard = membership
-    ? filterLeaderboardToCrew(leaderboard ?? [], memberIds)
-    : mapLeaderboardRows(leaderboard ?? []);
+  const initialWeekly = mapLeaderboardRows(leaderboard ?? [], leaderboardMemberIds);
+  const initialLifetime = mapLifetimeLeaderboard(
+    leaderboard ?? [],
+    leaderboardMemberIds
+  );
 
   return (
     <DashboardClient
       currentProfile={currentProfile as Profile}
-      membership={membership}
+      memberships={memberships}
       crewProfiles={crewProfiles}
-      initialLeaderboard={initialLeaderboard}
+      initialWeekly={initialWeekly}
+      initialLifetime={initialLifetime}
       sessionCounts={sessionCounts}
       memberCountsMap={memberCountsMap}
     />

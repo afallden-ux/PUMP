@@ -59,6 +59,7 @@ export function CrewBannerUpload({
     const cacheBusted = `${publicUrl}?t=${Date.now()}`;
 
     const { error: rpcError } = await supabase.rpc("update_crew_banner_url", {
+      p_crew_id: crewId,
       p_url: cacheBusted,
     });
 

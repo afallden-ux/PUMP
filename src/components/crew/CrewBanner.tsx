@@ -30,7 +30,9 @@ export function CrewBanner({ membership }: CrewBannerProps) {
   async function regenerateCode() {
     setBusy(true);
     const supabase = createClient();
-    const { data, error } = await supabase.rpc("regenerate_invite_code");
+    const { data, error } = await supabase.rpc("regenerate_invite_code", {
+      p_crew_id: membership.crew.id,
+    });
     setBusy(false);
     if (error) {
       toast.error("Could not refresh code", { description: error.message });
@@ -41,16 +43,23 @@ export function CrewBanner({ membership }: CrewBannerProps) {
   }
 
   async function leaveCrew() {
-    if (!confirm("Leave this crew? You'll need a new invite to rejoin.")) return;
+    if (
+      !confirm(
+        `Leave "${membership.crew.name}"? If you're the last member, the crew will be removed.`
+      )
+    )
+      return;
     setBusy(true);
     const supabase = createClient();
-    const { error } = await supabase.rpc("leave_crew");
+    const { error } = await supabase.rpc("leave_crew", {
+      p_crew_id: membership.crew.id,
+    });
     setBusy(false);
     if (error) {
       toast.error("Could not leave", { description: error.message });
       return;
     }
-    toast.message("You left the crew");
+    toast.message(`Left ${membership.crew.name}`);
     router.refresh();
   }
 
@@ -63,7 +72,9 @@ export function CrewBanner({ membership }: CrewBannerProps) {
       return;
     setBusy(true);
     const supabase = createClient();
-    const { error } = await supabase.rpc("delete_crew");
+    const { error } = await supabase.rpc("delete_crew", {
+      p_crew_id: membership.crew.id,
+    });
     setBusy(false);
     if (error) {
       toast.error("Could not delete crew", { description: error.message });

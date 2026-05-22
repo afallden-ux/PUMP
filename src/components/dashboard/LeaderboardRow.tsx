@@ -9,9 +9,15 @@ import type { LeaderboardEntry } from "@/types/app";
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
   isCurrentUser?: boolean;
+  mode?: "weekly" | "lifetime";
 }
 
-export function LeaderboardRow({ entry, isCurrentUser }: LeaderboardRowProps) {
+export function LeaderboardRow({
+  entry,
+  isCurrentUser,
+  mode = "weekly",
+}: LeaderboardRowProps) {
+  const isLifetime = mode === "lifetime";
   const isTop = entry.rank === 1;
 
   return (
@@ -58,10 +64,18 @@ export function LeaderboardRow({ entry, isCurrentUser }: LeaderboardRowProps) {
 
       <div className="shrink-0 text-right">
         <p className="flex items-center justify-end gap-1 text-lg font-black text-orange-400">
-          <TrendingUp className="size-4" />
-          {entry.points_7d}
+          {isLifetime ? (
+            entry.current_pump_score.toLocaleString()
+          ) : (
+            <>
+              <TrendingUp className="size-4" />
+              {entry.points_7d}
+            </>
+          )}
         </p>
-        <p className="text-[10px] uppercase text-muted-foreground">7-day pts</p>
+        <p className="text-[10px] uppercase text-muted-foreground">
+          {isLifetime ? "lifetime pts" : "7-day pts"}
+        </p>
       </div>
     </motion.li>
   );

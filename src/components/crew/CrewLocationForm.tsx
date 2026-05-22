@@ -10,11 +10,13 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 
 interface CrewLocationFormProps {
+  crewId: string;
   location: string | null;
   isOwner: boolean;
 }
 
 export function CrewLocationForm({
+  crewId,
   location,
   isOwner,
 }: CrewLocationFormProps) {
@@ -28,6 +30,7 @@ export function CrewLocationForm({
     setSaving(true);
     const supabase = createClient();
     const { error } = await supabase.rpc("update_crew_location", {
+      p_crew_id: crewId,
       p_location: value.trim(),
     });
     setSaving(false);

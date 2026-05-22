@@ -30,22 +30,15 @@ export function filterLeaderboardToCrew(
   });
 }
 
-export async function fetchCrewMembership(
+async function buildMembership(
   supabase: Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>,
-  userId: string
+  crewId: string,
+  role: "owner" | "member"
 ): Promise<CrewMembership | null> {
-  const { data: membership } = await supabase
-    .from("crew_members")
-    .select("crew_id, role")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!membership) return null;
-
   const { data: crew } = await supabase
     .from("crews")
     .select("*")
-    .eq("id", membership.crew_id)
+    .eq("id", crewId)
     .single();
 
   if (!crew) return null;
@@ -53,7 +46,7 @@ export async function fetchCrewMembership(
   const { data: memberRows } = await supabase
     .from("crew_members")
     .select("user_id")
-    .eq("crew_id", membership.crew_id);
+    .eq("crew_id", crewId);
 
   const memberIds = (memberRows ?? []).map((r) => r.user_id);
   let members: Profile[] = [];
@@ -69,7 +62,57 @@ export async function fetchCrewMembership(
 
   return {
     crew: crew as Crew,
-    role: membership.role as "owner" | "member",
+    role,
     members,
   };
+}
+
+export async function fetchAllCrewMemberships(
+  supabase: Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>,
+  userId: string
+): Promise<CrewMembership[]> {
+  const { data: rows } = await supabase
+    .from("crew_members")
+    .select("crew_id, role")
+    .eq("user_id", userId);
+
+  if (!rows?.length) return [];
+
+  const memberships: CrewMembership[] = [];
+  for (const row of rows) {
+    const m = await buildMembership(
+      supabase,
+      row.crew_id,
+      row.role as "owner" | "member"
+    );
+    if (m) memberships.push(m);
+  }
+
+  return memberships.sort((a, b) => a.crew.name.localeCompare(b.crew.name));
+}
+
+/** First crew membership, if any (legacy helper). */
+export async function fetchCrewMembership(
+  supabase: Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>,
+  userId: string
+): Promise<CrewMembership | null> {
+  const all = await fetchAllCrewMemberships(supabase, userId);
+  return all[0] ?? null;
+}
+
+/** Unique profiles across all crews the user belongs to. */
+export function unionCrewMembers(memberships: CrewMembership[]): Profile[] {
+  const byId = new Map<string, Profile>();
+  for (const m of memberships) {
+    for (const p of m.members) {
+      byId.set(p.id, p);
+    }
+  }
+  return [...byId.values()].sort((a, b) => a.username.localeCompare(b.username));
+}
+
+export function memberIdsFromMembership(
+  membership: CrewMembership | null
+): string[] {
+  return membership?.members.map((m) => m.id) ?? [];
 }

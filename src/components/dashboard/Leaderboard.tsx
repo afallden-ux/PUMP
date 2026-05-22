@@ -10,6 +10,8 @@ interface LeaderboardProps {
   currentUserId: string;
   crewName?: string;
   global?: boolean;
+  mode?: "weekly" | "lifetime";
+  hideTitle?: boolean;
 }
 
 export function Leaderboard({
@@ -17,21 +19,38 @@ export function Leaderboard({
   currentUserId,
   crewName,
   global,
+  mode = "weekly",
+  hideTitle,
 }: LeaderboardProps) {
-  const active = entries.filter((e) => e.points_7d > 0);
+  const isLifetime = mode === "lifetime";
+  const active = isLifetime
+    ? entries.filter((e) => e.current_pump_score > 0)
+    : entries.filter((e) => e.points_7d > 0);
   const display = active.length > 0 ? active : entries;
 
   return (
     <section className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Trophy className="size-5 text-amber-400" />
-        <h3 className="text-lg font-black">
-          {crewName ? `${crewName} — week` : "Winner of the Week"}
-        </h3>
-        <span className="text-xs text-muted-foreground">
-          {global ? "(last 7 days · everyone)" : "(last 7 days · crew only)"}
-        </span>
-      </div>
+      {!hideTitle && (
+        <div className="flex items-center gap-2">
+          <Trophy className="size-5 text-amber-400" />
+          <h3 className="text-lg font-black">
+            {crewName
+              ? `${crewName} — ${isLifetime ? "lifetime" : "week"}`
+              : isLifetime
+                ? "Lifetime pump"
+                : "Winner of the Week"}
+          </h3>
+          <span className="text-xs text-muted-foreground">
+            {isLifetime
+              ? global
+                ? "(all-time · everyone)"
+                : "(all-time · crew)"
+              : global
+                ? "(last 7 days · everyone)"
+                : "(last 7 days · crew)"}
+          </span>
+        </div>
+      )}
 
       {display.length === 0 ? (
         <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
@@ -45,6 +64,7 @@ export function Leaderboard({
               key={entry.id}
               entry={entry}
               isCurrentUser={entry.id === currentUserId}
+              mode={mode}
             />
           ))}
         </motion.ul>

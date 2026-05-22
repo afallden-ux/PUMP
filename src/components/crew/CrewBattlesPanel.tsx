@@ -65,6 +65,7 @@ export function CrewBattlesPanel({
     setBusy(true);
     const supabase = createClient();
     const { data, error } = await supabase.rpc("challenge_crew_battle", {
+      p_crew_id: membership.crew.id,
       p_opponent_code: opponentCode.trim(),
       p_duration_days: days,
     });
