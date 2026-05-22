@@ -21,10 +21,15 @@ export default async function CrewPage() {
         <div>
           <h1 className="text-2xl font-black text-orange-400">Your crew</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create or join a crew to see members, invite codes, and battles.
+            Create or join a crew — or browse every squad on PUMP.
           </p>
         </div>
         <CrewOnboarding />
+        <p className="text-center text-sm">
+          <a href="/crews" className="font-semibold text-orange-400 underline">
+            Browse all crews
+          </a>
+        </p>
       </div>
     );
   }

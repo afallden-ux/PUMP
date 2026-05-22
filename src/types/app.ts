@@ -16,6 +16,7 @@ export interface Crew {
   name: string;
   invite_code: string;
   location: string | null;
+  banner_url: string | null;
   created_by: string;
   created_at: string;
 }

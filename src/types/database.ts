@@ -140,6 +140,7 @@ export interface Database {
           name: string;
           invite_code: string;
           location: string | null;
+          banner_url: string | null;
           created_by: string;
           created_at: string;
         };
@@ -148,6 +149,7 @@ export interface Database {
           name: string;
           invite_code: string;
           location?: string | null;
+          banner_url?: string | null;
           created_by: string;
           created_at?: string;
         };
@@ -156,6 +158,7 @@ export interface Database {
           name?: string;
           invite_code?: string;
           location?: string | null;
+          banner_url?: string | null;
           created_by?: string;
           created_at?: string;
         };
@@ -314,6 +317,19 @@ export interface Database {
       compute_battle_scores: { Args: { p_battle_id: string }; Returns: Json };
       finalize_expired_battles: { Args: Record<string, never>; Returns: undefined };
       update_crew_location: { Args: { p_location: string }; Returns: undefined };
+      update_crew_banner_url: { Args: { p_url: string }; Returns: undefined };
+      list_public_crews: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          name: string;
+          location: string | null;
+          banner_url: string | null;
+          member_count: number;
+          created_at: string;
+        }[];
+      };
+      get_public_crew_detail: { Args: { p_crew_id: string }; Returns: Json };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

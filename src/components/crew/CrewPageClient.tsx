@@ -11,6 +11,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { CrewBadgesBoard } from "@/components/crew/CrewBadgesBoard";
+import { CrewBannerUpload } from "@/components/crew/CrewBannerUpload";
 import { CrewLocationForm } from "@/components/crew/CrewLocationForm";
 import type { SessionCountsMap } from "@/lib/data/sessionBadges";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
@@ -51,6 +52,23 @@ export function CrewPageClient({
         <Shield className="size-6 text-orange-400" />
       </div>
 
+      <CrewBannerUpload
+        crewId={membership.crew.id}
+        crewName={membership.crew.name}
+        bannerUrl={membership.crew.banner_url ?? null}
+        isOwner={membership.role === "owner"}
+      />
+
+      <Link
+        href={`/crews/${membership.crew.id}`}
+        className={cn(
+          buttonVariants({ variant: "outline", size: "sm" }),
+          "w-full text-center"
+        )}
+      >
+        View public crew page (badges & roster)
+      </Link>
+
       <CrewBanner membership={membership} />
 
       <CrewLocationForm
@@ -61,6 +79,7 @@ export function CrewPageClient({
       <CrewBadgesBoard
         members={membership.members}
         countsMap={memberCountsMap}
+        crewName={membership.crew.name}
         currentUserId={currentUserId}
       />
 

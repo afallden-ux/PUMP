@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Dumbbell, LogOut, User, Users } from "lucide-react";
+import { Dumbbell, LogOut, User, Users, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -41,6 +41,15 @@ export function AppNav() {
           >
             <Users className="size-4 sm:mr-1" />
             <span className="hidden sm:inline">Crew</span>
+          </Button>
+        </Link>
+        <Link href="/crews">
+          <Button
+            variant={pathname.startsWith("/crews") ? "secondary" : "ghost"}
+            size="sm"
+          >
+            <List className="size-4 sm:mr-1" />
+            <span className="hidden sm:inline">All</span>
           </Button>
         </Link>
         <Link href="/profile" aria-label="Profile">
