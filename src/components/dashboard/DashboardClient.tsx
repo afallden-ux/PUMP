@@ -34,7 +34,7 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
-  const [crewPromptDismissed, setCrewPromptDismissed] = useState(false);
+  const [crewPromptDismissed, setCrewPromptDismissed] = useState(true);
   const memberIds = crewProfiles.map((p) => p.id);
 
   const { entries, refresh } = useLeaderboard(initialLeaderboard, memberIds);
