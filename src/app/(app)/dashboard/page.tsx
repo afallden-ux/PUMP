@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
-import { mapLeaderboardRows } from "@/lib/data/leaderboard";
+import {
+  fetchCrewMembership,
+  filterLeaderboardToCrew,
+} from "@/lib/data/crew";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/app";
 
@@ -12,21 +15,27 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const [{ data: currentProfile }, { data: allProfiles }, { data: leaderboard }] =
-    await Promise.all([
-      supabase.from("profiles").select("*").eq("id", user.id).single(),
-      supabase.from("profiles").select("*").order("username"),
-      supabase.from("leaderboard_7d").select("*"),
-    ]);
+  const [{ data: currentProfile }, { data: leaderboard }] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", user.id).single(),
+    supabase.from("leaderboard_7d").select("*"),
+  ]);
 
   if (!currentProfile) redirect("/login");
 
-  const initialLeaderboard = mapLeaderboardRows(leaderboard ?? []);
+  const membership = await fetchCrewMembership(supabase, user.id);
+  const memberIds = membership?.members.map((m) => m.id) ?? [];
+  const crewProfiles = membership?.members ?? [];
+
+  const initialLeaderboard =
+    memberIds.length > 0
+      ? filterLeaderboardToCrew(leaderboard ?? [], memberIds)
+      : [];
 
   return (
     <DashboardClient
       currentProfile={currentProfile as Profile}
-      allProfiles={(allProfiles ?? []) as Profile[]}
+      membership={membership}
+      crewProfiles={crewProfiles}
       initialLeaderboard={initialLeaderboard}
     />
   );

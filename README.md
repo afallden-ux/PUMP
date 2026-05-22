@@ -110,3 +110,12 @@ DNS can take 5 minutes–48 hours; Vercel shows **Valid** when ready and issues 
   - `https://*.vercel.app/**` (optional, for preview deploys)
 
 Share `https://pump.yourdomain.se` with your crew.
+
+## Migrations after first deploy
+
+If you added features later, run new SQL files in Supabase SQL Editor (in order):
+
+- `supabase/migrations/002_workout_photos.sql` — session photos + storage bucket
+- `supabase/migrations/003_social_grades_bonuses.sql` — Moonboard/Outdoors bonuses, Font grades, comments, kudos
+- `supabase/migrations/004_private_crews.sql` — private crews with invite codes (required to use the app)
+- `supabase/migrations/005_session_types_and_battles.sql` — session types + crew vs crew battles

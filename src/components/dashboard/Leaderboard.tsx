@@ -8,9 +8,10 @@ import type { LeaderboardEntry } from "@/types/app";
 interface LeaderboardProps {
   entries: LeaderboardEntry[];
   currentUserId: string;
+  crewName?: string;
 }
 
-export function Leaderboard({ entries, currentUserId }: LeaderboardProps) {
+export function Leaderboard({ entries, currentUserId, crewName }: LeaderboardProps) {
   const active = entries.filter((e) => e.points_7d > 0);
   const display = active.length > 0 ? active : entries;
 
@@ -18,8 +19,10 @@ export function Leaderboard({ entries, currentUserId }: LeaderboardProps) {
     <section className="space-y-3">
       <div className="flex items-center gap-2">
         <Trophy className="size-5 text-amber-400" />
-        <h3 className="text-lg font-black">Winner of the Week</h3>
-        <span className="text-xs text-muted-foreground">(last 7 days)</span>
+        <h3 className="text-lg font-black">
+          {crewName ? `${crewName} — week` : "Winner of the Week"}
+        </h3>
+        <span className="text-xs text-muted-foreground">(last 7 days · crew only)</span>
       </div>
 
       {display.length === 0 ? (

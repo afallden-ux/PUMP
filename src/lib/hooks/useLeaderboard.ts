@@ -2,17 +2,26 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { mapLeaderboardRows } from "@/lib/data/leaderboard";
+import { filterLeaderboardToCrew } from "@/lib/data/crew";
 import { createClient } from "@/lib/supabase/client";
 import type { LeaderboardEntry } from "@/types/app";
 
-export function useLeaderboard(initial: LeaderboardEntry[]) {
+export function useLeaderboard(
+  initial: LeaderboardEntry[],
+  memberIds: string[]
+) {
   const [entries, setEntries] = useState(initial);
   const supabase = createClient();
 
   const refresh = useCallback(async () => {
     const { data } = await supabase.from("leaderboard_7d").select("*");
-    if (data) setEntries(mapLeaderboardRows(data));
-  }, [supabase]);
+    if (data) {
+      const rows = memberIds.length > 0
+        ? filterLeaderboardToCrew(data, memberIds)
+        : mapLeaderboardRows(data);
+      setEntries(rows);
+    }
+  }, [memberIds.join(",")]);
 
   useEffect(() => {
     const channel = supabase
