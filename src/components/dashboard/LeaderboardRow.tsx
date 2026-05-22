@@ -44,6 +44,7 @@ export function LeaderboardRow({
         avatarUrl={entry.avatar_url}
         lifetimeScore={entry.current_pump_score}
         size="sm"
+        plain
       />
 
       <div className="min-w-0 flex-1">

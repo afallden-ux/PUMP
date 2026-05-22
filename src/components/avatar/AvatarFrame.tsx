@@ -11,6 +11,8 @@ interface AvatarFrameProps {
   lifetimeScore: number;
   size?: "sm" | "md" | "lg";
   shameMode?: boolean;
+  /** Leaderboard & lists: photo only, no Popeye frame */
+  plain?: boolean;
   className?: string;
 }
 
@@ -26,11 +28,43 @@ export function AvatarFrame({
   lifetimeScore,
   size = "md",
   shameMode = false,
+  plain = false,
   className,
 }: AvatarFrameProps) {
   const tier = getPumpTier(lifetimeScore);
   const dims = sizeMap[size];
   const initial = username.slice(0, 1).toUpperCase();
+
+  if (plain) {
+    const imgSize = dims.image;
+    return (
+      <div
+        className={cn(
+          "relative shrink-0 overflow-hidden rounded-full bg-muted",
+          shameMode && "grayscale opacity-60",
+          className
+        )}
+        style={{ width: imgSize, height: imgSize }}
+      >
+        {avatarUrl ? (
+          <Image
+            src={avatarUrl}
+            alt={username}
+            width={imgSize}
+            height={imgSize}
+            className="size-full object-cover"
+            unoptimized
+          />
+        ) : (
+          <span
+            className="flex size-full items-center justify-center bg-orange-500/20 text-sm font-bold text-orange-400"
+          >
+            {initial}
+          </span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)}>

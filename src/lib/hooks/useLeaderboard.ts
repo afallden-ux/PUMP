@@ -10,8 +10,7 @@ import type { LeaderboardEntry } from "@/types/app";
 
 export function useLeaderboard(
   initialWeekly: LeaderboardEntry[],
-  initialLifetime: LeaderboardEntry[],
-  memberIds: string[]
+  initialLifetime: LeaderboardEntry[]
 ) {
   const [weeklyEntries, setWeeklyEntries] = useState(initialWeekly);
   const [lifetimeEntries, setLifetimeEntries] = useState(initialLifetime);
@@ -20,11 +19,10 @@ export function useLeaderboard(
   const refresh = useCallback(async () => {
     const { data } = await supabase.from("leaderboard_7d").select("*");
     if (data) {
-      const ids = memberIds.length > 0 ? memberIds : undefined;
-      setWeeklyEntries(mapLeaderboardRows(data, ids));
-      setLifetimeEntries(mapLifetimeLeaderboard(data, ids));
+      setWeeklyEntries(mapLeaderboardRows(data));
+      setLifetimeEntries(mapLifetimeLeaderboard(data));
     }
-  }, [memberIds.join(",")]);
+  }, [supabase]);
 
   useEffect(() => {
     setWeeklyEntries(initialWeekly);

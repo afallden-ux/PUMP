@@ -112,7 +112,9 @@ create trigger workout_logs_points_before_insert
   before insert on public.workout_logs
   for each row execute function public.enforce_workout_points();
 
-create or replace view public.leaderboard_7d as
+create or replace view public.leaderboard_7d
+with (security_invoker = true)
+as
 select
   p.id,
   p.username,
@@ -128,6 +130,8 @@ left join public.workout_logs w
   and w.created_at >= (now() - interval '7 days')
 group by p.id, p.username, p.avatar_url, p.title, p.current_pump_score, p.last_logged_at
 order by points_7d desc, sessions_7d desc;
+
+grant select on public.leaderboard_7d to authenticated;
 
 create or replace function public.set_updated_at()
 returns trigger

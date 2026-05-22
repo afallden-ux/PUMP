@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, MessageCircle, Users } from "lucide-react";
 import { CrewBanner } from "@/components/crew/CrewBanner";
 import { CrewBattlesPanel } from "@/components/crew/CrewBattlesPanel";
 import { CrewBadgesBoard } from "@/components/crew/CrewBadgesBoard";
@@ -35,14 +35,24 @@ export function CrewPageClient({
           <ArrowLeft className="size-4" />
         </Link>
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl font-black">Your crews</h1>
+          <h1 className="text-xl font-black">Crew settings</h1>
           <p className="text-xs text-muted-foreground">
-            {memberships.length} crew{memberships.length === 1 ? "" : "s"} — join
-            more anytime
+            Banners, battles, invites — not the social feed
           </p>
         </div>
         <Users className="size-6 text-orange-400" />
       </div>
+
+      <Link
+        href="/dashboard#crew-feed"
+        className={cn(
+          buttonVariants({ size: "default" }),
+          "flex w-full items-center justify-center gap-2 bg-orange-600 font-bold text-white hover:bg-orange-500"
+        )}
+      >
+        <MessageCircle className="size-5" />
+        Open crew feed (comments & kudos)
+      </Link>
 
       {memberships.map((membership) => (
         <section
@@ -109,12 +119,9 @@ export function CrewPageClient({
 
       <Link
         href="/dashboard"
-        className={cn(
-          buttonVariants({ size: "default" }),
-          "w-full bg-orange-600 font-bold text-white"
-        )}
+        className={cn(buttonVariants({ variant: "outline" }), "w-full")}
       >
-        Back to board
+        Back to home
       </Link>
     </div>
   );

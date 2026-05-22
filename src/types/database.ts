@@ -340,6 +340,7 @@ export interface Database {
         }[];
       };
       get_public_crew_detail: { Args: { p_crew_id: string }; Returns: Json };
+      get_my_crew_memberships: { Args: Record<string, never>; Returns: Json };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

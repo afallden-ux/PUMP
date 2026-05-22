@@ -2,7 +2,16 @@ import { getWeeklyRankTitle } from "@/lib/constants/rankTitles";
 import type { Crew, CrewMembership, LeaderboardEntry, Profile } from "@/types/app";
 import type { Database } from "@/types/database";
 
+export type SupabaseAppClient = Awaited<
+  ReturnType<typeof import("@/lib/supabase/server").createClient>
+>;
+
 type LeaderboardRow = Database["public"]["Views"]["leaderboard_7d"]["Row"];
+
+function parseRpcMemberships(data: unknown): CrewMembership[] | null {
+  if (!Array.isArray(data) || data.length === 0) return null;
+  return data as unknown as CrewMembership[];
+}
 
 export function filterLeaderboardToCrew(
   rows: LeaderboardRow[],
@@ -30,8 +39,44 @@ export function filterLeaderboardToCrew(
   });
 }
 
+async function buildMembershipFromPublic(
+  supabase: SupabaseAppClient,
+  crewId: string,
+  role: "owner" | "member"
+): Promise<CrewMembership | null> {
+  const { data, error } = await supabase.rpc("get_public_crew_detail", {
+    p_crew_id: crewId,
+  });
+  if (error || !data || typeof data !== "object") return null;
+
+  const raw = data as unknown as {
+    id: string;
+    name: string;
+    location: string | null;
+    banner_url: string | null;
+    created_at: string;
+    members: Array<Profile & { role?: "owner" | "member" }>;
+  };
+
+  const members = (raw.members ?? []).map(({ role: _r, ...p }) => p as Profile);
+
+  return {
+    crew: {
+      id: raw.id,
+      name: raw.name,
+      invite_code: "",
+      location: raw.location,
+      banner_url: raw.banner_url,
+      created_by: "",
+      created_at: raw.created_at,
+    },
+    role,
+    members: members.sort((a, b) => a.username.localeCompare(b.username)),
+  };
+}
+
 async function buildMembership(
-  supabase: Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>,
+  supabase: SupabaseAppClient,
   crewId: string,
   role: "owner" | "member"
 ): Promise<CrewMembership | null> {
@@ -67,28 +112,56 @@ async function buildMembership(
   };
 }
 
-export async function fetchAllCrewMemberships(
-  supabase: Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>,
+/** Load all crews for a user — RPC first, then RLS fallbacks. */
+export async function fetchMyCrewMemberships(
+  supabase: SupabaseAppClient,
   userId: string
 ): Promise<CrewMembership[]> {
-  const { data: rows } = await supabase
+  const { data: rpcData, error: rpcError } = await supabase.rpc(
+    "get_my_crew_memberships"
+  );
+  const fromRpc = !rpcError ? parseRpcMemberships(rpcData) : null;
+  if (fromRpc?.length) return fromRpc;
+
+  const { data: rows, error: rowsError } = await supabase
     .from("crew_members")
     .select("crew_id, role")
     .eq("user_id", userId);
 
-  if (!rows?.length) return [];
+  if (rowsError || !rows?.length) return [];
 
   const memberships: CrewMembership[] = [];
   for (const row of rows) {
-    const m = await buildMembership(
-      supabase,
-      row.crew_id,
-      row.role as "owner" | "member"
-    );
+    const role = row.role as "owner" | "member";
+    const m =
+      (await buildMembership(supabase, row.crew_id, role)) ??
+      (await buildMembershipFromPublic(supabase, row.crew_id, role));
     if (m) memberships.push(m);
   }
 
   return memberships.sort((a, b) => a.crew.name.localeCompare(b.crew.name));
+}
+
+export async function fetchAllCrewMemberships(
+  supabase: SupabaseAppClient,
+  userId: string
+): Promise<CrewMembership[]> {
+  return fetchMyCrewMemberships(supabase, userId);
+}
+
+/** True if user has crew_members rows but full crew payload could not be loaded. */
+export async function hasHiddenCrewMembership(
+  supabase: SupabaseAppClient,
+  userId: string,
+  loadedCount: number
+): Promise<boolean> {
+  if (loadedCount > 0) return false;
+  const { data: rows } = await supabase
+    .from("crew_members")
+    .select("crew_id")
+    .eq("user_id", userId)
+    .limit(1);
+  return (rows?.length ?? 0) > 0;
 }
 
 /** First crew membership, if any (legacy helper). */

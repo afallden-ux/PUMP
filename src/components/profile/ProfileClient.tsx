@@ -17,7 +17,7 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
   const [profile, setProfile] = useState(initial);
 
   return (
-    <div className="mx-auto max-w-lg space-y-8 px-4 py-6">
+    <div className="mx-auto w-full max-w-lg space-y-8 px-4 py-6 lg:max-w-2xl lg:px-8">
       <AvatarUpload
         profile={profile}
         onUpdated={(avatarUrl) =>
@@ -38,9 +38,8 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
           {profile.current_pump_score.toLocaleString()} pts
         </p>
         <p className="mt-1">
-          Badges unlock at 10–1000 logs per track — hangboard glory, stretching shame,
-          outdoors Jug-Hugger → 9A Downgrader, gym mirror energy. Avatar frame still
-          grows with lifetime score.
+          Badges unlock at 10–1000 logs per track. Compare yourself to everyone on the
+          board from Home.
         </p>
       </div>
     </div>

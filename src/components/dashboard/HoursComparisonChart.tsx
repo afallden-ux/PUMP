@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 
 interface HoursComparisonChartProps {
   currentUser: Profile;
-  crew: Profile[];
+  climbers: Profile[];
   refreshKey?: number;
 }
 
@@ -37,7 +37,7 @@ const RANGES: { id: HoursRange; label: string }[] = [
 
 export function HoursComparisonChart({
   currentUser,
-  crew,
+  climbers,
   refreshKey = 0,
 }: HoursComparisonChartProps) {
   const [range, setRange] = useState<HoursRange>("week");
@@ -45,16 +45,16 @@ export function HoursComparisonChart({
     () => new Set([currentUser.id])
   );
 
-  const others = crew.filter((p) => p.id !== currentUser.id);
+  const others = climbers.filter((p) => p.id !== currentUser.id);
   const userIds = [...selected];
 
   const { logsByUser, loading } = useComparisonHours(userIds, range, refreshKey);
 
   const usernames = useMemo(() => {
     const map: Record<string, string> = { [currentUser.id]: currentUser.username };
-    for (const p of crew) map[p.id] = p.username;
+    for (const p of climbers) map[p.id] = p.username;
     return map;
-  }, [currentUser, crew]);
+  }, [currentUser, climbers]);
 
   const { data } = useMemo(
     () => buildHoursComparisonSeries(logsByUser, usernames, range),
@@ -79,10 +79,10 @@ export function HoursComparisonChart({
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg font-black">
           <BarChart3 className="size-5 text-orange-400" />
-          Hours vs the crew
+          Training hours vs climbers
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          Compare training hours — tap climbers to add/remove lines (max 6).
+          Compare anyone on PUMP — tap names to add/remove lines (max 6).
         </p>
         <div className="flex gap-1 pt-2">
           {RANGES.map((r) => (
@@ -138,7 +138,7 @@ export function HoursComparisonChart({
             No hours in this range. Log sessions or widen the time window.
           </p>
         ) : (
-          <div className="h-64 w-full">
+          <div className="h-64 w-full lg:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted/40" />

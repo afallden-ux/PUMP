@@ -1,34 +1,28 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { BarChart3, MessageCircle, Users } from "lucide-react";
 import { AvatarEvolution } from "@/components/avatar/AvatarEvolution";
-import { CrewBanner } from "@/components/crew/CrewBanner";
-import { CrewOnboarding } from "@/components/crew/CrewOnboarding";
 import { CouchOfShame } from "@/components/dashboard/CouchOfShame";
-import { LeaderboardsPanel } from "@/components/dashboard/LeaderboardsPanel";
-import { QuickLogFab } from "@/components/dashboard/QuickLogFab";
 import { HoursComparisonChart } from "@/components/dashboard/HoursComparisonChart";
+import { LeaderboardsPanel } from "@/components/dashboard/LeaderboardsPanel";
+import { PlatformWeeklyChart } from "@/components/dashboard/PlatformWeeklyChart";
+import { QuickLogFab } from "@/components/dashboard/QuickLogFab";
 import { SessionHistoryList } from "@/components/dashboard/SessionHistoryList";
+import { SessionTypeBreakdownChart } from "@/components/dashboard/SessionTypeBreakdownChart";
+import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { TrainingHistoryChart } from "@/components/dashboard/TrainingHistoryChart";
-import { CrewFeed } from "@/components/social/CrewFeed";
+import { ActivityFeed } from "@/components/social/ActivityFeed";
 import { LogWorkoutModal } from "@/components/workout/LogWorkoutModal";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import { useWorkoutHistory } from "@/lib/hooks/useWorkoutHistory";
 import type { SessionCounts, SessionCountsMap } from "@/lib/data/sessionBadges";
-import type { CrewMembership, LeaderboardEntry, Profile } from "@/types/app";
-
-type DashboardTab = "feed" | "stats";
+import type { LeaderboardEntry, Profile } from "@/types/app";
 
 interface DashboardClientProps {
   currentProfile: Profile;
-  memberships: CrewMembership[];
-  crewProfiles: Profile[];
+  allClimbers: Profile[];
   initialWeekly: LeaderboardEntry[];
   initialLifetime: LeaderboardEntry[];
   sessionCounts: SessionCounts;
@@ -37,8 +31,7 @@ interface DashboardClientProps {
 
 export function DashboardClient({
   currentProfile,
-  memberships,
-  crewProfiles,
+  allClimbers,
   initialWeekly,
   initialLifetime,
   sessionCounts,
@@ -46,37 +39,19 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
-  const [crewPromptDismissed, setCrewPromptDismissed] = useState(true);
-  const [selectedCrewId, setSelectedCrewId] = useState<string | null>(
-    memberships[0]?.crew.id ?? null
-  );
-  const [tab, setTab] = useState<DashboardTab>(memberships.length > 0 ? "feed" : "stats");
-
-  const activeMembership = useMemo(
-    () => memberships.find((m) => m.crew.id === selectedCrewId) ?? memberships[0] ?? null,
-    [memberships, selectedCrewId]
-  );
-
-  const leaderboardMemberIds = useMemo(
-    () => activeMembership?.members.map((m) => m.id) ?? [],
-    [activeMembership]
-  );
 
   const { weeklyEntries, lifetimeEntries, refresh } = useLeaderboard(
     initialWeekly,
-    initialLifetime,
-    leaderboardMemberIds
+    initialLifetime
   );
-
-  const feedMemberIds = activeMembership?.members.map((m) => m.id) ?? [];
 
   const { logs, loading: historyLoading, refresh: refreshHistory } = useWorkoutHistory(
     currentProfile.id,
     refreshKey
   );
 
-  const slackers = crewProfiles.filter(isOnCouchOfShame);
-  const activeClimbers = crewProfiles.filter((p) => !isOnCouchOfShame(p));
+  const slackers = allClimbers.filter(isOnCouchOfShame);
+  const activeCount = allClimbers.length - slackers.length;
 
   function handleLogged() {
     refresh();
@@ -89,153 +64,96 @@ export function DashboardClient({
     refreshHistory();
   }
 
-  const showCrewPrompt = memberships.length === 0 && !crewPromptDismissed;
-  const hasCrews = memberships.length > 0;
-
   return (
-    <div className="mx-auto max-w-lg space-y-4 px-4 pb-28 pt-4">
-      <header className="flex items-center justify-between gap-3">
+    <div className="mx-auto w-full max-w-7xl px-4 pb-28 pt-4 lg:px-8 lg:pb-8 lg:pt-6">
+      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Welcome back
+            PUMP board
           </p>
-          <h1 className="text-xl font-black">{currentProfile.username}</h1>
+          <h1 className="text-2xl font-black lg:text-3xl">{currentProfile.username}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {allClimbers.length} registered climbers · {activeCount} active this week
+          </p>
         </div>
-        <Link
-          href="/crew"
-          className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0")}
-        >
-          <Users className="size-4" />
-          Crew{memberships.length > 1 ? "s" : ""}
-        </Link>
+        <div className="hidden shrink-0 lg:block">
+          <LogWorkoutModal userId={currentProfile.id} onLogged={handleLogged} />
+        </div>
       </header>
 
-      <LeaderboardsPanel
-        weeklyEntries={weeklyEntries}
-        lifetimeEntries={lifetimeEntries}
-        currentUserId={currentProfile.id}
-        crewName={activeMembership?.crew.name}
-        global={!hasCrews}
-      />
-
-      {showCrewPrompt && (
-        <CrewOnboarding
-          compact
-          onLoneWolf={() => setCrewPromptDismissed(true)}
+      <div className="space-y-6">
+        <StatsOverview
+          profile={currentProfile}
+          sessionCounts={sessionCounts}
+          weeklyEntries={weeklyEntries}
+          recentLogs={logs}
         />
-      )}
 
-      {hasCrews && memberships.length > 1 && (
-        <div className="flex flex-wrap gap-1.5">
-          {memberships.map((m) => (
-            <button
-              key={m.crew.id}
-              type="button"
-              onClick={() => setSelectedCrewId(m.crew.id)}
-              className={cn(
-                "rounded-full border px-3 py-1 text-xs font-bold transition-colors",
-                selectedCrewId === m.crew.id
-                  ? "border-orange-500 bg-orange-600 text-white"
-                  : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {m.crew.name}
-            </button>
-          ))}
+        <div className="grid gap-6 lg:grid-cols-12 lg:gap-8">
+          <div className="space-y-6 lg:col-span-5">
+            <LeaderboardsPanel
+              weeklyEntries={weeklyEntries}
+              lifetimeEntries={lifetimeEntries}
+              currentUserId={currentProfile.id}
+            />
+            <div className="hidden lg:block">
+              <AvatarEvolution
+                profile={currentProfile}
+                sessionCounts={sessionCounts}
+              />
+            </div>
+          </div>
+
+          <div className="lg:col-span-7" id="feed">
+            <ActivityFeed
+              currentUserId={currentProfile.id}
+              memberCountsMap={memberCountsMap}
+              refreshKey={refreshKey}
+            />
+          </div>
         </div>
-      )}
 
-      {activeMembership && <CrewBanner membership={activeMembership} />}
-
-      <AvatarEvolution profile={currentProfile} sessionCounts={sessionCounts} />
-
-      <div className="hidden md:block">
-        <LogWorkoutModal userId={currentProfile.id} onLogged={handleLogged} />
-      </div>
-
-      {hasCrews && (
-        <div
-          className="flex rounded-xl border border-border/60 bg-muted/30 p-1"
-          role="tablist"
-        >
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "feed"}
-            className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-bold transition-colors",
-              tab === "feed"
-                ? "bg-orange-600 text-white shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-            onClick={() => setTab("feed")}
-          >
-            <MessageCircle className="size-4" />
-            Feed
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "stats"}
-            className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-bold transition-colors",
-              tab === "stats"
-                ? "bg-orange-600 text-white shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-            onClick={() => setTab("stats")}
-          >
-            <BarChart3 className="size-4" />
-            Stats
-          </button>
-        </div>
-      )}
-
-      {tab === "feed" && activeMembership && (
-        <CrewFeed
-          currentUserId={currentProfile.id}
-          memberIds={feedMemberIds}
-          crewName={activeMembership.crew.name}
-          memberCountsMap={memberCountsMap}
-          refreshKey={refreshKey}
-        />
-      )}
-
-      {(tab === "stats" || !hasCrews) && (
-        <div className="space-y-6">
-          {!hasCrews && (
-            <section className="rounded-xl border border-dashed border-orange-500/30 bg-orange-500/5 p-4 text-center text-sm text-muted-foreground">
-              Lone wolf mode — global boards above.{" "}
-              <Link href="/crew" className="font-semibold text-orange-400 underline">
-                Join a crew
-              </Link>{" "}
-              for private feed, kudos, and comments.
-            </section>
-          )}
-
+        <section id="compare">
           <HoursComparisonChart
             currentUser={currentProfile}
-            crew={crewProfiles}
+            climbers={allClimbers}
             refreshKey={refreshKey}
           />
+        </section>
 
+        <PlatformWeeklyChart entries={weeklyEntries} />
+
+        <div className="grid gap-6 lg:grid-cols-2">
           <TrainingHistoryChart logs={logs} loading={historyLoading} />
+          <SessionTypeBreakdownChart logs={logs} loading={historyLoading} />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
           <SessionHistoryList
             logs={logs}
             userId={currentProfile.id}
             loading={historyLoading}
             onDeleted={handleDeleted}
           />
-
-          <section className="space-y-2">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              Still climbing ({activeClimbers.length})
-            </h3>
-          </section>
-
-          <CouchOfShame slackers={slackers} />
+          <div className="space-y-6">
+            <section className="rounded-xl border border-border/60 bg-card/50 p-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                Still climbing ({activeCount})
+              </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Logged within the last 96 hours
+              </p>
+            </section>
+            <CouchOfShame slackers={slackers} />
+            <div className="lg:hidden">
+              <AvatarEvolution
+                profile={currentProfile}
+                sessionCounts={sessionCounts}
+              />
+            </div>
+          </div>
         </div>
-      )}
+      </div>
 
       <QuickLogFab userId={currentProfile.id} onLogged={handleLogged} />
     </div>
