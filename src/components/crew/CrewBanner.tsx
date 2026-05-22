@@ -83,7 +83,10 @@ export function CrewBanner({ membership }: CrewBannerProps) {
               <p className="font-black text-foreground">{membership.crew.name}</p>
               <p className="text-xs text-muted-foreground">
                 {membership.members.length} member
-                {membership.members.length === 1 ? "" : "s"} · private crew
+                {membership.members.length === 1 ? "" : "s"}
+                {membership.crew.location
+                  ? ` · 📍 ${membership.crew.location}`
+                  : " · private crew"}
               </p>
             </div>
           </div>

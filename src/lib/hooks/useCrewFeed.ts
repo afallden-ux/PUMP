@@ -24,7 +24,7 @@ export function useCrewFeed(memberIds: string[], refreshKey = 0) {
       .select(
         `
         *,
-        profiles ( id, username, avatar_url, current_pump_score ),
+        profiles ( id, username, avatar_url, current_pump_score, home_crag ),
         session_comments (
           id, workout_log_id, user_id, body, created_at,
           profiles ( username, avatar_url )

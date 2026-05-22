@@ -13,17 +13,21 @@ import { INTENSITY_SHORT } from "@/lib/constants/intensityLabels";
 import { SESSION_TYPE_META } from "@/lib/constants/sessionTypes";
 import { formatDuration, formatRelativeTime } from "@/lib/utils/dates";
 import { createClient } from "@/lib/supabase/client";
+import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
+import type { SessionCounts } from "@/lib/data/sessionBadges";
 import type { CrewFeedSession, IntensityLevel } from "@/types/app";
 
 interface SessionFeedCardProps {
   session: CrewFeedSession;
   currentUserId: string;
+  authorBadgeCounts?: SessionCounts;
   onUpdated?: () => void;
 }
 
 export function SessionFeedCard({
   session,
   currentUserId,
+  authorBadgeCounts,
   onUpdated,
 }: SessionFeedCardProps) {
   const [comment, setComment] = useState("");
@@ -109,6 +113,14 @@ export function SessionFeedCard({
               {session.total_points} pts
             </span>
           </p>
+          {profile.home_crag && (
+            <p className="text-[10px] text-muted-foreground/80">🏔 {profile.home_crag}</p>
+          )}
+          {authorBadgeCounts && (
+            <div className="mt-1.5">
+              <BadgeShowcase counts={authorBadgeCounts} max={5} size="sm" />
+            </div>
+          )}
         </div>
       </div>
 

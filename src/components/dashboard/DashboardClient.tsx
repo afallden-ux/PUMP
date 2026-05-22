@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import { useWorkoutHistory } from "@/lib/hooks/useWorkoutHistory";
-import type { SessionCounts } from "@/lib/data/sessionBadges";
+import type { SessionCounts, SessionCountsMap } from "@/lib/data/sessionBadges";
 import type { CrewMembership, LeaderboardEntry, Profile } from "@/types/app";
 
 type DashboardTab = "feed" | "stats";
@@ -31,6 +31,7 @@ interface DashboardClientProps {
   crewProfiles: Profile[];
   initialLeaderboard: LeaderboardEntry[];
   sessionCounts: SessionCounts;
+  memberCountsMap: SessionCountsMap;
 }
 
 export function DashboardClient({
@@ -39,6 +40,7 @@ export function DashboardClient({
   crewProfiles,
   initialLeaderboard,
   sessionCounts,
+  memberCountsMap,
 }: DashboardClientProps) {
   const router = useRouter();
   const [refreshKey, setRefreshKey] = useState(0);
@@ -146,6 +148,7 @@ export function DashboardClient({
           currentUserId={currentProfile.id}
           memberIds={memberIds}
           crewName={membership.crew.name}
+          memberCountsMap={memberCountsMap}
           refreshKey={refreshKey}
         />
       )}

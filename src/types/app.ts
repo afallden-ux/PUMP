@@ -6,6 +6,7 @@ export interface Profile {
   username: string;
   avatar_url: string | null;
   title: string;
+  home_crag: string | null;
   current_pump_score: number;
   last_logged_at: string | null;
 }
@@ -14,6 +15,7 @@ export interface Crew {
   id: string;
   name: string;
   invite_code: string;
+  location: string | null;
   created_by: string;
   created_at: string;
 }
@@ -88,7 +90,10 @@ export interface SessionKudo {
 }
 
 export interface CrewFeedSession extends WorkoutLog {
-  profiles: Pick<Profile, "id" | "username" | "avatar_url" | "current_pump_score">;
+  profiles: Pick<
+    Profile,
+    "id" | "username" | "avatar_url" | "current_pump_score" | "home_crag"
+  >;
   session_comments: SessionComment[];
   session_kudos: SessionKudo[];
 }

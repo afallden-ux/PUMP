@@ -24,6 +24,11 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
           setProfile((p) => ({ ...p, avatar_url: avatarUrl }))
         }
       />
+      {profile.home_crag && (
+        <p className="text-center text-sm text-muted-foreground">
+          🏔 Home crag: <span className="font-semibold text-foreground">{profile.home_crag}</span>
+        </p>
+      )}
       <BadgeShowcase counts={sessionCounts} max={8} size="md" />
       <BadgeGallery counts={sessionCounts} />
       <ProfileForm profile={profile} />

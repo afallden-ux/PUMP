@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { CrewPageClient } from "@/components/crew/CrewPageClient";
 import { CrewOnboarding } from "@/components/crew/CrewOnboarding";
 import { fetchCrewMembership } from "@/lib/data/crew";
-import { fetchSessionCounts } from "@/lib/data/sessionBadges";
+import { fetchSessionCountsMap } from "@/lib/data/sessionBadges";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function CrewPage() {
@@ -29,13 +29,14 @@ export default async function CrewPage() {
     );
   }
 
-  const sessionCounts = await fetchSessionCounts(supabase, user.id);
+  const memberIds = membership.members.map((m) => m.id);
+  const memberCountsMap = await fetchSessionCountsMap(supabase, memberIds);
 
   return (
     <CrewPageClient
       membership={membership}
       currentUserId={user.id}
-      sessionCounts={sessionCounts}
+      memberCountsMap={memberCountsMap}
     />
   );
 }

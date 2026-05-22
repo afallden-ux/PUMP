@@ -15,6 +15,7 @@ export interface Database {
           username: string;
           avatar_url: string | null;
           title: string;
+          home_crag: string | null;
           current_pump_score: number;
           last_logged_at: string | null;
           created_at: string;
@@ -25,6 +26,7 @@ export interface Database {
           username: string;
           avatar_url?: string | null;
           title?: string;
+          home_crag?: string | null;
           current_pump_score?: number;
           last_logged_at?: string | null;
           created_at?: string;
@@ -35,6 +37,7 @@ export interface Database {
           username?: string;
           avatar_url?: string | null;
           title?: string;
+          home_crag?: string | null;
           current_pump_score?: number;
           last_logged_at?: string | null;
           created_at?: string;
@@ -136,6 +139,7 @@ export interface Database {
           id: string;
           name: string;
           invite_code: string;
+          location: string | null;
           created_by: string;
           created_at: string;
         };
@@ -143,6 +147,7 @@ export interface Database {
           id?: string;
           name: string;
           invite_code: string;
+          location?: string | null;
           created_by: string;
           created_at?: string;
         };
@@ -150,6 +155,7 @@ export interface Database {
           id?: string;
           name?: string;
           invite_code?: string;
+          location?: string | null;
           created_by?: string;
           created_at?: string;
         };
@@ -307,6 +313,7 @@ export interface Database {
       decline_crew_battle: { Args: { p_battle_id: string }; Returns: undefined };
       compute_battle_scores: { Args: { p_battle_id: string }; Returns: Json };
       finalize_expired_battles: { Args: Record<string, never>; Returns: undefined };
+      update_crew_location: { Args: { p_location: string }; Returns: undefined };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

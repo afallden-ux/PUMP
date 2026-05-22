@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
-import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
-import type { SessionCounts } from "@/lib/data/sessionBadges";
+import { CrewBadgesBoard } from "@/components/crew/CrewBadgesBoard";
+import { CrewLocationForm } from "@/components/crew/CrewLocationForm";
+import type { SessionCountsMap } from "@/lib/data/sessionBadges";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { formatRelativeTime } from "@/lib/utils/dates";
 import type { CrewMembership } from "@/types/app";
@@ -19,13 +20,13 @@ import type { CrewMembership } from "@/types/app";
 interface CrewPageClientProps {
   membership: CrewMembership;
   currentUserId: string;
-  sessionCounts: SessionCounts;
+  memberCountsMap: SessionCountsMap;
 }
 
 export function CrewPageClient({
   membership,
   currentUserId,
-  sessionCounts,
+  memberCountsMap,
 }: CrewPageClientProps) {
   const sortedMembers = [...membership.members].sort((a, b) => {
     if (a.id === currentUserId) return -1;
@@ -52,12 +53,16 @@ export function CrewPageClient({
 
       <CrewBanner membership={membership} />
 
-      <div className="rounded-xl border border-orange-500/25 bg-orange-500/5 p-3 text-center">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-          Your badges
-        </p>
-        <BadgeShowcase counts={sessionCounts} max={6} size="md" />
-      </div>
+      <CrewLocationForm
+        location={membership.crew.location}
+        isOwner={membership.role === "owner"}
+      />
+
+      <CrewBadgesBoard
+        members={membership.members}
+        countsMap={memberCountsMap}
+        currentUserId={currentUserId}
+      />
 
       <section className="space-y-3">
         <SectionHeader
@@ -106,6 +111,7 @@ export function CrewPageClient({
                         {member.current_pump_score.toLocaleString()} lifetime pts
                       </p>
                       <p className="text-xs text-muted-foreground">
+                        {member.home_crag ? `${member.home_crag} · ` : ""}
                         {member.last_logged_at
                           ? `Last log ${formatRelativeTime(member.last_logged_at)}`
                           : "Never logged — drag them to the wall"}

@@ -33,10 +33,23 @@ export interface TrackBadgeProgress {
 }
 
 type LogRow = {
+  user_id?: string;
   session_type: string;
   is_moonboard: boolean | null;
   is_outdoors: boolean | null;
 };
+
+export type SessionCountsMap = Record<string, SessionCounts>;
+
+const EMPTY_COUNTS = (): SessionCounts => ({
+  hangboard: 0,
+  climbing: 0,
+  board: 0,
+  outdoors: 0,
+  gym: 0,
+  stretching: 0,
+  total: 0,
+});
 
 export function aggregateSessionCounts(rows: LogRow[]): SessionCounts {
   const counts: SessionCounts = {
@@ -132,14 +145,55 @@ export function getShowcaseBadges(counts: SessionCounts, limit = 6): EarnedBadge
     .slice(0, limit);
 }
 
+export function combineSessionCounts(countsList: SessionCounts[]): SessionCounts {
+  const combined = EMPTY_COUNTS();
+  for (const c of countsList) {
+    combined.hangboard += c.hangboard;
+    combined.climbing += c.climbing;
+    combined.board += c.board;
+    combined.outdoors += c.outdoors;
+    combined.gym += c.gym;
+    combined.stretching += c.stretching;
+    combined.total += c.total;
+  }
+  return combined;
+}
+
 export async function fetchSessionCounts(
   supabase: Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>,
   userId: string
 ): Promise<SessionCounts> {
+  const map = await fetchSessionCountsMap(supabase, [userId]);
+  return map[userId] ?? EMPTY_COUNTS();
+}
+
+export async function fetchSessionCountsMap(
+  supabase: Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>,
+  userIds: string[]
+): Promise<SessionCountsMap> {
+  const map: SessionCountsMap = {};
+  for (const id of userIds) {
+    map[id] = EMPTY_COUNTS();
+  }
+  if (userIds.length === 0) return map;
+
   const { data } = await supabase
     .from("workout_logs")
-    .select("session_type, is_moonboard, is_outdoors")
-    .eq("user_id", userId);
+    .select("user_id, session_type, is_moonboard, is_outdoors")
+    .in("user_id", userIds);
 
-  return aggregateSessionCounts((data ?? []) as LogRow[]);
+  const byUser = new Map<string, LogRow[]>();
+  for (const row of (data ?? []) as LogRow[]) {
+    const uid = row.user_id;
+    if (!uid) continue;
+    const list = byUser.get(uid) ?? [];
+    list.push(row);
+    byUser.set(uid, list);
+  }
+
+  for (const id of userIds) {
+    map[id] = aggregateSessionCounts(byUser.get(id) ?? []);
+  }
+
+  return map;
 }

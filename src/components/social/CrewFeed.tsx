@@ -4,11 +4,13 @@ import { MessageCircle } from "lucide-react";
 import { SessionFeedCard } from "@/components/social/SessionFeedCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { useCrewFeed } from "@/lib/hooks/useCrewFeed";
+import type { SessionCountsMap } from "@/lib/data/sessionBadges";
 
 interface CrewFeedProps {
   currentUserId: string;
   memberIds: string[];
   crewName: string;
+  memberCountsMap?: SessionCountsMap;
   refreshKey?: number;
 }
 
@@ -16,6 +18,7 @@ export function CrewFeed({
   currentUserId,
   memberIds,
   crewName,
+  memberCountsMap,
   refreshKey = 0,
 }: CrewFeedProps) {
   const { sessions, loading, refresh } = useCrewFeed(memberIds, refreshKey);
@@ -47,6 +50,7 @@ export function CrewFeed({
               key={session.id}
               session={session}
               currentUserId={currentUserId}
+              authorBadgeCounts={memberCountsMap?.[session.user_id]}
               onUpdated={refresh}
             />
           ))}

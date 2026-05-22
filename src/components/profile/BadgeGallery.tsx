@@ -11,19 +11,22 @@ import { cn } from "@/lib/utils";
 
 interface BadgeGalleryProps {
   counts: SessionCounts;
+  hideHeader?: boolean;
 }
 
-export function BadgeGallery({ counts }: BadgeGalleryProps) {
+export function BadgeGallery({ counts, hideHeader }: BadgeGalleryProps) {
   const tracks = getAllTrackProgress(counts);
   const totalEarned = tracks.reduce((n, t) => n + t.earned.length, 0);
 
   return (
     <section className="space-y-4">
-      <SectionHeader
-        icon={Award}
-        title="Pump badges"
-        subtitle={`${totalEarned} earned. Stretching badges get more shameful; outdoors goes Jug-Hugger → 9A Downgrader. Milestones: 10 · 25 · 50 · 100 · 500 · 1000.`}
-      />
+      {!hideHeader && (
+        <SectionHeader
+          icon={Award}
+          title="Pump badges"
+          subtitle={`${totalEarned} earned. Stretching badges get more shameful; outdoors goes Jug-Hugger → 9A Downgrader. Milestones: 10 · 25 · 50 · 100 · 500 · 1000.`}
+        />
+      )}
 
       <div className="space-y-4">
         {tracks.map((progress) => (
