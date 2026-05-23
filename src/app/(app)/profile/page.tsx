@@ -22,7 +22,15 @@ export default async function ProfilePage() {
 
   const sessionCounts = await fetchSessionCounts(supabase, user.id);
 
+  const normalized: Profile = {
+    ...(profile as Profile),
+    height_cm:
+      "height_cm" in profile && profile.height_cm != null
+        ? Number(profile.height_cm)
+        : null,
+  };
+
   return (
-    <ProfileClient profile={profile as Profile} sessionCounts={sessionCounts} />
+    <ProfileClient profile={normalized} sessionCounts={sessionCounts} />
   );
 }

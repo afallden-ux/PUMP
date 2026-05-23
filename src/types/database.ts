@@ -16,6 +16,7 @@ export interface Database {
           avatar_url: string | null;
           title: string;
           home_crag: string | null;
+          height_cm: number | null;
           current_pump_score: number;
           last_logged_at: string | null;
           created_at: string;
@@ -27,6 +28,7 @@ export interface Database {
           avatar_url?: string | null;
           title?: string;
           home_crag?: string | null;
+          height_cm?: number | null;
           current_pump_score?: number;
           last_logged_at?: string | null;
           created_at?: string;
@@ -38,6 +40,7 @@ export interface Database {
           avatar_url?: string | null;
           title?: string;
           home_crag?: string | null;
+          height_cm?: number | null;
           current_pump_score?: number;
           last_logged_at?: string | null;
           created_at?: string;
@@ -271,6 +274,41 @@ export interface Database {
           },
           {
             foreignKeyName: "session_kudos_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      body_metric_logs: {
+        Row: {
+          id: string;
+          user_id: string;
+          metric_type: string;
+          value_kg: number;
+          recorded_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          metric_type: string;
+          value_kg: number;
+          recorded_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          metric_type?: string;
+          value_kg?: number;
+          recorded_at?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "body_metric_logs_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";

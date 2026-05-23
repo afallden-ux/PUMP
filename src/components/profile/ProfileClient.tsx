@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { Award, User } from "lucide-react";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { BadgeGallery } from "@/components/profile/BadgeGallery";
 import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
+import { BodyMetricsPanel } from "@/components/profile/BodyMetricsPanel";
 import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import type { SessionCounts } from "@/lib/data/sessionBadges";
 import type { Profile } from "@/types/app";
 
@@ -30,8 +33,30 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
           🏔 Home crag: <span className="font-semibold text-foreground">{profile.home_crag}</span>
         </p>
       )}
-      <BadgeShowcase counts={sessionCounts} max={8} size="md" />
-      <BadgeGallery counts={sessionCounts} />
+      <CollapsibleSection
+        title="Body & strength"
+        subtitle="Height, weight, hang, pull-up — with charts"
+        icon={User}
+        defaultOpen
+      >
+        <BodyMetricsPanel
+          profile={profile}
+          onHeightSaved={(height_cm) => setProfile((p) => ({ ...p, height_cm }))}
+        />
+      </CollapsibleSection>
+
+      <CollapsibleSection
+        title="Pump badges"
+        subtitle="Earned milestones per session type"
+        icon={Award}
+        defaultOpen={false}
+      >
+        <BadgeShowcase counts={sessionCounts} max={8} size="md" />
+        <div className="mt-4">
+          <BadgeGallery counts={sessionCounts} hideHeader />
+        </div>
+      </CollapsibleSection>
+
       <ProfileForm profile={profile} />
       <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-sm text-muted-foreground">
         <p>

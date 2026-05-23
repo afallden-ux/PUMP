@@ -17,7 +17,8 @@ import { ActivityFeed } from "@/components/social/ActivityFeed";
 import { LogWorkoutModal } from "@/components/workout/LogWorkoutModal";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { MessageCircle } from "lucide-react";
+import { BarChart3, Clock, MessageCircle, TrendingUp } from "lucide-react";
+import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import { useWorkoutHistory } from "@/lib/hooks/useWorkoutHistory";
@@ -131,20 +132,42 @@ export function DashboardClient({
           </div>
         </div>
 
-        <section id="compare">
-          <HoursComparisonChart
-            currentUser={currentProfile}
-            climbers={allClimbers}
-            refreshKey={refreshKey}
-          />
-        </section>
+        <CollapsibleSection
+          title="Compare hours"
+          subtitle="You vs everyone on the board"
+          icon={Clock}
+          defaultOpen={false}
+          className="scroll-mt-20"
+        >
+          <div id="compare">
+            <HoursComparisonChart
+              currentUser={currentProfile}
+              climbers={allClimbers}
+              refreshKey={refreshKey}
+            />
+          </div>
+        </CollapsibleSection>
 
-        <PlatformWeeklyChart entries={weeklyEntries} />
+        <CollapsibleSection
+          title="Platform weekly"
+          subtitle="7-day leaderboard snapshot"
+          icon={TrendingUp}
+          defaultOpen={false}
+        >
+          <PlatformWeeklyChart entries={weeklyEntries} />
+        </CollapsibleSection>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <TrainingHistoryChart logs={logs} loading={historyLoading} />
-          <SessionTypeBreakdownChart logs={logs} loading={historyLoading} />
-        </div>
+        <CollapsibleSection
+          title="Your training charts"
+          subtitle="Points, duration, session mix"
+          icon={BarChart3}
+          defaultOpen
+        >
+          <div className="grid gap-6 lg:grid-cols-2">
+            <TrainingHistoryChart logs={logs} loading={historyLoading} />
+            <SessionTypeBreakdownChart logs={logs} loading={historyLoading} />
+          </div>
+        </CollapsibleSection>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <SessionHistoryList

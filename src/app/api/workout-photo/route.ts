@@ -6,6 +6,13 @@ const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
 
 function friendlyStorageError(message: string): string {
+  if (message.includes("Invalid Compact JWS") || message.includes("Compact JWS")) {
+    return (
+      "Wrong Supabase key in Vercel. SUPABASE_SERVICE_ROLE_KEY must be the " +
+      "service_role key (eyJ…) or Secret key (sb_secret_…) from Supabase → Settings → API — " +
+      "not the anon or publishable key. Remove quotes/spaces and redeploy."
+    );
+  }
   if (message.includes("invalid or incompatible")) {
     return (
       "Supabase Storage is not set up correctly. In Supabase: Storage → New bucket → name workout-photos (public). " +

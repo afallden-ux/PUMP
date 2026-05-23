@@ -199,7 +199,13 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="flex max-h-[92vh] flex-col gap-0 overflow-hidden border-orange-500/30 p-0 sm:max-w-lg">
+      <DialogContent
+        className={cn(
+          "z-[60] flex max-h-[min(90dvh,100%)] w-full max-w-none flex-col gap-0 overflow-hidden border-orange-500/30 p-0",
+          "inset-x-0 bottom-0 top-auto translate-x-0 translate-y-0 rounded-t-2xl rounded-b-none",
+          "sm:inset-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl"
+        )}
+      >
         <DialogHeader className="shrink-0 border-b border-orange-500/20 bg-orange-500/5 px-4 pb-3 pt-4">
           <DialogTitle className="text-xl font-black">Log session</DialogTitle>
           <DialogDescription>
@@ -383,9 +389,9 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
           </p>
         </div>
 
-        <DialogFooter className="shrink-0 border-t border-orange-500/20 bg-background px-4 py-3">
+        <DialogFooter className="!-mx-0 !-mb-0 shrink-0 rounded-none border-t border-orange-500/20 bg-background px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:rounded-b-xl">
           <Button
-            className="w-full bg-orange-600 font-black hover:bg-orange-500"
+            className="h-12 w-full bg-orange-600 text-base font-black hover:bg-orange-500"
             onClick={handleSave}
             disabled={saving}
           >

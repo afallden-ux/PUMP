@@ -7,6 +7,7 @@ export interface Profile {
   avatar_url: string | null;
   title: string;
   home_crag: string | null;
+  height_cm?: number | null;
   current_pump_score: number;
   last_logged_at: string | null;
 }
