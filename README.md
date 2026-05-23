@@ -119,6 +119,34 @@ Confirmation emails use `/auth/callback` on that domain. If links still show loc
 
 Share `https://pump.yourdomain.se` with your crew.
 
+## 72-hour inactivity emails (optional)
+
+If someone logs a session then goes quiet for **72 hours**, a cron job can email them:
+
+- “Still a climber?” + how long they’ve been idle  
+- Summary of what **other climbers** logged in the last 72h  
+- **Log in & send a session** button → your production URL  
+
+### Setup
+
+1. **Supabase SQL Editor:** run `supabase/RUN_INACTIVITY_EMAIL.sql`
+2. **[Resend](https://resend.com):** create API key; verify your sending domain (or use `onboarding@resend.dev` for testing)
+3. **Vercel → Environment variables:**
+   - `CRON_SECRET` — long random string (Vercel Cron sends `Authorization: Bearer …`)
+   - `SUPABASE_SERVICE_ROLE_KEY` — from Supabase → Settings → API (keep secret)
+   - `RESEND_API_KEY`
+   - `EMAIL_FROM` — e.g. `PUMP <noreply@yourdomain.se>`
+   - `NEXT_PUBLIC_SITE_URL` — production app URL (used in the email link)
+4. Deploy — `vercel.json` runs the job every **6 hours**
+
+Manual test (after deploy):
+
+```bash
+curl -H "Authorization: Bearer YOUR_CRON_SECRET" https://your-app.vercel.app/api/cron/inactivity-nudge
+```
+
+Each user gets **at most one** nudge per idle stretch (until they log again).
+
 ## Migrations after first deploy
 
 If you added features later, run new SQL files in Supabase SQL Editor (in order):

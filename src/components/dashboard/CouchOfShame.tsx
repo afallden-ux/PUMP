@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Cookie, Sofa } from "lucide-react";
 import { AvatarFrame } from "@/components/avatar/AvatarFrame";
+import { useClimberProfile } from "@/components/profile/ClimberProfileContext";
 import { hoursSinceLastLog } from "@/lib/utils/couchOfShame";
 import type { Profile } from "@/types/app";
 
@@ -11,6 +12,7 @@ interface CouchOfShameProps {
 }
 
 export function CouchOfShame({ slackers }: CouchOfShameProps) {
+  const { openProfile } = useClimberProfile();
   if (slackers.length === 0) return null;
 
   return (
@@ -32,26 +34,34 @@ export function CouchOfShame({ slackers }: CouchOfShameProps) {
               key={profile.id}
               animate={{ y: [0, -2, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="flex items-center gap-3 rounded-xl border border-zinc-700 bg-zinc-950/60 p-3"
+              className="rounded-xl border border-zinc-700 bg-zinc-950/60"
             >
-              <AvatarFrame
-                username={profile.username}
-                avatarUrl={profile.avatar_url}
-                lifetimeScore={profile.current_pump_score}
-                size="md"
-                shameMode
-              />
-              <div>
-                <p className="font-bold text-zinc-300">{profile.username}</p>
-                <p className="text-xs text-zinc-500">
-                  {hours === null
-                    ? "Never logged. Tragic."
-                    : `${hours}h on the couch`}
-                </p>
-                <p className="mt-1 text-[10px] italic text-amber-700/80">
-                  *munching imaginary chips*
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={() => openProfile(profile.id)}
+                className="flex w-full items-center gap-3 rounded-xl p-3 text-left hover:bg-zinc-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
+                aria-label={`View ${profile.username}'s profile`}
+              >
+                <AvatarFrame
+                  username={profile.username}
+                  avatarUrl={profile.avatar_url}
+                  lifetimeScore={profile.current_pump_score}
+                  size="md"
+                  shameMode
+                  plain
+                />
+                <div>
+                  <p className="font-bold text-zinc-300">{profile.username}</p>
+                  <p className="text-xs text-zinc-500">
+                    {hours === null
+                      ? "Never logged. Tragic."
+                      : `${hours}h on the couch`}
+                  </p>
+                  <p className="mt-1 text-[10px] italic text-amber-700/80">
+                    *munching imaginary chips*
+                  </p>
+                </div>
+              </button>
             </motion.li>
           );
         })}

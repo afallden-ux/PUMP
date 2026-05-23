@@ -73,7 +73,7 @@ export function SessionPhotoPicker({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp,image/gif"
         capture="environment"
         className="hidden"
         onChange={(e) => {

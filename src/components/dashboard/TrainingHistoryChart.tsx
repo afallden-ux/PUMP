@@ -14,8 +14,13 @@ import {
 import { TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { INTENSITY_SHORT } from "@/lib/constants/intensityLabels";
-import { SESSION_TYPE_META, SESSION_TYPES } from "@/lib/constants/sessionTypes";
 import { formatDuration } from "@/lib/utils/dates";
+import {
+  CHART_CATEGORIES,
+  CHART_CATEGORY_META,
+  chartCategoryLabel,
+  getWorkoutChartCategory,
+} from "@/lib/utils/workoutChartCategory";
 import type { WorkoutLog } from "@/types/app";
 import type { IntensityLevel } from "@/types/app";
 
@@ -33,16 +38,17 @@ function chartData(logs: WorkoutLog[]) {
         day: "numeric",
         month: "short",
       });
-      const type = log.session_type ?? "climbing";
+      const category = getWorkoutChartCategory(log);
+      const meta = CHART_CATEGORY_META[category];
       return {
         key: log.id,
         label: logs.length > 8 ? `${label}` : `${label} #${index + 1}`,
         points: log.total_points,
         duration: log.duration_minutes,
         intensity: log.intensity_level,
-        sessionType: type,
-        typeLabel: SESSION_TYPE_META[type]?.label ?? type,
-        fill: SESSION_TYPE_META[type]?.chartColor ?? "#f97316",
+        category,
+        typeLabel: chartCategoryLabel(log),
+        fill: meta.chartColor,
         fullDate: date.toLocaleString("en-GB", {
           dateStyle: "medium",
           timeStyle: "short",
@@ -62,23 +68,23 @@ export function TrainingHistoryChart({ logs, loading }: TrainingHistoryChartProp
           Your pump history
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          Bar colour = session type (climbing, hangboard, gym, stretching)
+          Bar colour = session type. Climbing splits into gym wall, board, and outdoors.
         </p>
         <div className="flex flex-wrap gap-2 pt-1">
-          {SESSION_TYPES.map((t) => (
+          {CHART_CATEGORIES.map((cat) => (
             <span
-              key={t}
+              key={cat}
               className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold"
               style={{
-                borderColor: `${SESSION_TYPE_META[t].chartColor}66`,
-                color: SESSION_TYPE_META[t].chartColor,
+                borderColor: `${CHART_CATEGORY_META[cat].chartColor}66`,
+                color: CHART_CATEGORY_META[cat].chartColor,
               }}
             >
               <span
                 className="size-2 rounded-full"
-                style={{ background: SESSION_TYPE_META[t].chartColor }}
+                style={{ background: CHART_CATEGORY_META[cat].chartColor }}
               />
-              {SESSION_TYPE_META[t].label}
+              {CHART_CATEGORY_META[cat].emoji} {CHART_CATEGORY_META[cat].label}
             </span>
           ))}
         </div>
@@ -93,7 +99,7 @@ export function TrainingHistoryChart({ logs, loading }: TrainingHistoryChartProp
             No sessions yet. Log one and watch this chart get aggressive.
           </p>
         ) : (
-          <div className="h-56 w-full">
+          <div className="h-56 w-full lg:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data} margin={{ top: 8, right: 4, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted/40" />

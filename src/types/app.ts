@@ -35,6 +35,7 @@ export interface WorkoutLog {
   intensity_level: IntensityLevel;
   total_points: number;
   photo_url: string | null;
+  notes: string | null;
   is_moonboard: boolean;
   is_outdoors: boolean;
   hardest_grade: FontGrade | null;

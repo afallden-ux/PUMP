@@ -39,12 +39,15 @@ export function AppNav() {
               Board
             </Button>
           </Link>
-          <Link href="/dashboard#feed">
-            <Button variant="ghost" size="sm">
-              <MessageCircle className="size-4 mr-1" />
-              Feed
-            </Button>
-          </Link>
+        <Link href="/feed">
+          <Button
+            variant={pathname === "/feed" ? "secondary" : "ghost"}
+            size="sm"
+          >
+            <MessageCircle className="size-4 mr-1" />
+            Feed
+          </Button>
+        </Link>
           <Link href="/dashboard#compare">
             <Button variant="ghost" size="sm">
               <BarChart3 className="size-4 mr-1" />
@@ -73,8 +76,10 @@ export function AppNav() {
           />
           <span className="text-[10px] font-semibold">Board</span>
         </Link>
-        <Link href="/dashboard#feed" className="flex flex-1 flex-col items-center gap-0.5 py-1">
-          <MessageCircle className="size-5 text-muted-foreground" />
+        <Link href="/feed" className="flex flex-1 flex-col items-center gap-0.5 py-1">
+          <MessageCircle
+            className={`size-5 ${pathname === "/feed" ? "text-orange-400" : "text-muted-foreground"}`}
+          />
           <span className="text-[10px] font-semibold">Feed</span>
         </Link>
         <Link href="/dashboard#compare" className="flex flex-1 flex-col items-center gap-0.5 py-1">

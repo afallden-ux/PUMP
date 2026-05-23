@@ -53,6 +53,7 @@ export interface Database {
           intensity_level: number;
           total_points: number;
           photo_url: string | null;
+          notes: string | null;
           session_type: string;
           is_moonboard: boolean;
           is_outdoors: boolean;
@@ -67,6 +68,7 @@ export interface Database {
           intensity_level: number;
           total_points: number;
           photo_url?: string | null;
+          notes?: string | null;
           is_moonboard?: boolean;
           is_outdoors?: boolean;
           hardest_grade?: string | null;
@@ -80,6 +82,7 @@ export interface Database {
           intensity_level?: number;
           total_points?: number;
           photo_url?: string | null;
+          notes?: string | null;
           is_moonboard?: boolean;
           is_outdoors?: boolean;
           hardest_grade?: string | null;
@@ -342,6 +345,18 @@ export interface Database {
       get_public_crew_detail: { Args: { p_crew_id: string }; Returns: Json };
       get_my_crew_memberships: { Args: Record<string, never>; Returns: Json };
       delete_my_account: { Args: Record<string, never>; Returns: undefined };
+      get_inactivity_nudge_candidates: {
+        Args: Record<string, never>;
+        Returns: Json;
+      };
+      get_platform_activity_summary: {
+        Args: { p_hours?: number };
+        Returns: Json;
+      };
+      mark_inactivity_email_sent_system: {
+        Args: { p_user_id: string };
+        Returns: undefined;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

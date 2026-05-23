@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Crown, TrendingUp } from "lucide-react";
+import { Crown, Medal, TrendingUp } from "lucide-react";
 import { AvatarFrame } from "@/components/avatar/AvatarFrame";
+import { useClimberProfile } from "@/components/profile/ClimberProfileContext";
 import { Badge } from "@/components/ui/badge";
 import type { LeaderboardEntry } from "@/types/app";
 
@@ -17,26 +18,49 @@ export function LeaderboardRow({
   isCurrentUser,
   mode = "weekly",
 }: LeaderboardRowProps) {
+  const { openProfile } = useClimberProfile();
   const isLifetime = mode === "lifetime";
   const isTop = entry.rank === 1;
+  const isSecond = !isLifetime && entry.rank === 2;
+  const isThird = !isLifetime && entry.rank === 3;
 
   return (
     <motion.li
       layout
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
-      className={`flex items-center gap-3 rounded-xl border p-3 ${
+      className={`rounded-xl border ${
         isCurrentUser
           ? "border-orange-500/60 bg-orange-500/10"
           : "border-border/60 bg-card/50"
       }`}
     >
+      <button
+        type="button"
+        onClick={() => openProfile(entry.id)}
+        className="flex w-full items-center gap-3 rounded-xl p-3 text-left transition-colors hover:bg-orange-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50"
+        aria-label={`View ${entry.username}'s profile`}
+      >
       <span
         className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-black ${
-          isTop ? "bg-amber-500 text-black" : "bg-muted text-muted-foreground"
+          isTop
+            ? "bg-amber-500 text-black"
+            : isSecond
+              ? "bg-zinc-300 text-zinc-900"
+              : isThird
+                ? "bg-orange-700 text-orange-100"
+                : "bg-muted text-muted-foreground"
         }`}
       >
-        {isTop ? <Crown className="size-4" /> : entry.rank}
+        {isTop ? (
+          <Crown className="size-4" />
+        ) : isSecond ? (
+          <Medal className="size-4" />
+        ) : isThird ? (
+          <Medal className="size-4" />
+        ) : (
+          entry.rank
+        )}
       </span>
 
       <AvatarFrame
@@ -78,6 +102,7 @@ export function LeaderboardRow({
           {isLifetime ? "lifetime pts" : "7-day pts"}
         </p>
       </div>
+      </button>
     </motion.li>
   );
 }

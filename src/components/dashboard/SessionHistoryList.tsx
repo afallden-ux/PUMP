@@ -1,30 +1,47 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import { ImageIcon, Trash2 } from "lucide-react";
+import { SessionPhotoThumb } from "@/components/workout/SessionPhotoThumb";
 import { toast } from "sonner";
+import { FeedPagination } from "@/components/social/FeedPagination";
 import { Button } from "@/components/ui/button";
 import { INTENSITY_SHORT } from "@/lib/constants/intensityLabels";
 import { SESSION_TYPE_META } from "@/lib/constants/sessionTypes";
+import {
+  SESSION_HISTORY_PAGE_SIZE,
+  usePaginatedWorkoutHistory,
+} from "@/lib/hooks/useWorkoutHistory";
 import { formatDuration, formatRelativeTime } from "@/lib/utils/dates";
 import { createClient } from "@/lib/supabase/client";
 import type { IntensityLevel, WorkoutLog } from "@/types/app";
 
 interface SessionHistoryListProps {
-  logs: WorkoutLog[];
   userId: string;
-  loading?: boolean;
+  refreshKey?: number;
   onDeleted?: () => void;
 }
 
 export function SessionHistoryList({
-  logs,
   userId,
-  loading,
+  refreshKey = 0,
   onDeleted,
 }: SessionHistoryListProps) {
+  const [page, setPage] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const { logs, total, totalPages, loading, refresh, pageSize } =
+    usePaginatedWorkoutHistory(userId, page, refreshKey);
+
+  useEffect(() => {
+    setPage(0);
+  }, [refreshKey]);
+
+  useEffect(() => {
+    if (page > 0 && page >= totalPages) {
+      setPage(Math.max(0, totalPages - 1));
+    }
+  }, [page, totalPages]);
 
   async function handleDelete(log: WorkoutLog) {
     if (
@@ -48,6 +65,7 @@ export function SessionHistoryList({
       return;
     }
     toast.success("Session deleted");
+    refresh();
     onDeleted?.();
   }
 
@@ -59,7 +77,7 @@ export function SessionHistoryList({
     );
   }
 
-  if (logs.length === 0) return null;
+  if (total === 0) return null;
 
   return (
     <section className="space-y-3">
@@ -72,7 +90,7 @@ export function SessionHistoryList({
         </p>
       </div>
       <ul className="space-y-2">
-        {logs.slice(0, 12).map((log) => {
+        {logs.map((log) => {
           const meta = SESSION_TYPE_META[log.session_type];
           return (
             <li
@@ -81,12 +99,10 @@ export function SessionHistoryList({
             >
               <div className="relative size-16 shrink-0 overflow-hidden rounded-lg bg-muted">
                 {log.photo_url ? (
-                  <Image
-                    src={log.photo_url}
-                    alt="Session"
-                    fill
-                    className="object-cover"
-                    unoptimized
+                  <SessionPhotoThumb
+                    photoUrl={log.photo_url}
+                    userId={userId}
+                    workoutLogId={log.id}
                   />
                 ) : (
                   <div className="flex size-full items-center justify-center text-muted-foreground">
@@ -112,10 +128,21 @@ export function SessionHistoryList({
                   {formatDuration(log.duration_minutes)} · L{log.intensity_level}{" "}
                   {INTENSITY_SHORT[log.intensity_level as IntensityLevel]}
                   {log.hardest_grade ? ` · ${log.hardest_grade}` : ""}
-                  {log.is_moonboard ? " · Board" : ""}
-                  {log.is_outdoors ? " · Outdoors" : ""} ·{" "}
+                  {log.session_type === "climbing"
+                    ? log.is_moonboard
+                      ? " · Board"
+                      : log.is_outdoors
+                        ? " · Outdoors"
+                        : " · Gym wall"
+                    : ""}{" "}
+                  ·{" "}
                   {formatRelativeTime(log.created_at)}
                 </p>
+                {log.notes && (
+                  <p className="mt-1 line-clamp-2 text-xs text-foreground/80">
+                    {log.notes}
+                  </p>
+                )}
               </div>
               <Button
                 type="button"
@@ -132,6 +159,16 @@ export function SessionHistoryList({
           );
         })}
       </ul>
+
+      {total > SESSION_HISTORY_PAGE_SIZE && (
+        <FeedPagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
+      )}
     </section>
   );
 }

@@ -12,8 +12,12 @@ import { SessionHistoryList } from "@/components/dashboard/SessionHistoryList";
 import { SessionTypeBreakdownChart } from "@/components/dashboard/SessionTypeBreakdownChart";
 import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { TrainingHistoryChart } from "@/components/dashboard/TrainingHistoryChart";
+import Link from "next/link";
 import { ActivityFeed } from "@/components/social/ActivityFeed";
 import { LogWorkoutModal } from "@/components/workout/LogWorkoutModal";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { MessageCircle } from "lucide-react";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import { useWorkoutHistory } from "@/lib/hooks/useWorkoutHistory";
@@ -104,11 +108,25 @@ export function DashboardClient({
             </div>
           </div>
 
-          <div className="lg:col-span-7" id="feed">
+          <div className="space-y-3 lg:col-span-7">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-bold text-muted-foreground">Recent feed</p>
+              <Link
+                href="/feed"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "gap-1.5"
+                )}
+              >
+                <MessageCircle className="size-4" />
+                Open feed
+              </Link>
+            </div>
             <ActivityFeed
               currentUserId={currentProfile.id}
               memberCountsMap={memberCountsMap}
               refreshKey={refreshKey}
+              previewCount={2}
             />
           </div>
         </div>
@@ -130,9 +148,8 @@ export function DashboardClient({
 
         <div className="grid gap-6 lg:grid-cols-2">
           <SessionHistoryList
-            logs={logs}
             userId={currentProfile.id}
-            loading={historyLoading}
+            refreshKey={refreshKey}
             onDeleted={handleDeleted}
           />
           <div className="space-y-6">

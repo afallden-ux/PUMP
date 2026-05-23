@@ -34,11 +34,13 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/login") ||
     request.nextUrl.pathname.startsWith("/signup");
   const isAuthCallback = request.nextUrl.pathname.startsWith("/auth/callback");
+  const isCronApi = request.nextUrl.pathname.startsWith("/api/cron");
 
   if (
     !user &&
     !isAuthRoute &&
     !isAuthCallback &&
+    !isCronApi &&
     request.nextUrl.pathname !== "/"
   ) {
     const url = request.nextUrl.clone();

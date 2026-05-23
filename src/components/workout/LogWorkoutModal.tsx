@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Flame, Timer } from "lucide-react";
+import { Flame, MessageSquare, Timer } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -51,6 +51,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
   const [saving, setSaving] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [notes, setNotes] = useState("");
 
   const durationMinutes = DURATION_STEPS[durationIndex] ?? 60;
   const previewPoints = calcPumpPoints({
@@ -70,6 +71,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
     setIntensity(3);
     setClimbBonus("none");
     setHardestGrade("");
+    setNotes("");
   }
 
   function handleOpenChange(next: boolean) {
@@ -86,23 +88,8 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
       sessionType === "climbing" ? climbBonus : "none"
     );
 
-    const { error } = await supabase.from("workout_logs").insert({
-      id: workoutId,
-      user_id: userId,
-      session_type: sessionType,
-      duration_minutes: durationMinutes,
-      intensity_level: intensity,
-      total_points,
-      is_moonboard: flags.is_moonboard,
-      is_outdoors: flags.is_outdoors,
-      hardest_grade: sessionType === "climbing" ? hardestGrade || null : null,
-    });
-
-    if (error) {
-      setSaving(false);
-      toast.error("Pump failed", { description: error.message });
-      return;
-    }
+    const trimmedNote = notes.trim();
+    let photoUrl: string | null = null;
 
     if (photoFile) {
       const { url, error: photoError } = await uploadWorkoutPhoto(
@@ -110,11 +97,82 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
         workoutId,
         photoFile
       );
-      if (!photoError && url) {
-        await supabase
-          .from("workout_logs")
-          .update({ photo_url: url })
-          .eq("id", workoutId);
+      if (photoError) {
+        setSaving(false);
+        toast.error("Photo upload failed", { description: photoError });
+        return;
+      }
+      photoUrl = url;
+    }
+
+    const baseRow = {
+      id: workoutId,
+      user_id: userId,
+      session_type: sessionType,
+      duration_minutes: durationMinutes,
+      intensity_level: intensity,
+      total_points,
+      photo_url: photoUrl,
+      is_moonboard: flags.is_moonboard,
+      is_outdoors: flags.is_outdoors,
+      hardest_grade: sessionType === "climbing" ? hardestGrade || null : null,
+    };
+
+    let { error } = await supabase.from("workout_logs").insert({
+      ...baseRow,
+      ...(trimmedNote ? { notes: trimmedNote } : {}),
+    });
+
+    if (
+      error &&
+      (error.message.includes("notes") || error.message.includes("photo_url"))
+    ) {
+      const retry = await supabase.from("workout_logs").insert(baseRow);
+      error = retry.error;
+    }
+
+    if (error) {
+      setSaving(false);
+      toast.error("Pump failed", { description: error.message });
+      return;
+    }
+
+    if (photoUrl) {
+      const { error: photoUpdateError } = await supabase
+        .from("workout_logs")
+        .update({ photo_url: photoUrl })
+        .eq("id", workoutId)
+        .eq("user_id", userId);
+
+      if (photoUpdateError) {
+        toast.error("Session saved — photo won't show on feed yet", {
+          description:
+            "Run supabase/RUN_WORKOUT_PHOTO_AND_NOTES_FIX.sql in Supabase SQL Editor, then log again with a photo.",
+          duration: 8000,
+        });
+      }
+    }
+
+    if (trimmedNote) {
+      const { error: notesUpdateError } = await supabase
+        .from("workout_logs")
+        .update({ notes: trimmedNote })
+        .eq("id", workoutId)
+        .eq("user_id", userId);
+
+      if (notesUpdateError) {
+        const { error: commentError } = await supabase
+          .from("session_comments")
+          .insert({
+            workout_log_id: workoutId,
+            user_id: userId,
+            body: trimmedNote,
+          });
+        if (commentError) {
+          toast.error("Note could not be saved", {
+            description: commentError.message,
+          });
+        }
       }
     }
 
@@ -141,13 +199,49 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto border-orange-500/30 sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-black">Quick Pump Log</DialogTitle>
-          <DialogDescription>Pick session type, then dial it in.</DialogDescription>
+      <DialogContent className="flex max-h-[92vh] flex-col gap-0 overflow-hidden border-orange-500/30 p-0 sm:max-w-lg">
+        <DialogHeader className="shrink-0 border-b border-orange-500/20 bg-orange-500/5 px-4 pb-3 pt-4">
+          <DialogTitle className="text-xl font-black">Log session</DialogTitle>
+          <DialogDescription>
+            Add a note and photo for the feed — then pick type and intensity.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 py-2">
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-4">
+          <div className="space-y-2 rounded-xl border-2 border-orange-500/40 bg-orange-500/10 p-3">
+            <Label
+              htmlFor="session-note"
+              className="flex items-center gap-2 text-base font-black text-orange-300"
+            >
+              <MessageSquare className="size-5" />
+              Session note
+              <span className="text-sm font-normal text-muted-foreground">
+                (shows on Feed)
+              </span>
+            </Label>
+            <textarea
+              id="session-note"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="What did you crush? Project, board, outdoor send…"
+              maxLength={280}
+              rows={4}
+              className="flex w-full resize-none rounded-lg border border-orange-500/40 bg-background px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-orange-500/50"
+            />
+            <p className="text-[10px] text-muted-foreground">
+              {notes.length}/280 · visible on your feed post
+            </p>
+          </div>
+
+          <SessionPhotoPicker
+            file={photoFile}
+            previewUrl={photoPreview}
+            onFileChange={(file, preview) => {
+              setPhotoFile(file);
+              setPhotoPreview(preview);
+            }}
+          />
+
           <div className="space-y-2">
             <Label className="font-semibold">Session type</Label>
             <div className="grid grid-cols-2 gap-2">
@@ -276,15 +370,6 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
             </motion.p>
           </div>
 
-          <SessionPhotoPicker
-            file={photoFile}
-            previewUrl={photoPreview}
-            onFileChange={(file, preview) => {
-              setPhotoFile(file);
-              setPhotoPreview(preview);
-            }}
-          />
-
           <p
             className={cn(
               "rounded-lg py-2 text-center text-sm font-bold",
@@ -298,7 +383,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
           </p>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="shrink-0 border-t border-orange-500/20 bg-background px-4 py-3">
           <Button
             className="w-full bg-orange-600 font-black hover:bg-orange-500"
             onClick={handleSave}

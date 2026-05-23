@@ -12,9 +12,12 @@ import {
 } from "recharts";
 import { PieChart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SESSION_TYPE_META, SESSION_TYPES } from "@/lib/constants/sessionTypes";
+import {
+  CHART_CATEGORIES,
+  CHART_CATEGORY_META,
+  getWorkoutChartCategory,
+} from "@/lib/utils/workoutChartCategory";
 import type { WorkoutLog } from "@/types/app";
-import type { SessionType } from "@/lib/constants/sessionTypes";
 
 interface SessionTypeBreakdownChartProps {
   logs: WorkoutLog[];
@@ -23,17 +26,16 @@ interface SessionTypeBreakdownChartProps {
 
 function breakdown(logs: WorkoutLog[]) {
   const counts: Record<string, number> = {};
-  for (const t of SESSION_TYPES) counts[t] = 0;
+  for (const cat of CHART_CATEGORIES) counts[cat] = 0;
   for (const log of logs) {
-    const t = (log.session_type ?? "climbing") as SessionType;
-    if (counts[t] !== undefined) counts[t]++;
-    else counts[t] = 1;
+    const cat = getWorkoutChartCategory(log);
+    counts[cat] = (counts[cat] ?? 0) + 1;
   }
-  return SESSION_TYPES.map((type) => ({
-    type,
-    label: SESSION_TYPE_META[type].label,
-    count: counts[type] ?? 0,
-    fill: SESSION_TYPE_META[type].chartColor,
+  return CHART_CATEGORIES.map((cat) => ({
+    category: cat,
+    label: CHART_CATEGORY_META[cat].label,
+    count: counts[cat] ?? 0,
+    fill: CHART_CATEGORY_META[cat].chartColor,
   })).filter((d) => d.count > 0);
 }
 
@@ -51,7 +53,7 @@ export function SessionTypeBreakdownChart({
           Session mix
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          Your logged session types (all time in history list).
+          Count by type — climbing split into gym, board, and outdoors.
         </p>
       </CardHeader>
       <CardContent>
@@ -71,7 +73,7 @@ export function SessionTypeBreakdownChart({
                   type="category"
                   dataKey="label"
                   tick={{ fontSize: 10 }}
-                  width={72}
+                  width={88}
                 />
                 <Tooltip
                   contentStyle={{
@@ -83,7 +85,7 @@ export function SessionTypeBreakdownChart({
                 />
                 <Bar dataKey="count" radius={[0, 4, 4, 0]}>
                   {data.map((entry) => (
-                    <Cell key={entry.type} fill={entry.fill} />
+                    <Cell key={entry.category} fill={entry.fill} />
                   ))}
                 </Bar>
               </BarChart>

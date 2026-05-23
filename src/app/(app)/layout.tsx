@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppNav } from "@/components/layout/AppNav";
-import { LiveTicker } from "@/components/layout/LiveTicker";
+import { AppProviders } from "@/components/layout/AppProviders";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({
@@ -16,10 +16,9 @@ export default async function AppLayout({
   if (!user) redirect("/login");
 
   return (
-    <>
-      <LiveTicker />
+    <AppProviders>
       <AppNav />
       <main className="flex-1 pb-16 lg:pb-0">{children}</main>
-    </>
+    </AppProviders>
   );
 }
