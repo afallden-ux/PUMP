@@ -5,7 +5,19 @@ import { createClient } from "@/lib/supabase/server";
 const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
 
+function normalizedContentType(file: File): string {
+  const type = (file.type || "").toLowerCase().trim();
+  if (type === "image/jpg" || type === "image/pjpeg") return "image/jpeg";
+  if (type.startsWith("image/")) return type;
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+  if (ext === "png") return "image/png";
+  if (ext === "webp") return "image/webp";
+  if (ext === "gif") return "image/gif";
+  return "image/jpeg";
+}
+
 function friendlyStorageError(message: string): string {
+  const lower = message.toLowerCase();
   if (message.includes("Invalid Compact JWS") || message.includes("Compact JWS")) {
     return (
       "Wrong Supabase key in Vercel. SUPABASE_SERVICE_ROLE_KEY must be the " +
@@ -13,14 +25,25 @@ function friendlyStorageError(message: string): string {
       "not the anon or publishable key. Remove quotes/spaces and redeploy."
     );
   }
-  if (message.includes("invalid or incompatible")) {
+  if (lower.includes("row-level security") || lower.includes("policy")) {
     return (
-      "Supabase Storage is not set up correctly. In Supabase: Storage → New bucket → name workout-photos (public). " +
-      "Then run supabase/RUN_WORKOUT_PHOTOS_STORAGE_FIX.sql in the SQL Editor."
+      "Storage permission denied — run supabase/RUN_WORKOUT_PHOTOS_STORAGE_FIX.sql in the SQL Editor."
     );
   }
-  if (message.includes("Bucket not found") || message.includes("not found")) {
-    return 'Storage bucket "workout-photos" is missing — create it in Supabase → Storage.';
+  if (lower.includes("mime") || lower.includes("not supported")) {
+    return (
+      "Image type not allowed — run RUN_WORKOUT_PHOTOS_STORAGE_FIX.sql to refresh bucket MIME types."
+    );
+  }
+  if (message.includes("invalid or incompatible") || lower.includes("schema")) {
+    return (
+      "Supabase Storage DB schema is out of date (your bucket can still exist). " +
+      "Check storage.objects has a level column in Table Editor, run RUN_WORKOUT_PHOTOS_STORAGE_FIX.sql, " +
+      "and ensure Vercel env URLs match this Supabase project."
+    );
+  }
+  if (message.includes("Bucket not found")) {
+    return 'Storage bucket "workout-photos" is missing in this Supabase project.';
   }
   return message;
 }
@@ -91,7 +114,7 @@ export async function POST(request: Request) {
     .from("workout-photos")
     .upload(path, await file.arrayBuffer(), {
       upsert: true,
-      contentType: file.type || `image/${safeExt === "jpg" ? "jpeg" : safeExt}`,
+      contentType: normalizedContentType(file),
     });
 
   if (uploadError) {
