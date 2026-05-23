@@ -137,7 +137,7 @@ If someone logs a session then goes quiet for **72 hours**, a cron job can email
    - `RESEND_API_KEY`
    - `EMAIL_FROM` — e.g. `PUMP <noreply@yourdomain.se>`
    - `NEXT_PUBLIC_SITE_URL` — production app URL (used in the email link)
-4. Deploy — `vercel.json` runs the job every **6 hours**
+4. Deploy — `vercel.json` runs the job **once per day** (09:00 UTC; Hobby plan limit). On **Pro**, you can change the schedule in `vercel.json` to `0 */6 * * *` for every 6 hours.
 
 Manual test (after deploy):
 
