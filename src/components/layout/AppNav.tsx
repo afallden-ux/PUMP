@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { BarChart3, Dumbbell, Home, LogOut, MessageCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { APP_UI_VERSION } from "@/lib/appVersion";
 import { createClient } from "@/lib/supabase/client";
 
 export function AppNav() {
@@ -66,6 +67,15 @@ export function AppNav() {
           <Button variant="ghost" size="icon-sm" onClick={signOut} aria-label="Sign out">
             <LogOut className="size-4" />
           </Button>
+          <span
+            className="ml-2 hidden text-[10px] tabular-nums text-muted-foreground/50 lg:inline"
+            title="UI version and git commit — if this is missing or old, redeploy on Vercel"
+          >
+            UI {APP_UI_VERSION}
+            {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
+              ? ` · ${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA.slice(0, 7)}`
+              : null}
+          </span>
         </div>
       </nav>
 
