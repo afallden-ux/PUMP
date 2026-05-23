@@ -1,6 +1,12 @@
--- Run if session photos or notes don't show on the feed.
+-- Fix "Photo upload failed — database schema is invalid or incompatible"
+-- Run in Supabase SQL Editor AFTER creating the bucket in the dashboard (step 1).
 
--- Photo URL on logs + allow updating after upload
+-- 1) In Supabase Dashboard: Storage → New bucket
+--    Name: workout-photos
+--    Public bucket: ON
+--    (Then run this script.)
+
+-- 2) workout_logs column + update policy
 alter table public.workout_logs
   add column if not exists photo_url text;
 
@@ -11,21 +17,7 @@ create policy "Users can update own workout logs"
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
--- Session notes
-alter table public.workout_logs
-  add column if not exists notes text;
-
-alter table public.workout_logs
-  drop constraint if exists workout_logs_notes_length;
-
-alter table public.workout_logs
-  add constraint workout_logs_notes_length check (
-    notes is null or char_length(trim(notes)) between 1 and 280
-  );
-
--- Storage: prefer RUN_WORKOUT_PHOTOS_STORAGE_FIX.sql (create bucket in Dashboard first)
--- Or run the block below if the bucket already exists:
-
+-- 3) Bucket (if you already created it in the UI, this just ensures public)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'workout-photos',
@@ -34,8 +26,12 @@ values (
   5242880,
   array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 )
-on conflict (id) do update set public = true;
+on conflict (id) do update set
+  public = true,
+  file_size_limit = 5242880,
+  allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
+-- 4) Storage policies (path: {user_id}/{workout_id}.jpg)
 drop policy if exists "Workout photos are publicly accessible" on storage.objects;
 create policy "Workout photos are publicly accessible"
   on storage.objects for select
@@ -47,7 +43,7 @@ create policy "Users can upload own workout photos"
   to authenticated
   with check (
     bucket_id = 'workout-photos'
-    and split_part(name, '/', 1) = (select auth.uid()::text)
+    and (split_part(name, '/', 1) = (select auth.uid()::text))
   );
 
 drop policy if exists "Users can update own workout photos" on storage.objects;
@@ -56,9 +52,18 @@ create policy "Users can update own workout photos"
   to authenticated
   using (
     bucket_id = 'workout-photos'
-    and split_part(name, '/', 1) = (select auth.uid()::text)
+    and (split_part(name, '/', 1) = (select auth.uid()::text))
   )
   with check (
     bucket_id = 'workout-photos'
-    and split_part(name, '/', 1) = (select auth.uid()::text)
+    and (split_part(name, '/', 1) = (select auth.uid()::text))
+  );
+
+drop policy if exists "Users can delete own workout photos" on storage.objects;
+create policy "Users can delete own workout photos"
+  on storage.objects for delete
+  to authenticated
+  using (
+    bucket_id = 'workout-photos'
+    and (split_part(name, '/', 1) = (select auth.uid()::text))
   );
