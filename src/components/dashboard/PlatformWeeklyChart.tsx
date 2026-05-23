@@ -46,8 +46,8 @@ export function PlatformWeeklyChart({ entries }: PlatformWeeklyChartProps) {
             No weekly activity yet.
           </p>
         ) : (
-          <div className="h-64 w-full lg:h-72">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-64 min-h-64 w-full min-w-0 lg:h-72">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={256}>
               <BarChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 48 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted/40" />
                 <XAxis

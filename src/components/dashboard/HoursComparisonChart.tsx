@@ -138,8 +138,8 @@ export function HoursComparisonChart({
             No hours in this range. Log sessions or widen the time window.
           </p>
         ) : (
-          <div className="h-64 w-full lg:h-80">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-64 min-h-64 w-full min-w-0 lg:h-80">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={256}>
               <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted/40" />
                 <XAxis dataKey="label" tick={{ fontSize: 10 }} />

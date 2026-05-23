@@ -99,8 +99,8 @@ export function TrainingHistoryChart({ logs, loading }: TrainingHistoryChartProp
             No sessions yet. Log one and watch this chart get aggressive.
           </p>
         ) : (
-          <div className="h-56 w-full lg:h-64">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-56 min-h-56 w-full min-w-0 lg:h-64">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={224}>
               <BarChart data={data} margin={{ top: 8, right: 4, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted/40" />
                 <XAxis
