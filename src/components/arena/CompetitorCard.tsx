@@ -54,7 +54,7 @@ export function CompetitorCard({ ranked, metricKind }: CompetitorCardProps) {
       transition={{ type: "spring", stiffness: 400, damping: 32 }}
       className={cn(
         "grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-lg border bg-white p-3 shadow-sm sm:gap-4 sm:p-4",
-        isMe ? "border-[#2563eb]/40 ring-1 ring-[#2563eb]/15" : "border-slate-200/90"
+        isMe ? "border-teal-500/40 ring-1 ring-teal-500/15" : "border-slate-200/90"
       )}
     >
       <RankBadge rank={rank} />
@@ -71,7 +71,7 @@ export function CompetitorCard({ ranked, metricKind }: CompetitorCardProps) {
           <h3 className="truncate font-semibold text-slate-800">
             {athlete.username}
             {isMe && (
-              <span className="ml-1.5 text-[10px] font-bold uppercase text-[#2563eb]">
+              <span className="ml-1.5 text-[10px] font-bold uppercase text-teal-700">
                 You
               </span>
             )}

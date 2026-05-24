@@ -192,7 +192,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
         {trigger ?? (
           <Button
             size="lg"
-            className="h-14 w-full bg-gradient-to-r from-orange-600 to-amber-500 text-base font-black text-black hover:from-orange-500 hover:to-amber-400"
+            className="h-14 w-full bg-gradient-to-r from-teal-700 to-teal-500 text-base font-bold text-white hover:from-teal-600 hover:to-teal-400"
           >
             <Flame className="size-5" />
             LOG SESSION
@@ -201,12 +201,12 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "z-[60] flex max-h-[min(90dvh,100%)] w-full max-w-none flex-col gap-0 overflow-hidden border-orange-500/30 p-0",
+          "z-[60] flex max-h-[min(90dvh,100%)] w-full max-w-none flex-col gap-0 overflow-hidden border-teal-500/30 p-0",
           "inset-x-0 bottom-0 top-auto translate-x-0 translate-y-0 rounded-t-2xl rounded-b-none",
           "sm:inset-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl"
         )}
       >
-        <DialogHeader className="shrink-0 border-b border-orange-500/20 bg-orange-500/5 px-4 pb-3 pt-4">
+        <DialogHeader className="shrink-0 border-b border-teal-500/20 bg-teal-500/5 px-4 pb-3 pt-4">
           <DialogTitle className="text-xl font-black">Log session</DialogTitle>
           <DialogDescription>
             Add a note and photo for the feed — then pick type and intensity.
@@ -214,10 +214,10 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
         </DialogHeader>
 
         <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-4">
-          <div className="space-y-2 rounded-xl border-2 border-orange-500/40 bg-orange-500/10 p-3">
+          <div className="space-y-2 rounded-xl border-2 border-teal-500/40 bg-teal-500/10 p-3">
             <Label
               htmlFor="session-note"
-              className="flex items-center gap-2 text-base font-black text-orange-300"
+              className="flex items-center gap-2 text-base font-black text-teal-800"
             >
               <MessageSquare className="size-5" />
               Session note
@@ -232,7 +232,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
               placeholder="What did you crush? Project, board, outdoor send…"
               maxLength={280}
               rows={4}
-              className="flex w-full resize-none rounded-lg border border-orange-500/40 bg-background px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-orange-500/50"
+              className="flex w-full resize-none rounded-lg border border-teal-500/40 bg-background px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-teal-500/50"
             />
             <p className="text-[10px] text-muted-foreground">
               {notes.length}/280 · visible on your feed post
@@ -261,7 +261,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
                     className={cn(
                       "h-auto flex-col gap-0.5 py-2.5 text-left",
                       sessionType === type && type === "stretching" && "bg-zinc-600",
-                      sessionType === type && type !== "stretching" && "bg-orange-600"
+                      sessionType === type && type !== "stretching" && "bg-teal-600"
                     )}
                     onClick={() => setSessionType(type)}
                   >
@@ -291,7 +291,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
                         "text-[10px] font-bold",
                         climbBonus === bonus && bonus === "board" && "bg-indigo-600",
                         climbBonus === bonus && bonus === "outdoors" && "bg-emerald-600",
-                        climbBonus === bonus && bonus === "none" && "bg-orange-600"
+                        climbBonus === bonus && bonus === "none" && "bg-teal-600"
                       )}
                       onClick={() => setClimbBonus(bonus)}
                     >
@@ -329,10 +329,10 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label className="flex items-center gap-2 font-semibold">
-                <Timer className="size-4 text-orange-400" />
+                <Timer className="size-4 text-teal-600" />
                 Duration
               </Label>
-              <span className="font-mono text-sm font-bold text-orange-400">
+              <span className="font-mono text-sm font-bold text-teal-600">
                 {formatDuration(durationMinutes)}
               </span>
             </div>
@@ -351,10 +351,10 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
               <Label className="flex items-center gap-2 font-semibold">
-                <Flame className="size-4 text-orange-400" />
+                <Flame className="size-4 text-teal-600" />
                 {sessionType === "stretching" ? "Laziness level" : "Intensity"}
               </Label>
-              <span className="text-xs font-bold text-orange-400">Level {intensity}</span>
+              <span className="text-xs font-bold text-teal-600">Level {intensity}</span>
             </div>
             <Slider
               min={1}
@@ -380,7 +380,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
             className={cn(
               "rounded-lg py-2 text-center text-sm font-bold",
               previewPoints >= 0
-                ? "bg-orange-500/10 text-orange-400"
+                ? "bg-teal-500/10 text-teal-700"
                 : "bg-zinc-500/20 text-zinc-400"
             )}
           >
@@ -389,9 +389,9 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
           </p>
         </div>
 
-        <DialogFooter className="!-mx-0 !-mb-0 shrink-0 rounded-none border-t border-orange-500/20 bg-background px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:rounded-b-xl">
+        <DialogFooter className="!-mx-0 !-mb-0 shrink-0 rounded-none border-t border-teal-500/20 bg-background px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:rounded-b-xl">
           <Button
-            className="h-12 w-full bg-orange-600 text-base font-black hover:bg-orange-500"
+            className="h-12 w-full bg-teal-600 text-base font-black hover:bg-teal-500"
             onClick={handleSave}
             disabled={saving}
           >

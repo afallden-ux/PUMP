@@ -12,7 +12,7 @@ export default function AuthLayout({
         <BrandLogo href="/login" size="lg" priority className="mx-auto" />
         <p className="mt-3 max-w-xs text-sm text-muted-foreground">{APP_TAGLINE}</p>
       </div>
-      <div className="w-full max-w-sm rounded-2xl border border-orange-500/20 bg-card/80 p-6 shadow-xl shadow-orange-950/20 backdrop-blur">
+      <div className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/50">
         {children}
       </div>
     </div>

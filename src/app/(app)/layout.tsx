@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { AppNav } from "@/components/layout/AppNav";
+import { AppShell } from "@/components/layout/AppShell";
 import { AppProviders } from "@/components/layout/AppProviders";
 import { createClient } from "@/lib/supabase/server";
 
@@ -17,10 +17,7 @@ export default async function AppLayout({
 
   return (
     <AppProviders>
-      <AppNav />
-      <main className="flex-1 pb-16 lg:pb-0 [&:has(.arena-fullbleed)]:p-0 [&:has(.arena-fullbleed)]:pb-0">
-        {children}
-      </main>
+      <AppShell>{children}</AppShell>
     </AppProviders>
   );
 }

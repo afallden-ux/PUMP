@@ -34,28 +34,28 @@ export function StatsOverview({
       value: weeklyRank === "—" ? "—" : `#${weeklyRank}`,
       sub: me?.rank_title ?? "Log to rank",
       icon: Trophy,
-      accent: "text-amber-400",
+      accent: "text-amber-600",
     },
     {
       label: "7-day pts",
       value: points7d.toLocaleString(),
       sub: `${sessions7d} session${sessions7d === 1 ? "" : "s"}`,
       icon: Flame,
-      accent: "text-orange-400",
+      accent: "text-teal-600",
     },
     {
       label: "Lifetime CC",
       value: profile.current_pump_score.toLocaleString(),
       sub: "All-time score",
       icon: Target,
-      accent: "text-orange-300",
+      accent: "text-teal-700",
     },
     {
       label: "Hours (7d)",
       value: `${hours7d}h`,
       sub: `${sessionCounts.total} total logs`,
       icon: Clock,
-      accent: "text-sky-400",
+      accent: "text-cyan-600",
     },
   ];
 
@@ -64,16 +64,16 @@ export function StatsOverview({
       {cards.map((c) => (
         <div
           key={c.label}
-          className="rounded-xl border border-border/60 bg-card/80 p-3 lg:p-4"
+          className="rounded-lg border border-slate-200/90 bg-white p-3 shadow-sm lg:p-4"
         >
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground lg:text-xs">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 lg:text-xs">
               {c.label}
             </p>
             <c.icon className={`size-4 shrink-0 ${c.accent}`} />
           </div>
-          <p className="mt-1 text-xl font-black lg:text-2xl">{c.value}</p>
-          <p className="text-[10px] text-muted-foreground lg:text-xs">{c.sub}</p>
+          <p className="mt-1 text-xl font-bold text-slate-800 lg:text-2xl">{c.value}</p>
+          <p className="text-[10px] text-slate-500 lg:text-xs">{c.sub}</p>
         </div>
       ))}
     </div>

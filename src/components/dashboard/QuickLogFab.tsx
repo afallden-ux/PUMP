@@ -18,7 +18,7 @@ export function QuickLogFab({ userId, onLogged }: QuickLogFabProps) {
         trigger={
           <Button
             size="lg"
-            className="h-14 w-full shadow-lg shadow-orange-900/50 bg-gradient-to-r from-orange-600 to-amber-500 font-black text-black"
+            className="h-14 w-full bg-gradient-to-r from-teal-700 to-teal-500 font-bold text-white shadow-lg shadow-teal-900/25"
           >
             <Flame className="size-5" />
             LOG NOW

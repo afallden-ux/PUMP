@@ -25,11 +25,11 @@ export function PersonalComparisonPanel({
   return (
     <aside
       className={cn(
-        "rounded-lg border border-[#2563eb]/25 bg-white p-4 shadow-sm ring-1 ring-[#2563eb]/10",
+        "rounded-lg border border-teal-500/25 bg-white p-4 shadow-sm ring-1 ring-teal-500/10",
         className
       )}
     >
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-[#2563eb]">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-teal-700">
         Your comparison
       </p>
       <h2 className="text-base font-semibold text-slate-800">{athlete.username}</h2>

@@ -8,6 +8,8 @@ import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
 import { BodyMetricsPanel } from "@/components/profile/BodyMetricsPanel";
 import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { AppCard } from "@/components/ui/AppCard";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { APP_SHORT } from "@/lib/brand";
 import type { SessionCounts } from "@/lib/data/sessionBadges";
@@ -22,7 +24,13 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
   const [profile, setProfile] = useState(initial);
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-8 px-4 py-6 lg:max-w-2xl lg:px-8">
+    <div className="mx-auto w-full max-w-2xl space-y-5">
+      <PageHeader
+        eyebrow="Account"
+        title={profile.username}
+        subtitle={profile.title || "Your profile, metrics, and badges"}
+      />
+      <AppCard className="p-5">
       <AvatarUpload
         profile={profile}
         onUpdated={(avatarUrl) =>
@@ -30,10 +38,11 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
         }
       />
       {profile.home_crag && (
-        <p className="text-center text-sm text-muted-foreground">
-          🏔 Home crag: <span className="font-semibold text-foreground">{profile.home_crag}</span>
+        <p className="mt-3 text-center text-sm text-slate-500">
+          🏔 Home crag: <span className="font-semibold text-slate-800">{profile.home_crag}</span>
         </p>
       )}
+      </AppCard>
       <CollapsibleSection
         title="Body & strength"
         subtitle="Height, weight, hang, pull-up — with charts"
@@ -58,17 +67,18 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
         </div>
       </CollapsibleSection>
 
-      <ProfileForm profile={profile} />
-      <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-sm text-muted-foreground">
+      <AppCard className="p-5">
+        <ProfileForm profile={profile} />
+      </AppCard>
+      <AppCard className="p-4 text-sm text-slate-600">
         <p>
-          <strong className="text-foreground">Lifetime {APP_SHORT} score:</strong>{" "}
+          <strong className="text-slate-800">Lifetime {APP_SHORT} score:</strong>{" "}
           {profile.current_pump_score.toLocaleString()} pts
         </p>
         <p className="mt-1">
-          Badges unlock at 10–1000 logs per track. Compare yourself to everyone on the
-          board from Home.
+          Badges unlock at 10–1000 logs per track. Compare yourself on Home and Analytics.
         </p>
-      </div>
+      </AppCard>
       <DeleteAccountSection />
     </div>
   );

@@ -14,11 +14,11 @@ interface AvatarEvolutionProps {
 export function AvatarEvolution({ profile, sessionCounts }: AvatarEvolutionProps) {
   return (
     <motion.section
-      className="flex flex-col items-center gap-3 rounded-2xl border border-orange-500/30 bg-gradient-to-b from-orange-500/10 to-transparent p-6"
+      className="flex flex-col items-center gap-3 rounded-lg border border-teal-500/25 bg-gradient-to-b from-teal-500/10 to-transparent p-6 shadow-sm"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <p className="text-xs font-bold uppercase tracking-widest text-orange-400">
+      <p className="text-xs font-semibold uppercase tracking-widest text-teal-700">
         Lifetime CC
       </p>
       <AvatarFrame
@@ -34,7 +34,7 @@ export function AvatarEvolution({ profile, sessionCounts }: AvatarEvolutionProps
           key={profile.current_pump_score}
           initial={{ scale: 1.3, color: "#fb923c" }}
           animate={{ scale: 1, color: "inherit" }}
-          className="mt-2 text-3xl font-black tabular-nums text-orange-400"
+          className="mt-2 text-3xl font-bold tabular-nums text-teal-700"
         >
           {profile.current_pump_score.toLocaleString()}
           <span className="ml-1 text-sm font-semibold text-muted-foreground">

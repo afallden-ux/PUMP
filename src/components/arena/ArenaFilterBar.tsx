@@ -65,7 +65,7 @@ export function ArenaFilterBar({
             <select
               value={metric}
               onChange={(e) => onMetricChange(e.target.value as ArenaMetric)}
-              className="h-10 w-full appearance-none rounded-md border border-slate-200 bg-white pl-3 pr-9 text-sm text-slate-700 shadow-sm outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20"
+              className="h-10 w-full appearance-none rounded-md border border-slate-200 bg-white pl-3 pr-9 text-sm text-slate-700 shadow-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20"
             >
               {METRIC_OPTIONS.map((o) => (
                 <option key={o.id} value={o.id}>
@@ -88,7 +88,7 @@ export function ArenaFilterBar({
                 className={cn(
                   "relative pb-2 text-sm font-medium transition-colors",
                   periodTab === tab.id
-                    ? "text-[#2563eb] after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-[#2563eb] after:content-['']"
+                    ? "text-teal-700 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-teal-600 after:content-['']"
                     : "text-slate-500 hover:text-slate-700"
                 )}
               >
@@ -124,7 +124,7 @@ export function ArenaFilterBar({
         <Button
           type="button"
           onClick={onApply}
-          className="h-10 bg-[#2563eb] px-6 font-semibold text-white shadow-sm hover:bg-[#1d4ed8]"
+          className="h-10 bg-teal-600 px-6 font-semibold text-white shadow-sm hover:bg-teal-700"
         >
           Apply
         </Button>

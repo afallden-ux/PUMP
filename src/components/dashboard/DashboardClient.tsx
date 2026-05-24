@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { BarChart3, Clock, MessageCircle, TrendingUp } from "lucide-react";
 import { AvatarEvolution } from "@/components/avatar/AvatarEvolution";
 import { CouchOfShame } from "@/components/dashboard/CouchOfShame";
 import { HoursComparisonChart } from "@/components/dashboard/HoursComparisonChart";
@@ -12,18 +14,18 @@ import { SessionHistoryList } from "@/components/dashboard/SessionHistoryList";
 import { SessionTypeBreakdownChart } from "@/components/dashboard/SessionTypeBreakdownChart";
 import { StatsOverview } from "@/components/dashboard/StatsOverview";
 import { TrainingHistoryChart } from "@/components/dashboard/TrainingHistoryChart";
-import Link from "next/link";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { ActivityFeed } from "@/components/social/ActivityFeed";
 import { LogWorkoutModal } from "@/components/workout/LogWorkoutModal";
+import { AppCard } from "@/components/ui/AppCard";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { BarChart3, Clock, MessageCircle, TrendingUp } from "lucide-react";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
+import { cn } from "@/lib/utils";
+import { APP_SHORT } from "@/lib/brand";
 import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import { useWorkoutHistory } from "@/lib/hooks/useWorkoutHistory";
 import type { SessionCounts, SessionCountsMap } from "@/lib/data/sessionBadges";
-import { APP_SHORT } from "@/lib/brand";
 import type { LeaderboardEntry, Profile } from "@/types/app";
 
 interface DashboardClientProps {
@@ -71,23 +73,19 @@ export function DashboardClient({
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 pb-28 pt-4 lg:px-8 lg:pb-8 lg:pt-6">
-      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            {APP_SHORT} board
-          </p>
-          <h1 className="text-2xl font-black lg:text-3xl">{currentProfile.username}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {allClimbers.length} registered climbers · {activeCount} active this week
-          </p>
-        </div>
-        <div className="hidden shrink-0 lg:block">
-          <LogWorkoutModal userId={currentProfile.id} onLogged={handleLogged} />
-        </div>
-      </header>
+    <>
+      <PageHeader
+        eyebrow={`${APP_SHORT} board`}
+        title={currentProfile.username}
+        subtitle={`${allClimbers.length} climbers on the board · ${activeCount} active this week`}
+        actions={
+          <div className="hidden lg:block">
+            <LogWorkoutModal userId={currentProfile.id} onLogged={handleLogged} />
+          </div>
+        }
+      />
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         <StatsOverview
           profile={currentProfile}
           sessionCounts={sessionCounts}
@@ -95,8 +93,8 @@ export function DashboardClient({
           recentLogs={logs}
         />
 
-        <div className="grid gap-6 lg:grid-cols-12 lg:gap-8">
-          <div className="space-y-6 lg:col-span-5">
+        <div className="grid gap-5 lg:grid-cols-12">
+          <div className="space-y-5 lg:col-span-5">
             <LeaderboardsPanel
               weeklyEntries={weeklyEntries}
               lifetimeEntries={lifetimeEntries}
@@ -110,15 +108,12 @@ export function DashboardClient({
             </div>
           </div>
 
-          <div className="space-y-3 lg:col-span-7">
+          <AppCard className="space-y-3 p-4 lg:col-span-7">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-bold text-muted-foreground">Recent feed</p>
+              <p className="text-sm font-semibold text-slate-700">Recent feed</p>
               <Link
                 href="/feed"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "gap-1.5"
-                )}
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "gap-1.5")}
               >
                 <MessageCircle className="size-4" />
                 Open feed
@@ -130,7 +125,7 @@ export function DashboardClient({
               refreshKey={refreshKey}
               previewCount={2}
             />
-          </div>
+          </AppCard>
         </div>
 
         <CollapsibleSection
@@ -164,39 +159,36 @@ export function DashboardClient({
           icon={BarChart3}
           defaultOpen
         >
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-5 lg:grid-cols-2">
             <TrainingHistoryChart logs={logs} loading={historyLoading} />
             <SessionTypeBreakdownChart logs={logs} loading={historyLoading} />
           </div>
         </CollapsibleSection>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-5 lg:grid-cols-2">
           <SessionHistoryList
             userId={currentProfile.id}
             refreshKey={refreshKey}
             onDeleted={handleDeleted}
           />
-          <div className="space-y-6">
-            <section className="rounded-xl border border-border/60 bg-card/50 p-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+          <div className="space-y-5">
+            <AppCard className="p-4">
+              <h3 className="text-sm font-semibold text-slate-800">
                 Still climbing ({activeCount})
               </h3>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-slate-500">
                 Logged within the last 96 hours
               </p>
-            </section>
+            </AppCard>
             <CouchOfShame slackers={slackers} />
             <div className="lg:hidden">
-              <AvatarEvolution
-                profile={currentProfile}
-                sessionCounts={sessionCounts}
-              />
+              <AvatarEvolution profile={currentProfile} sessionCounts={sessionCounts} />
             </div>
           </div>
         </div>
       </div>
 
       <QuickLogFab userId={currentProfile.id} onLogged={handleLogged} />
-    </div>
+    </>
   );
 }
