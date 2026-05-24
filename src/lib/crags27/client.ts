@@ -28,13 +28,32 @@ export function normalizeProfileSlug(input: string): string {
     .replace(/[^a-z0-9-_]/g, "");
 }
 
-function isLoggedIn(html: string): boolean {
+const SESSION_COOKIE = "_27crags_session";
+
+function hasSessionCookie(jar: CookieJar): boolean {
+  return jar.has(SESSION_COOKIE) && Boolean(jar.toSerializable().find((c) => c.name === SESSION_COOKIE)?.value);
+}
+
+/** Server HTML no longer includes nav logout (React nav) — use URL + login form presence. */
+function isLoginPage(html: string, finalUrl: string): boolean {
   return (
-    html.includes('class="user-logged"') ||
-    html.includes("user-logged") ||
-    html.includes('href="/logout"') ||
-    html.includes("Log out")
+    finalUrl.includes("/login") &&
+    html.includes('name="web_user[password]"')
   );
+}
+
+function loginFormError(html: string): string | null {
+  const $ = cheerio.load(html);
+  const alert = $(".alert-danger, .flash.error, .error-message, .alert-error")
+    .first()
+    .text()
+    .trim()
+    .replace(/\s+/g, " ");
+  if (alert.length > 0) return alert;
+  if (/invalid (?:email|username|password|credentials)/i.test(html)) {
+    return "Invalid 27crags username or password";
+  }
+  return null;
 }
 
 function detectSlugFromLoginHtml(html: string): string | null {
@@ -59,15 +78,15 @@ function detectSlugFromLoginHtml(html: string): string | null {
 
 export function detectAscentsPageState(
   html: string,
-  status: number
+  status: number,
+  finalUrl?: string
 ): Crags27AscentsPageState {
   if (status === 404 || /404 Not found|doesn’t exist/i.test(html)) {
     return "not_found";
   }
   if (
-    !isLoggedIn(html) &&
-    (html.toLowerCase().includes('name="web_user[password]"') ||
-      html.toLowerCase().includes("/login"))
+    (finalUrl && isLoginPage(html, finalUrl)) ||
+    html.includes('name="web_user[password]"')
   ) {
     return "login_required";
   }
@@ -79,19 +98,29 @@ async function fetchWithJarFollow(
   jar: CookieJar,
   init?: RequestInit,
   maxRedirects = 8
-): Promise<Response> {
+): Promise<{ response: Response; finalUrl: string }> {
   let current = url;
+  let requestInit: RequestInit | undefined = init;
+
   for (let i = 0; i <= maxRedirects; i++) {
-    const res = await fetchWithJar(current, jar, { ...init, redirect: "manual" });
+    const res = await fetchWithJar(current, jar, {
+      ...requestInit,
+      redirect: "manual",
+    });
     if (res.status >= 300 && res.status < 400) {
       const loc = res.headers.get("location");
-      if (!loc || i === maxRedirects) return res;
+      if (!loc || i === maxRedirects) {
+        return { response: res, finalUrl: current };
+      }
       current = loc.startsWith("http")
         ? loc
         : new URL(loc, current).toString();
+      requestInit = {
+        headers: requestInit?.headers,
+      };
       continue;
     }
-    return res;
+    return { response: res, finalUrl: current };
   }
   throw new Error("Too many redirects while fetching 27crags");
 }
@@ -102,14 +131,18 @@ export async function crags27Login(
 ): Promise<Crags27LoginResult> {
   const jar = new CookieJar();
 
-  const loginPage = await fetchWithJarFollow(`${CRAGS27_HOST}/login`, jar, {
-    headers: { "User-Agent": USER_AGENT },
-  });
-  if (!loginPage.ok) {
-    throw new Error(`27crags login page failed (${loginPage.status})`);
+  const { response: loginPageRes } = await fetchWithJarFollow(
+    `${CRAGS27_HOST}/login`,
+    jar,
+    {
+      headers: { "User-Agent": USER_AGENT },
+    }
+  );
+  if (!loginPageRes.ok) {
+    throw new Error(`27crags login page failed (${loginPageRes.status})`);
   }
 
-  const html = await loginPage.text();
+  const html = await loginPageRes.text();
   const $ = cheerio.load(html);
   const csrf = $('meta[name="csrf-token"]').attr("content");
   if (!csrf) {
@@ -123,33 +156,49 @@ export async function crags27Login(
     "web_user[remember_me]": "1",
   });
 
-  const loginRes = await fetchWithJarFollow(`${CRAGS27_HOST}/login`, jar, {
-    method: "POST",
-    headers: {
-      "User-Agent": USER_AGENT,
-      "Content-Type": "application/x-www-form-urlencoded",
-      "X-CSRF-Token": csrf,
-      Referer: `${CRAGS27_HOST}/login`,
-    },
-    body: body.toString(),
-  });
+  const { response: loginRes, finalUrl } = await fetchWithJarFollow(
+    `${CRAGS27_HOST}/login`,
+    jar,
+    {
+      method: "POST",
+      headers: {
+        "User-Agent": USER_AGENT,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-CSRF-Token": csrf,
+        Referer: `${CRAGS27_HOST}/login`,
+      },
+      body: body.toString(),
+    }
+  );
 
   const afterHtml = await loginRes.text();
-  if (!isLoggedIn(afterHtml)) {
-    if (
-      afterHtml.toLowerCase().includes("invalid") ||
-      afterHtml.toLowerCase().includes("password")
-    ) {
-      throw new Error("Invalid 27crags username or password");
-    }
+
+  if (isLoginPage(afterHtml, finalUrl)) {
     throw new Error(
-      "27crags login did not return a session. Check credentials or try again later."
+      loginFormError(afterHtml) ?? "Invalid 27crags username or password"
     );
+  }
+
+  if (!hasSessionCookie(jar)) {
+    throw new Error(
+      "27crags did not set a session cookie. Try again in a few minutes."
+    );
+  }
+
+  const { response: homeRes, finalUrl: homeUrl } = await fetchWithJarFollow(
+    `${CRAGS27_HOST}/`,
+    jar,
+    { headers: { "User-Agent": USER_AGENT } }
+  );
+  const homeHtml = await homeRes.text();
+
+  if (isLoginPage(homeHtml, homeUrl)) {
+    throw new Error("Invalid 27crags username or password");
   }
 
   return {
     cookies: jar.toSerializable(),
-    detectedSlug: detectSlugFromLoginHtml(afterHtml),
+    detectedSlug: detectSlugFromLoginHtml(homeHtml),
   };
 }
 
@@ -208,12 +257,12 @@ export async function fetchCrags27AscentTree(
 
   const jar = CookieJar.fromSerializable(cookies);
   const url = `${CRAGS27_HOST}/climbers/${slug}/ascents/all`;
-  const res = await fetchWithJarFollow(url, jar, {
+  const { response: res, finalUrl } = await fetchWithJarFollow(url, jar, {
     headers: { "User-Agent": USER_AGENT },
   });
 
   const html = await res.text();
-  const pageState = detectAscentsPageState(html, res.status);
+  const pageState = detectAscentsPageState(html, res.status, finalUrl);
 
   if (pageState === "not_found") {
     throw new Error(
