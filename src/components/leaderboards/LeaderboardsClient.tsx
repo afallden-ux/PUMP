@@ -2,18 +2,10 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  BarChart3,
-  LayoutList,
-  Search,
-  Sparkles,
-  Trophy,
-  Users,
-} from "lucide-react";
+import { Search, Sparkles, Trophy, Users } from "lucide-react";
 import { LeaderboardBarRace } from "@/components/leaderboards/LeaderboardBarRace";
 import { LeaderboardCategoryRail } from "@/components/leaderboards/LeaderboardCategoryRail";
 import { LeaderboardMetricChips } from "@/components/leaderboards/LeaderboardMetricChips";
-import { LeaderboardPodium } from "@/components/leaderboards/LeaderboardPodium";
 import { LeaderboardRankList } from "@/components/leaderboards/LeaderboardRankList";
 import { Input } from "@/components/ui/input";
 import { getCategoryMeta } from "@/lib/leaderboards/categoryMeta";
@@ -28,18 +20,10 @@ import type {
 } from "@/lib/leaderboards/types";
 import { cn } from "@/lib/utils";
 
-type ViewMode = "stage" | "race" | "table";
-
 interface LeaderboardsClientProps {
   athletes: LeaderboardAthlete[];
   currentUserId: string;
 }
-
-const VIEW_TABS: { id: ViewMode; label: string; icon: typeof Trophy }[] = [
-  { id: "stage", label: "Podium", icon: Trophy },
-  { id: "race", label: "Bar race", icon: BarChart3 },
-  { id: "table", label: "Table", icon: LayoutList },
-];
 
 export function LeaderboardsClient({
   athletes,
@@ -48,7 +32,6 @@ export function LeaderboardsClient({
   const [category, setCategory] = useState<LeaderboardCategory>("all");
   const [metricId, setMetricId] = useState(LEADERBOARD_METRICS[0].id);
   const [search, setSearch] = useState("");
-  const [view, setView] = useState<ViewMode>("stage");
   const [highlightedId, setHighlight] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -246,50 +229,15 @@ export function LeaderboardsClient({
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex rounded-lg border border-slate-200 bg-slate-50/80 p-0.5">
-                {VIEW_TABS.map((tab) => {
-                  const Icon = tab.icon;
-                  const active = view === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setView(tab.id)}
-                      className={cn(
-                        "relative flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors",
-                        active
-                          ? "text-teal-900"
-                          : "text-slate-500 hover:text-slate-700"
-                      )}
-                    >
-                      {active && (
-                        <motion.span
-                          layoutId="lb-view-tab"
-                          className="absolute inset-0 rounded-md bg-white shadow-sm"
-                          transition={{
-                            type: "spring",
-                            stiffness: 400,
-                            damping: 32,
-                          }}
-                        />
-                      )}
-                      <Icon className="relative size-3.5" />
-                      <span className="relative hidden sm:inline">{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              {myRow && myRow.rank > 8 && (
-                <button
-                  type="button"
-                  onClick={scrollToMe}
-                  className="rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 transition-colors hover:bg-teal-100"
-                >
-                  Jump to me
-                </button>
-              )}
-            </div>
+            {myRow && myRow.rank > 12 && (
+              <button
+                type="button"
+                onClick={scrollToMe}
+                className="shrink-0 rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 transition-colors hover:bg-teal-100"
+              >
+                Jump to me
+              </button>
+            )}
           </div>
 
           {myRow && percentile != null && (
@@ -322,61 +270,40 @@ export function LeaderboardsClient({
         ) : (
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${view}-${activeMetric.id}-${search}`}
+              key={`${activeMetric.id}-${search}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
+              className="divide-y divide-slate-100"
             >
-              {view === "stage" && (
-                <>
-                  <LeaderboardPodium
-                    rows={ranked}
-                    metricKey={activeMetric.id}
-                    highlightedId={highlightedId}
-                    onHighlight={setHighlight}
-                  />
-                  <div className="border-t border-slate-100 px-4 py-4 sm:px-6">
-                    <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                      Rest of the field
-                    </p>
-                    <LeaderboardRankList
-                      rows={ranked}
-                      higherIsBetter={activeMetric.higherIsBetter}
-                      metricKey={activeMetric.id}
-                      highlightedId={highlightedId}
-                      onHighlight={setHighlight}
-                      startRank={4}
-                    />
-                  </div>
-                </>
-              )}
+              <section className="px-4 py-4 sm:px-6 sm:py-5">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Bar race
+                </p>
+                <LeaderboardBarRace
+                  rows={ranked}
+                  higherIsBetter={activeMetric.higherIsBetter}
+                  metricKey={activeMetric.id}
+                  highlightedId={highlightedId}
+                  onHighlight={setHighlight}
+                  limit={15}
+                />
+              </section>
 
-              {view === "race" && (
-                <div className="px-4 py-4 sm:px-6 sm:py-5">
-                  <LeaderboardBarRace
-                    rows={ranked}
-                    higherIsBetter={activeMetric.higherIsBetter}
-                    metricKey={activeMetric.id}
-                    highlightedId={highlightedId}
-                    onHighlight={setHighlight}
-                    limit={20}
-                  />
-                </div>
-              )}
-
-              {view === "table" && (
-                <div className="p-4 sm:p-6">
-                  <LeaderboardRankList
-                    rows={ranked}
-                    higherIsBetter={activeMetric.higherIsBetter}
-                    metricKey={activeMetric.id}
-                    highlightedId={highlightedId}
-                    onHighlight={setHighlight}
-                    startRank={1}
-                  />
-                </div>
-              )}
+              <section className="p-4 sm:p-6">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Full standings
+                </p>
+                <LeaderboardRankList
+                  rows={ranked}
+                  higherIsBetter={activeMetric.higherIsBetter}
+                  metricKey={activeMetric.id}
+                  highlightedId={highlightedId}
+                  onHighlight={setHighlight}
+                  startRank={1}
+                />
+              </section>
             </motion.div>
           </AnimatePresence>
         )}
