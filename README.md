@@ -1,6 +1,8 @@
 # PUMP
 
-A humorous, high-energy bouldering workout tracker for you and your crew. Log sessions in ~3 seconds, grow your avatar ("Popeye effect"), flash panic tickers when friends train, and exile idle climbers to the **Couch of Shame** (96h without a session).
+A humorous, high-energy bouldering workout tracker for you and your crew.
+
+**Co-developing?** See [CONTRIBUTING.md](./CONTRIBUTING.md) for branch/PR workflow, env vars, and Supabase rules. Log sessions in ~3 seconds, grow your avatar ("Popeye effect"), flash panic tickers when friends train, and exile idle climbers to the **Couch of Shame** (96h without a session).
 
 ## Stack
 
