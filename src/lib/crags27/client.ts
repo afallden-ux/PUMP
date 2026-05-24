@@ -207,41 +207,90 @@ export function parseAscentTreeFromHtml(html: string): Crags27TreeRow[] {
   const $ = cheerio.load(html);
   const table = $("table")
     .filter((_, el) => {
-      const headers = $(el).find("th").text();
-      return /red point/i.test(headers) && /diagram/i.test(headers);
+      const text = $(el).text();
+      return /red point/i.test(text) && /diagram/i.test(text);
     })
     .first();
 
   if (!table.length) return [];
 
-  const out: Crags27TreeRow[] = [];
-  const seen = new Set<string>();
+  const byGrade = new Map<string, Crags27TreeRow>();
 
   table.find("tbody tr").each((_, row) => {
     const $row = $(row);
-    const tds = $row.find("td");
-    if (tds.length < 6) return;
-
     const gradeRaw =
-      $(tds[0]).text().trim() || $(tds[1]).text().trim();
+      $row.find("td.grade").first().text().trim() ||
+      $row.find("td").first().text().trim();
     const grade = normalizeCrags27Grade(gradeRaw);
     if (!grade) return;
 
-    const total = parseInt($(tds[2]).text().trim(), 10);
-    if (Number.isNaN(total)) return;
+    const nums = $row
+      .find("td.text-right")
+      .map((_, td) => parseInt($(td).text().trim(), 10))
+      .get()
+      .filter((n) => !Number.isNaN(n));
 
-    const onsight = parseInt($(tds[3]).text().trim(), 10) || 0;
-    const flash = parseInt($(tds[4]).text().trim(), 10) || 0;
-    const redpoint = parseInt($(tds[5]).text().trim(), 10) || 0;
-    const toprope = parseInt($(tds[6]).text().trim(), 10) || 0;
+    let counts: {
+      total: number;
+      onsight: number;
+      flash: number;
+      redpoint: number;
+      toprope: number;
+    } | null = null;
 
-    if (seen.has(grade)) return;
-    seen.add(grade);
+    if (nums.length >= 5) {
+      counts = {
+        total: nums[0],
+        onsight: nums[1] ?? 0,
+        flash: nums[2] ?? 0,
+        redpoint: nums[3] ?? 0,
+        toprope: nums[4] ?? 0,
+      };
+    } else if (nums.length >= 4) {
+      counts = {
+        total: nums[0],
+        onsight: nums[1] ?? 0,
+        flash: nums[2] ?? 0,
+        redpoint: nums[3] ?? 0,
+        toprope: 0,
+      };
+    } else {
+      const tds = $row.find("td");
+      if (tds.length >= 6) {
+        const g0 = $(tds[0]).text().trim().toLowerCase();
+        const g1 = $(tds[1]).text().trim().toLowerCase();
+        const offset = g0 && g1 && g0 === g1 ? 1 : 0;
+        const total = parseInt($(tds[offset + 1]).text().trim(), 10);
+        if (!Number.isNaN(total)) {
+          counts = {
+            total,
+            onsight: parseInt($(tds[offset + 2]).text().trim(), 10) || 0,
+            flash: parseInt($(tds[offset + 3]).text().trim(), 10) || 0,
+            redpoint: parseInt($(tds[offset + 4]).text().trim(), 10) || 0,
+            toprope: parseInt($(tds[offset + 5]).text().trim(), 10) || 0,
+          };
+        }
+      }
+    }
 
-    out.push({ grade, total, onsight, flash, redpoint, toprope });
+    if (!counts) return;
+
+    const existing = byGrade.get(grade);
+    if (existing) {
+      byGrade.set(grade, {
+        grade,
+        total: existing.total + counts.total,
+        onsight: existing.onsight + counts.onsight,
+        flash: existing.flash + counts.flash,
+        redpoint: existing.redpoint + counts.redpoint,
+        toprope: existing.toprope + counts.toprope,
+      });
+    } else {
+      byGrade.set(grade, { grade, ...counts });
+    }
   });
 
-  return out;
+  return [...byGrade.values()];
 }
 
 export async function fetchCrags27AscentTree(
@@ -283,8 +332,9 @@ export async function fetchCrags27AscentTree(
     );
   }
 
-  const withTicks = tree.filter((r) => r.total > 0);
-  if (withTicks.length === 0) return tree;
+  if (tree.every((r) => r.total === 0)) {
+    return tree;
+  }
 
   return tree;
 }

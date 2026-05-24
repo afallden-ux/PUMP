@@ -10,7 +10,7 @@ interface Crags27AscentTreeProps {
 }
 
 export function Crags27AscentTree({ rows, className }: Crags27AscentTreeProps) {
-  const sorted = sortTreeRowsDesc(rows.filter((r) => r.total > 0));
+  const sorted = sortTreeRowsDesc(rows);
   if (sorted.length === 0) {
     return (
       <p className="py-6 text-center text-sm text-slate-500">
@@ -30,14 +30,18 @@ export function Crags27AscentTree({ rows, className }: Crags27AscentTreeProps) {
         <span className="text-right text-red-700">RP</span>
         <span>Diagram</span>
       </div>
-      <ul className="max-h-[min(28rem,55vh)] divide-y divide-slate-50 overflow-y-auto">
+      <ul className="max-h-[min(32rem,60vh)] divide-y divide-slate-50 overflow-y-auto">
         {sorted.map((row) => {
+          const inactive = row.total === 0;
           const flashPct = (row.flash / maxTotal) * 50;
           const redPct = (row.redpoint / maxTotal) * 50;
           return (
             <li
               key={row.grade}
-              className="grid grid-cols-[3.5rem_2.5rem_2.5rem_2.5rem_1fr] items-center gap-x-2 px-3 py-1.5 text-sm"
+              className={cn(
+                "grid grid-cols-[3.5rem_2.5rem_2.5rem_2.5rem_1fr] items-center gap-x-2 px-3 py-1.5 text-sm",
+                inactive && "opacity-40"
+              )}
             >
               <span className="font-bold tabular-nums text-slate-800">{row.grade}</span>
               <span className="text-right font-semibold tabular-nums text-slate-700">
@@ -46,7 +50,7 @@ export function Crags27AscentTree({ rows, className }: Crags27AscentTreeProps) {
               <span className="text-right tabular-nums text-amber-800">{row.flash}</span>
               <span className="text-right tabular-nums text-red-700">{row.redpoint}</span>
               <div className="flex h-5 items-center justify-center">
-                <div className="relative h-3 w-full max-w-[140px]">
+                <div className="relative h-3 w-full max-w-[160px]">
                   <div className="absolute inset-y-0 left-1/2 w-px bg-slate-200" />
                   {row.flash > 0 && (
                     <div
