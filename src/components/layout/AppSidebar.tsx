@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
+  GitCompare,
   Home,
   LogOut,
   MessageCircle,
@@ -16,6 +17,12 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/dashboard", label: "Home", icon: Home, match: (p: string) => p === "/dashboard" },
+  {
+    href: "/compare",
+    label: "Compare",
+    icon: GitCompare,
+    match: (p: string) => p.startsWith("/compare"),
+  },
   { href: "/feed", label: "Feed", icon: MessageCircle, match: (p: string) => p === "/feed" },
   {
     href: "/arena",
@@ -46,7 +53,7 @@ export function AppSidebar({ className }: { className?: string }) {
     >
       <div className="border-b border-slate-100 px-4 py-4">
         <BrandLogo href="/dashboard" size="sm" />
-        <p className="mt-2 text-[11px] text-slate-500">Compare · track · level up</p>
+        <p className="mt-2 text-[11px] text-slate-500">Side-by-side climber stats</p>
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5 p-3">

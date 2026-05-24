@@ -77,7 +77,7 @@ export function CrewBannerUpload({
 
   return (
     <div className="space-y-2">
-      <div className="relative aspect-[3/1] w-full overflow-hidden rounded-xl border border-orange-500/30 bg-muted">
+      <div className="relative aspect-[3/1] w-full overflow-hidden rounded-xl border border-teal-500/30 bg-muted">
         {preview ? (
           <Image
             src={preview}

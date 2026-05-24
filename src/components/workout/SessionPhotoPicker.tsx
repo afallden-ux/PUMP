@@ -33,12 +33,12 @@ export function SessionPhotoPicker({
   return (
     <div className="space-y-2">
       <Label className="flex items-center gap-2 font-semibold">
-        <Camera className="size-4 text-orange-400" />
+        <Camera className="size-4 text-teal-600" />
         Flex pic (optional)
       </Label>
 
       {previewUrl ? (
-        <div className="relative overflow-hidden rounded-xl border border-orange-500/30">
+        <div className="relative overflow-hidden rounded-xl border border-teal-500/30">
           <Image
             src={previewUrl}
             alt="Session preview"

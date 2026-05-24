@@ -45,7 +45,7 @@ export async function fetchClimberProfileStats(
     supabase
       .from("profiles")
       .select(
-        "id, username, avatar_url, title, home_crag, current_pump_score, last_logged_at"
+        "id, username, avatar_url, title, home_crag, height_cm, current_pump_score, last_logged_at"
       )
       .eq("id", userId)
       .maybeSingle(),

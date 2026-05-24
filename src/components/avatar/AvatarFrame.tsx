@@ -11,7 +11,7 @@ interface AvatarFrameProps {
   lifetimeScore: number;
   size?: "sm" | "md" | "lg";
   shameMode?: boolean;
-  /** Leaderboard & lists: photo only, no Popeye frame */
+  /** Leaderboard & lists: photo only, no tier frame */
   plain?: boolean;
   className?: string;
 }
@@ -40,7 +40,7 @@ export function AvatarFrame({
     return (
       <div
         className={cn(
-          "relative shrink-0 overflow-hidden rounded-full bg-muted",
+          "relative shrink-0 overflow-hidden rounded-full bg-slate-100",
           shameMode && "grayscale opacity-60",
           className
         )}
@@ -56,9 +56,7 @@ export function AvatarFrame({
             unoptimized
           />
         ) : (
-          <span
-            className="flex size-full items-center justify-center bg-orange-500/20 text-sm font-bold text-orange-400"
-          >
+          <span className="flex size-full items-center justify-center bg-teal-100 text-sm font-bold text-teal-700">
             {initial}
           </span>
         )}
@@ -68,10 +66,9 @@ export function AvatarFrame({
 
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)}>
-      {/* Forearm bulges — "Popeye effect" */}
       <motion.div
         aria-hidden
-        className="absolute -left-3 top-1/2 z-0 h-4 w-8 -translate-y-1/2 rounded-full bg-gradient-to-r from-orange-600 to-amber-400"
+        className="absolute -left-3 top-1/2 z-0 h-4 w-8 -translate-y-1/2 rounded-full bg-gradient-to-r from-teal-700 to-teal-400"
         animate={{
           scaleX: shameMode ? 0.6 : tier.forearmScale,
           scaleY: shameMode ? 0.8 : tier.forearmScale * 0.7,
@@ -81,7 +78,7 @@ export function AvatarFrame({
       />
       <motion.div
         aria-hidden
-        className="absolute -right-3 top-1/2 z-0 h-4 w-8 -translate-y-1/2 rounded-full bg-gradient-to-l from-orange-600 to-amber-400"
+        className="absolute -right-3 top-1/2 z-0 h-4 w-8 -translate-y-1/2 rounded-full bg-gradient-to-l from-teal-700 to-teal-400"
         animate={{
           scaleX: shameMode ? 0.6 : tier.forearmScale,
           scaleY: shameMode ? 0.8 : tier.forearmScale * 0.7,
@@ -92,10 +89,8 @@ export function AvatarFrame({
 
       <motion.div
         className={cn(
-          "relative z-10 flex items-center justify-center rounded-2xl border-2 bg-zinc-900",
-          shameMode
-            ? "border-zinc-600 grayscale"
-            : "border-orange-500"
+          "relative z-10 flex items-center justify-center rounded-2xl border-2 bg-white",
+          shameMode ? "border-slate-400 grayscale" : "border-teal-600"
         )}
         style={{
           width: dims.box,
@@ -116,7 +111,7 @@ export function AvatarFrame({
           />
         ) : (
           <span
-            className="flex items-center justify-center rounded-xl bg-orange-500/20 font-bold text-orange-400"
+            className="flex items-center justify-center rounded-xl bg-teal-100 font-bold text-teal-700"
             style={{ width: dims.image, height: dims.image, fontSize: dims.image * 0.4 }}
           >
             {initial}
@@ -128,7 +123,7 @@ export function AvatarFrame({
         <motion.span
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute -bottom-5 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-wider text-orange-400"
+          className="absolute -bottom-5 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold uppercase tracking-wider text-teal-700"
         >
           {tier.label}
         </motion.span>

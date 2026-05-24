@@ -61,10 +61,10 @@ export function TrainingHistoryChart({ logs, loading }: TrainingHistoryChartProp
   const data = chartData(logs);
 
   return (
-    <Card className="border-orange-500/20 bg-card/80">
+    <Card className="border-slate-200 bg-white shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg font-black">
-          <TrendingUp className="size-5 text-orange-400" />
+          <TrendingUp className="size-5 text-teal-600" />
           Your training history
         </CardTitle>
         <p className="text-xs text-muted-foreground">

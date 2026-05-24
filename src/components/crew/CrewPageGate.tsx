@@ -34,7 +34,7 @@ export function CrewPageGate({
   if (loading && memberships.length === 0) {
     return (
       <div className="mx-auto flex max-w-lg flex-col items-center gap-3 px-4 py-16 text-muted-foreground">
-        <Loader2 className="size-8 animate-spin text-orange-400" />
+        <Loader2 className="size-8 animate-spin text-teal-600" />
         <p className="text-sm font-semibold">Loading your crews…</p>
       </div>
     );
@@ -44,7 +44,7 @@ export function CrewPageGate({
     return (
       <div className="mx-auto max-w-lg space-y-6 px-4 py-6">
         <div>
-          <h1 className="text-2xl font-black text-orange-400">Your crews</h1>
+          <h1 className="text-2xl font-black text-teal-600">Your crews</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Join multiple crews — create one or use invite codes.
           </p>
@@ -52,7 +52,7 @@ export function CrewPageGate({
         <CrewMembershipDiagnostic userId={userId} loadedCrewCount={0} />
         <CrewOnboarding onSuccess={handleCrewSuccess} />
         <p className="text-center text-sm">
-          <Link href="/crews" className="font-semibold text-orange-400 underline">
+          <Link href="/crews" className="font-semibold text-teal-600 underline">
             Browse all crews
           </Link>
         </p>

@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Award,
   Crown,
+  GitCompare,
   Loader2,
   Medal,
   Mountain,
   Target,
   Trophy,
 } from "lucide-react";
+import { COMPARE_ROUTE } from "@/lib/productVision";
 import { AvatarFrame } from "@/components/avatar/AvatarFrame";
 import { BadgeGallery } from "@/components/profile/BadgeGallery";
 import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
@@ -27,6 +30,7 @@ import { formatRelativeTime } from "@/lib/utils/dates";
 interface ClimberProfileSheetProps {
   userId: string | null;
   onClose: () => void;
+  currentUserId?: string | null;
 }
 
 function StatCard({
@@ -43,20 +47,22 @@ function StatCard({
   accent?: string;
 }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card/80 p-3">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Icon className={`size-4 shrink-0 ${accent ?? "text-orange-400"}`} />
-        <span className="text-[10px] font-bold uppercase tracking-wider">
-          {label}
-        </span>
+    <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+      <div className="flex items-center gap-2 text-slate-500">
+        <Icon className={`size-4 shrink-0 ${accent ?? "text-teal-600"}`} />
+        <span className="text-[10px] font-bold uppercase tracking-wider">{label}</span>
       </div>
-      <p className="mt-1 text-lg font-black tabular-nums">{value}</p>
-      {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
+      <p className="mt-1 text-lg font-bold tabular-nums text-slate-800">{value}</p>
+      {sub && <p className="text-[10px] text-slate-500">{sub}</p>}
     </div>
   );
 }
 
-export function ClimberProfileSheet({ userId, onClose }: ClimberProfileSheetProps) {
+export function ClimberProfileSheet({
+  userId,
+  onClose,
+  currentUserId,
+}: ClimberProfileSheetProps) {
   const [stats, setStats] = useState<ClimberProfileStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,21 +104,21 @@ export function ClimberProfileSheet({ userId, onClose }: ClimberProfileSheetProp
         if (!next) onClose();
       }}
     >
-      <DialogContent className="max-h-[90vh] overflow-hidden border-orange-500/30 p-0 sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-hidden border-slate-200 bg-[#f4f6f9] p-0 sm:max-w-lg">
         {loading && (
-          <div className="flex flex-col items-center gap-3 py-16">
-            <Loader2 className="size-8 animate-spin text-orange-500" />
-            <p className="text-sm text-muted-foreground">Loading climber card…</p>
+          <div className="flex flex-col items-center gap-3 bg-white py-16">
+            <Loader2 className="size-8 animate-spin text-teal-600" />
+            <p className="text-sm text-slate-500">Loading climber card…</p>
           </div>
         )}
 
         {!loading && error && (
-          <div className="p-6 text-center text-sm text-destructive">{error}</div>
+          <div className="bg-white p-6 text-center text-sm text-red-600">{error}</div>
         )}
 
         {!loading && stats && profile && (
           <div className="flex max-h-[90vh] flex-col">
-            <div className="shrink-0 border-b border-border/50 bg-gradient-to-b from-orange-500/10 to-transparent px-5 pb-4 pt-5">
+            <div className="shrink-0 border-b border-slate-200 bg-white px-5 pb-4 pt-5">
               <DialogHeader className="space-y-3 text-left">
                 <div className="flex items-start gap-4">
                   <AvatarFrame
@@ -123,24 +129,22 @@ export function ClimberProfileSheet({ userId, onClose }: ClimberProfileSheetProp
                     plain
                   />
                   <div className="min-w-0 flex-1 pt-1">
-                    <DialogTitle className="text-xl font-black">
+                    <DialogTitle className="text-xl font-semibold text-slate-800">
                       {profile.username}
                     </DialogTitle>
-                    <DialogDescription className="text-orange-400/90 font-semibold">
+                    <DialogDescription className="font-medium text-teal-700">
                       {profile.title}
                     </DialogDescription>
                     {stats.weeklyTitle && stats.weeklyRank !== null && (
-                      <p className="mt-1 text-xs text-muted-foreground">
+                      <p className="mt-1 text-xs text-slate-500">
                         This week: #{stats.weeklyRank} · {stats.weeklyTitle}
                       </p>
                     )}
                     {profile.home_crag && (
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        🏔 {profile.home_crag}
-                      </p>
+                      <p className="mt-0.5 text-xs text-slate-500">🏔 {profile.home_crag}</p>
                     )}
                     {profile.last_logged_at && (
-                      <p className="mt-0.5 text-[10px] text-muted-foreground">
+                      <p className="mt-0.5 text-[10px] text-slate-400">
                         Last log {formatRelativeTime(profile.last_logged_at)}
                       </p>
                     )}
@@ -148,12 +152,22 @@ export function ClimberProfileSheet({ userId, onClose }: ClimberProfileSheetProp
                 </div>
               </DialogHeader>
 
-              <div className="mt-3">
+              <div className="mt-3 flex flex-wrap items-center gap-2">
                 <BadgeShowcase counts={stats.sessionCounts} max={8} size="md" />
+                {currentUserId && userId && currentUserId !== userId && (
+                  <Link
+                    href={`${COMPARE_ROUTE}?with=${userId}`}
+                    onClick={onClose}
+                    className="ml-auto inline-flex shrink-0 items-center rounded-md bg-teal-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-700"
+                  >
+                    <GitCompare className="mr-1.5 size-4" />
+                    Compare
+                  </Link>
+                )}
               </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 space-y-5">
+            <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 <StatCard
                   icon={Target}
@@ -175,40 +189,40 @@ export function ClimberProfileSheet({ userId, onClose }: ClimberProfileSheetProp
                 />
               </div>
 
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-400/90">
+              <div className="rounded-lg border border-amber-200 bg-amber-50/80 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-800">
                   Winner of the week — past podiums
                 </p>
-                <p className="mt-0.5 text-[10px] text-muted-foreground">
+                <p className="mt-0.5 text-[10px] text-slate-500">
                   Calendar weeks (Mon–Sun), last 52 weeks. Live board uses rolling 7 days.
                 </p>
                 <div className="mt-3 grid grid-cols-3 gap-2">
-                  <div className="flex flex-col items-center rounded-lg border border-amber-500/40 bg-amber-500/10 py-2">
-                    <Crown className="size-5 text-amber-400" />
-                    <span className="text-xl font-black tabular-nums">
+                  <div className="flex flex-col items-center rounded-lg border border-amber-300 bg-amber-100/80 py-2">
+                    <Crown className="size-5 text-amber-600" />
+                    <span className="text-xl font-bold tabular-nums text-slate-800">
                       {stats.podium.gold}
                     </span>
-                    <span className="text-[10px] font-bold text-amber-300/90">Gold</span>
+                    <span className="text-[10px] font-bold text-amber-800">Gold</span>
                   </div>
-                  <div className="flex flex-col items-center rounded-lg border border-zinc-400/30 bg-zinc-500/10 py-2">
-                    <Medal className="size-5 text-zinc-300" />
-                    <span className="text-xl font-black tabular-nums">
+                  <div className="flex flex-col items-center rounded-lg border border-slate-300 bg-slate-100 py-2">
+                    <Medal className="size-5 text-slate-500" />
+                    <span className="text-xl font-bold tabular-nums text-slate-800">
                       {stats.podium.silver}
                     </span>
-                    <span className="text-[10px] font-bold text-zinc-300/90">Silver</span>
+                    <span className="text-[10px] font-bold text-slate-600">Silver</span>
                   </div>
-                  <div className="flex flex-col items-center rounded-lg border border-orange-700/40 bg-orange-900/20 py-2">
-                    <Medal className="size-5 text-orange-600" />
-                    <span className="text-xl font-black tabular-nums">
+                  <div className="flex flex-col items-center rounded-lg border border-amber-800/30 bg-amber-900/10 py-2">
+                    <Medal className="size-5 text-amber-900" />
+                    <span className="text-xl font-bold tabular-nums text-slate-800">
                       {stats.podium.bronze}
                     </span>
-                    <span className="text-[10px] font-bold text-orange-500/90">Bronze</span>
+                    <span className="text-[10px] font-bold text-amber-900/80">Bronze</span>
                   </div>
                 </div>
                 {stats.weeklyRank !== null && (
-                  <p className="mt-2 text-xs text-muted-foreground">
+                  <p className="mt-2 text-xs text-slate-500">
                     Right now (7-day board): #{stats.weeklyRank} with{" "}
-                    <span className="font-semibold text-orange-400">
+                    <span className="font-semibold text-teal-700">
                       {stats.weeklyPoints} pts
                     </span>{" "}
                     · {stats.weeklySessions} sessions
@@ -217,11 +231,11 @@ export function ClimberProfileSheet({ userId, onClose }: ClimberProfileSheetProp
               </div>
 
               {stats.hardestGrade && (
-                <div className="flex items-center gap-2 rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-sm">
-                  <Mountain className="size-4 text-emerald-400 shrink-0" />
+                <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-slate-700">
+                  <Mountain className="size-4 shrink-0 text-emerald-600" />
                   <span>
                     Hardest ascent logged:{" "}
-                    <strong className="text-emerald-300">{stats.hardestGrade}</strong>
+                    <strong className="text-emerald-800">{stats.hardestGrade}</strong>
                   </span>
                 </div>
               )}

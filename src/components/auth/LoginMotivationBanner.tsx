@@ -27,7 +27,7 @@ export function LoginMotivationBanner({ className }: LoginMotivationBannerProps)
         "rounded-xl border px-4 py-3 text-center shadow-lg",
         isOndra
           ? "border-red-500/40 bg-red-500/10 shadow-red-950/30"
-          : "border-orange-500/40 bg-orange-500/10 shadow-orange-950/30",
+          : "border-teal-500/40 bg-teal-500/10 shadow-teal-950/30",
         className
       )}
       aria-live="polite"
@@ -36,12 +36,12 @@ export function LoginMotivationBanner({ className }: LoginMotivationBannerProps)
         {isOndra ? (
           <Zap className="size-4 text-red-400" aria-hidden />
         ) : (
-          <Flame className="size-4 text-orange-400" aria-hidden />
+          <Flame className="size-4 text-teal-600" aria-hidden />
         )}
         <span
           className={cn(
             "text-[10px] font-black uppercase tracking-widest",
-            isOndra ? "text-red-400/90" : "text-orange-400/90"
+            isOndra ? "text-red-400/90" : "text-teal-600/90"
           )}
         >
           {toneLabel[quote.tone]}

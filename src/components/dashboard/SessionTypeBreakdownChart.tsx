@@ -46,10 +46,10 @@ export function SessionTypeBreakdownChart({
   const data = breakdown(logs);
 
   return (
-    <Card className="h-full border-orange-500/20 bg-card/80">
+    <Card className="h-full border-slate-200 bg-white shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg font-black">
-          <PieChart className="size-5 text-orange-400" />
+          <PieChart className="size-5 text-teal-600" />
           Session mix
         </CardTitle>
         <p className="text-xs text-muted-foreground">

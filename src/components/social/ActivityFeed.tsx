@@ -47,7 +47,7 @@ export function ActivityFeed({
         "space-y-3",
         isPage
           ? "space-y-4"
-          : "rounded-2xl border border-orange-500/25 bg-card/50 p-4 lg:p-5"
+          : "rounded-2xl border border-teal-500/25 bg-card/50 p-4 lg:p-5"
       )}
     >
       <SectionHeader
@@ -61,7 +61,7 @@ export function ActivityFeed({
           Loading sessions…
         </p>
       ) : sessions.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-orange-500/30 bg-orange-500/5 py-10 px-4 text-center">
+        <div className="rounded-xl border border-dashed border-teal-500/30 bg-teal-500/5 py-10 px-4 text-center">
           <p className="text-sm font-semibold text-foreground">No sessions yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Log a workout with a photo or note — it shows up here for everyone.

@@ -29,15 +29,15 @@ export function CrewBadgeGallery({ combinedCounts, crewName }: CrewBadgeGalleryP
       />
 
       {showcase.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-2 rounded-xl border border-orange-500/30 bg-orange-500/10 p-3">
+        <div className="flex flex-wrap justify-center gap-2 rounded-xl border border-teal-500/30 bg-teal-500/10 p-3">
           {showcase.map(({ track, tier }) => (
             <span
               key={tier.id}
               title={`${track.label}: ${tier.name} (${tier.threshold}+ squad logs)`}
-              className="rounded-lg border border-orange-500/40 bg-background/60 px-2.5 py-1.5 text-center"
+              className="rounded-lg border border-teal-500/40 bg-background/60 px-2.5 py-1.5 text-center"
             >
               <span className="text-xl">{tier.emoji}</span>
-              <p className="text-[10px] font-bold text-orange-300">{tier.name}</p>
+              <p className="text-[10px] font-bold text-teal-600">{tier.name}</p>
             </span>
           ))}
         </div>
@@ -45,7 +45,7 @@ export function CrewBadgeGallery({ combinedCounts, crewName }: CrewBadgeGalleryP
 
       <div className="space-y-4">
         {tracks.map((progress) => (
-          <Card key={progress.track.id} className="border-orange-500/25 bg-card/80">
+          <Card key={progress.track.id} className="border-teal-500/25 bg-card/80">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between gap-2">
                 <CardTitle className="flex items-center gap-2 text-base font-black">
@@ -67,14 +67,14 @@ export function CrewBadgeGallery({ combinedCounts, crewName }: CrewBadgeGalleryP
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full rounded-full bg-orange-500 transition-all"
+                      className="h-full rounded-full bg-teal-600 transition-all"
                       style={{ width: `${progress.progressToNext * 100}%` }}
                     />
                   </div>
                 </div>
               )}
               {!progress.next && progress.highest && (
-                <p className="text-[10px] font-bold text-orange-400 pt-1">
+                <p className="text-[10px] font-bold text-teal-600 pt-1">
                   Max squad rank: {progress.highest.tier.emoji} {progress.highest.tier.name}
                 </p>
               )}
@@ -89,7 +89,7 @@ export function CrewBadgeGallery({ combinedCounts, crewName }: CrewBadgeGalleryP
                       className={cn(
                         "rounded-xl border p-2.5 text-center transition-colors",
                         unlocked
-                          ? "border-orange-500/40 bg-orange-500/10 shadow-sm"
+                          ? "border-teal-500/40 bg-teal-500/10 shadow-sm"
                           : "border-border/50 bg-muted/20 opacity-55"
                       )}
                     >
@@ -97,7 +97,7 @@ export function CrewBadgeGallery({ combinedCounts, crewName }: CrewBadgeGalleryP
                       <p
                         className={cn(
                           "mt-1 text-xs font-black leading-tight",
-                          unlocked ? "text-orange-300" : "text-muted-foreground"
+                          unlocked ? "text-teal-600" : "text-muted-foreground"
                         )}
                       >
                         {tier.name}

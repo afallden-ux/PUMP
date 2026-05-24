@@ -17,13 +17,11 @@ export function SectionHeader({
   return (
     <div className={cn("space-y-1", className)}>
       <div className="flex items-center gap-2">
-        <Icon className="size-5 shrink-0 text-orange-400" />
-        <h2 className="text-lg font-black tracking-tight">{title}</h2>
+        <Icon className="size-5 shrink-0 text-teal-600" />
+        <h2 className="text-lg font-semibold tracking-tight text-slate-800">{title}</h2>
       </div>
       {subtitle && (
-        <p className="text-xs leading-relaxed text-muted-foreground pl-7">
-          {subtitle}
-        </p>
+        <p className="pl-7 text-xs leading-relaxed text-slate-500">{subtitle}</p>
       )}
     </div>
   );

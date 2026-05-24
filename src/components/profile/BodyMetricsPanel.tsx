@@ -109,7 +109,7 @@ export function BodyMetricsPanel({ profile, onHeightSaved }: BodyMetricsPanelPro
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/20 p-3">
-        <Ruler className="mt-0.5 size-5 shrink-0 text-orange-400" />
+        <Ruler className="mt-0.5 size-5 shrink-0 text-teal-600" />
         <div className="min-w-0 flex-1 space-y-2">
           <Label htmlFor="height-cm" className="font-semibold">
             Height (cm)
@@ -138,9 +138,9 @@ export function BodyMetricsPanel({ profile, onHeightSaved }: BodyMetricsPanelPro
         </div>
       </div>
 
-      <div className="space-y-3 rounded-lg border border-orange-500/30 bg-orange-500/5 p-3">
+      <div className="space-y-3 rounded-lg border border-teal-500/30 bg-teal-500/5 p-3">
         <div className="flex items-center gap-2">
-          <Dumbbell className="size-4 text-orange-400" />
+          <Dumbbell className="size-4 text-teal-600" />
           <p className="text-sm font-bold">Log a measurement</p>
         </div>
         <div className="grid grid-cols-3 gap-1.5">
@@ -175,7 +175,7 @@ export function BodyMetricsPanel({ profile, onHeightSaved }: BodyMetricsPanelPro
           />
           <Button
             type="button"
-            className="shrink-0 bg-orange-600 font-bold hover:bg-orange-500"
+            className="shrink-0 bg-teal-600 font-bold hover:bg-teal-700"
             onClick={logMetric}
             disabled={logging || loading}
           >
@@ -219,6 +219,6 @@ export function BodyMetricsPanel({ profile, onHeightSaved }: BodyMetricsPanelPro
 
 function cnMetricBtn(active: boolean) {
   return active
-    ? "h-auto flex-col gap-0.5 bg-orange-600 py-2"
+    ? "h-auto flex-col gap-0.5 bg-teal-600 py-2"
     : "h-auto flex-col gap-0.5 py-2";
 }

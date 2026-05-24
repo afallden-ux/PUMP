@@ -28,7 +28,7 @@ export function MemberBadgeRow({
     <div
       className={cn(
         "rounded-xl border bg-card/80 overflow-hidden",
-        isYou ? "border-orange-500/40" : "border-border/60"
+        isYou ? "border-teal-500/40" : "border-border/60"
       )}
     >
       <button
@@ -46,7 +46,7 @@ export function MemberBadgeRow({
           <p className="font-bold">
             {member.username}
             {isYou && (
-              <span className="ml-1.5 text-[10px] font-semibold text-orange-400">
+              <span className="ml-1.5 text-[10px] font-semibold text-teal-600">
                 (you)
               </span>
             )}

@@ -36,10 +36,10 @@ export function CrewFeed({
           Loading the chaos...
         </p>
       ) : sessions.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-orange-500/30 bg-orange-500/5 py-10 px-4 text-center">
+        <div className="rounded-xl border border-dashed border-teal-500/30 bg-teal-500/5 py-10 px-4 text-center">
           <p className="text-sm font-semibold text-foreground">No sessions in the feed yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Log a workout with the orange + button — add a photo and your crew can kudo &
+            Log a workout with the Log button — add a photo and your crew can kudo &
             comment here.
           </p>
         </div>

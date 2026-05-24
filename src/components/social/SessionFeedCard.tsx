@@ -99,13 +99,13 @@ export function SessionFeedCard({
   return (
     <motion.article
       layout
-      className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm"
+      className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm"
     >
-      <div className="flex gap-4 border-b border-border/40 bg-muted/20 p-3 sm:gap-5 sm:pl-4">
+      <div className="flex gap-4 border-b border-slate-100 bg-slate-50/80 p-3 sm:gap-5 sm:pl-4">
         <button
           type="button"
           onClick={() => openProfile(session.user_id)}
-          className="flex min-w-0 flex-1 gap-4 text-left transition-colors hover:bg-orange-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 rounded-lg -m-1 p-1 sm:gap-5"
+          className="-m-1 flex min-w-0 flex-1 gap-4 rounded-lg p-1 text-left transition-colors hover:bg-teal-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 sm:gap-5"
           aria-label={`View ${profile.username}'s profile`}
         >
         <div className="w-12 shrink-0 sm:w-14">
@@ -119,12 +119,12 @@ export function SessionFeedCard({
           />
         </div>
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="font-bold leading-tight text-orange-300/90 hover:underline">
+          <p className="font-bold leading-tight text-teal-600/90 hover:underline">
             {profile.username}
           </p>
           <p className="text-xs text-muted-foreground">
             {formatRelativeTime(session.created_at)} ·{" "}
-            <span className={session.total_points >= 0 ? "text-orange-400" : "text-zinc-400"}>
+            <span className={session.total_points >= 0 ? "text-teal-600" : "text-zinc-400"}>
               {session.total_points >= 0 ? "+" : ""}
               {session.total_points} pts
             </span>
@@ -151,8 +151,8 @@ export function SessionFeedCard({
       ) : null}
 
       {sessionNote && (
-        <div className="border-b border-orange-500/20 bg-orange-500/5 px-4 py-3">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-orange-400/90">
+        <div className="border-b border-teal-500/20 bg-teal-500/5 px-4 py-3">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-teal-600/90">
             Session note
           </p>
           <p className="mt-1 text-sm leading-relaxed text-foreground">{sessionNote}</p>
@@ -169,7 +169,7 @@ export function SessionFeedCard({
             {INTENSITY_SHORT[session.intensity_level as IntensityLevel]}
           </Badge>
           {session.hardest_grade && (
-            <Badge className="bg-orange-500/20 text-orange-300">
+            <Badge className="bg-teal-500/20 text-teal-600">
               Sent {session.hardest_grade}
             </Badge>
           )}
@@ -180,7 +180,7 @@ export function SessionFeedCard({
                   ? "gap-1 bg-indigo-500/20 text-indigo-300"
                   : session.is_outdoors
                     ? "gap-1 bg-emerald-500/20 text-emerald-300"
-                    : "gap-1 bg-orange-500/20 text-orange-300"
+                    : "gap-1 bg-teal-500/20 text-teal-600"
               }
             >
               {session.is_moonboard ? (
@@ -198,13 +198,13 @@ export function SessionFeedCard({
           )}
         </div>
 
-        <div className="rounded-xl border border-orange-500/25 bg-orange-500/5 p-3 space-y-3">
+        <div className="rounded-xl border border-teal-500/25 bg-teal-500/5 p-3 space-y-3">
           <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
               variant={hasKudo ? "default" : "outline"}
               size="sm"
-              className={hasKudo ? "bg-orange-600" : ""}
+              className={hasKudo ? "bg-teal-600" : ""}
               onClick={toggleKudo}
               aria-pressed={hasKudo}
             >
@@ -229,7 +229,7 @@ export function SessionFeedCard({
                     <button
                       type="button"
                       onClick={() => openProfile(c.user_id)}
-                      className="font-semibold text-orange-400/90 hover:underline"
+                      className="font-semibold text-teal-600/90 hover:underline"
                     >
                       {author?.username ?? "Climber"}:
                     </button>{" "}
@@ -254,7 +254,7 @@ export function SessionFeedCard({
             <Button
               type="submit"
               size="sm"
-              className="bg-orange-600 shrink-0"
+              className="bg-teal-600 shrink-0"
               disabled={submitting || !comment.trim()}
             >
               <Send className="size-4" />

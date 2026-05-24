@@ -45,7 +45,7 @@ export function CrewLocationForm({
   return (
     <form onSubmit={handleSave} className="rounded-xl border border-border/60 bg-card/80 p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <MapPin className="size-4 text-orange-400" />
+        <MapPin className="size-4 text-teal-600" />
         <Label htmlFor="crew-location" className="font-bold">
           Crew crag / gym
         </Label>
@@ -65,12 +65,12 @@ export function CrewLocationForm({
         readOnly={!isOwner}
       />
       {isOwner && (
-        <Button type="submit" size="sm" className="bg-orange-600" disabled={saving}>
+        <Button type="submit" size="sm" className="bg-teal-600" disabled={saving}>
           {saving ? "Saving..." : "Save crew location"}
         </Button>
       )}
       {!isOwner && location && (
-        <p className="text-sm font-semibold text-orange-300/90">📍 {location}</p>
+        <p className="text-sm font-semibold text-teal-600/90">📍 {location}</p>
       )}
     </form>
   );

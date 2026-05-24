@@ -75,10 +75,10 @@ export function HoursComparisonChart({
   }
 
   return (
-    <Card className="border-orange-500/20 bg-card/80">
+    <Card className="border-slate-200 bg-white shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg font-black">
-          <BarChart3 className="size-5 text-orange-400" />
+          <BarChart3 className="size-5 text-teal-600" />
           Training hours vs climbers
         </CardTitle>
         <p className="text-xs text-muted-foreground">
@@ -91,7 +91,7 @@ export function HoursComparisonChart({
               type="button"
               size="xs"
               variant={range === r.id ? "default" : "outline"}
-              className={range === r.id ? "bg-orange-600" : ""}
+              className={range === r.id ? "bg-teal-600" : ""}
               onClick={() => setRange(r.id)}
             >
               {r.label}
@@ -105,7 +105,7 @@ export function HoursComparisonChart({
             className={cn(
               "rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors",
               selected.has(currentUser.id)
-                ? "border-orange-500 bg-orange-500/20 text-orange-300"
+                ? "border-teal-500 bg-teal-500/20 text-teal-600"
                 : "border-border text-muted-foreground"
             )}
           >
@@ -119,7 +119,7 @@ export function HoursComparisonChart({
               className={cn(
                 "rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors",
                 selected.has(p.id)
-                  ? "border-orange-500 bg-orange-500/20 text-orange-300"
+                  ? "border-teal-500 bg-teal-500/20 text-teal-600"
                   : "border-border text-muted-foreground"
               )}
             >

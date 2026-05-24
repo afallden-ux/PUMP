@@ -40,14 +40,14 @@ export function CrewPageClient({
             Banners, battles, invites — not the social feed
           </p>
         </div>
-        <Users className="size-6 text-orange-400" />
+        <Users className="size-6 text-teal-600" />
       </div>
 
       <Link
         href="/dashboard#crew-feed"
         className={cn(
           buttonVariants({ size: "default" }),
-          "flex w-full items-center justify-center gap-2 bg-orange-600 font-bold text-white hover:bg-orange-500"
+          "flex w-full items-center justify-center gap-2 bg-teal-600 font-bold text-white hover:bg-teal-700"
         )}
       >
         <MessageCircle className="size-5" />
@@ -57,7 +57,7 @@ export function CrewPageClient({
       {memberships.map((membership) => (
         <section
           key={membership.crew.id}
-          className="space-y-4 rounded-2xl border border-orange-500/25 bg-card/30 p-4"
+          className="space-y-4 rounded-2xl border border-teal-500/25 bg-card/30 p-4"
         >
           <h2 className="text-lg font-black">{membership.crew.name}</h2>
 
@@ -102,7 +102,7 @@ export function CrewPageClient({
         </section>
       ))}
 
-      <section className="space-y-3 rounded-xl border border-dashed border-orange-500/30 p-4">
+      <section className="space-y-3 rounded-xl border border-dashed border-teal-500/30 p-4">
         <h3 className="font-bold">Join another crew</h3>
         <p className="text-xs text-muted-foreground">
           You can be in multiple crews. Create a new one or use an invite code.

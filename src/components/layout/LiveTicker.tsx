@@ -8,7 +8,7 @@ export function LiveTicker() {
   const message = useRecentActivity();
 
   return (
-    <div className="relative overflow-hidden border-b border-orange-500/40 bg-red-950/80">
+    <div className="relative overflow-hidden border-b border-teal-500/40 bg-red-950/80">
       <div className="flex items-center gap-2 px-3 py-2">
         <motion.span
           animate={{ scale: [1, 1.2, 1] }}

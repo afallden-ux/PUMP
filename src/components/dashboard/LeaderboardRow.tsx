@@ -29,16 +29,16 @@ export function LeaderboardRow({
       layout
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
-      className={`rounded-xl border ${
+      className={`rounded-lg border ${
         isCurrentUser
-          ? "border-orange-500/60 bg-orange-500/10"
-          : "border-border/60 bg-card/50"
+          ? "border-teal-500/50 bg-teal-50"
+          : "border-slate-200 bg-white"
       }`}
     >
       <button
         type="button"
         onClick={() => openProfile(entry.id)}
-        className="flex w-full items-center gap-3 rounded-xl p-3 text-left transition-colors hover:bg-orange-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/50"
+        className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-colors hover:bg-teal-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40"
         aria-label={`View ${entry.username}'s profile`}
       >
       <span
@@ -48,7 +48,7 @@ export function LeaderboardRow({
             : isSecond
               ? "bg-zinc-300 text-zinc-900"
               : isThird
-                ? "bg-orange-700 text-orange-100"
+                ? "bg-amber-800 text-amber-50"
                 : "bg-muted text-muted-foreground"
         }`}
       >
@@ -80,7 +80,7 @@ export function LeaderboardRow({
             </Badge>
           )}
         </div>
-        <p className="truncate text-xs text-orange-400/90">{entry.rank_title}</p>
+        <p className="truncate text-xs text-teal-600/90">{entry.rank_title}</p>
         <p className="text-[10px] text-muted-foreground">
           Lifetime: {entry.current_pump_score.toLocaleString()} · {entry.sessions_7d}{" "}
           sessions this week
@@ -88,7 +88,7 @@ export function LeaderboardRow({
       </div>
 
       <div className="shrink-0 text-right">
-        <p className="flex items-center justify-end gap-1 text-lg font-black text-orange-400">
+        <p className="flex items-center justify-end gap-1 text-lg font-black text-teal-600">
           {isLifetime ? (
             entry.current_pump_score.toLocaleString()
           ) : (

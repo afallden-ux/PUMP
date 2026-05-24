@@ -52,14 +52,14 @@ export function BadgeGallery({ counts, hideHeader }: BadgeGalleryProps) {
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full rounded-full bg-orange-500 transition-all"
+                      className="h-full rounded-full bg-teal-600 transition-all"
                       style={{ width: `${progress.progressToNext * 100}%` }}
                     />
                   </div>
                 </div>
               )}
               {!progress.next && progress.highest && (
-                <p className="text-[10px] font-bold text-orange-400 pt-1">
+                <p className="text-[10px] font-bold text-teal-600 pt-1">
                   Max rank: {progress.highest.tier.emoji} {progress.highest.tier.name}
                 </p>
               )}
@@ -74,7 +74,7 @@ export function BadgeGallery({ counts, hideHeader }: BadgeGalleryProps) {
                       className={cn(
                         "rounded-xl border p-2.5 text-center transition-colors",
                         unlocked
-                          ? "border-orange-500/40 bg-orange-500/10 shadow-sm"
+                          ? "border-teal-500/40 bg-teal-500/10 shadow-sm"
                           : "border-border/50 bg-muted/20 opacity-55"
                       )}
                     >
@@ -82,7 +82,7 @@ export function BadgeGallery({ counts, hideHeader }: BadgeGalleryProps) {
                       <p
                         className={cn(
                           "mt-1 text-xs font-black leading-tight",
-                          unlocked ? "text-orange-300" : "text-muted-foreground"
+                          unlocked ? "text-teal-600" : "text-muted-foreground"
                         )}
                       >
                         {tier.name}

@@ -56,7 +56,7 @@ export function FeedSessionPhoto({
     <div className="relative aspect-[4/3] w-full bg-muted">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="size-8 animate-spin text-orange-500/80" />
+          <Loader2 className="size-8 animate-spin text-teal-600/80" />
         </div>
       )}
       {src && (

@@ -87,7 +87,7 @@ export function SignupForm() {
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         Already on CC?{" "}
-        <Link href="/login" className="font-semibold text-orange-400 hover:underline">
+        <Link href="/login" className="font-semibold text-teal-600 hover:underline">
           Log in
         </Link>
       </p>

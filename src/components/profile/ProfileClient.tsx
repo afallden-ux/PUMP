@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Award, User } from "lucide-react";
+import { Award } from "lucide-react";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
+import { PrimaryAssessmentsSection } from "@/components/profile/assessments/PrimaryAssessmentsSection";
 import { BadgeGallery } from "@/components/profile/BadgeGallery";
 import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
-import { BodyMetricsPanel } from "@/components/profile/BodyMetricsPanel";
 import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -28,7 +28,10 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
       <PageHeader
         eyebrow="Account"
         title={profile.username}
-        subtitle={profile.title || "Your profile, metrics, and badges"}
+        subtitle={
+          profile.title ||
+          "Log assessments so friends can compare you side by side"
+        }
       />
       <AppCard className="p-5">
       <AvatarUpload
@@ -43,17 +46,13 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
         </p>
       )}
       </AppCard>
-      <CollapsibleSection
-        title="Body & strength"
-        subtitle="Height, weight, hang, pull-up — with charts"
-        icon={User}
-        defaultOpen
-      >
-        <BodyMetricsPanel
+
+      <AppCard className="p-5">
+        <PrimaryAssessmentsSection
           profile={profile}
           onHeightSaved={(height_cm) => setProfile((p) => ({ ...p, height_cm }))}
         />
-      </CollapsibleSection>
+      </AppCard>
 
       <CollapsibleSection
         title="CC badges"

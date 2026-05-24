@@ -316,6 +316,62 @@ export interface Database {
           },
         ];
       };
+      assessment_logs: {
+        Row: {
+          id: string;
+          user_id: string;
+          assessment_type: string;
+          recorded_at: string;
+          body_weight_kg: number | null;
+          resistance_kg: number | null;
+          time_under_tension_s: number | null;
+          total_duration_s: number | null;
+          distance_cm: number | null;
+          sets: number | null;
+          reps: number | null;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          assessment_type: string;
+          recorded_at?: string;
+          body_weight_kg?: number | null;
+          resistance_kg?: number | null;
+          time_under_tension_s?: number | null;
+          total_duration_s?: number | null;
+          distance_cm?: number | null;
+          sets?: number | null;
+          reps?: number | null;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          assessment_type?: string;
+          recorded_at?: string;
+          body_weight_kg?: number | null;
+          resistance_kg?: number | null;
+          time_under_tension_s?: number | null;
+          total_duration_s?: number | null;
+          distance_cm?: number | null;
+          sets?: number | null;
+          reps?: number | null;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "assessment_logs_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       leaderboard_7d: {

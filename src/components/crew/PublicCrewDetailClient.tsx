@@ -43,7 +43,7 @@ export function PublicCrewDetailClient({
             href="/crew"
             className={cn(
               buttonVariants({ size: "sm" }),
-              "shrink-0 bg-orange-600 text-white"
+              "shrink-0 bg-teal-600 text-white"
             )}
           >
             Manage
@@ -51,7 +51,7 @@ export function PublicCrewDetailClient({
         )}
       </div>
 
-      <div className="relative aspect-[3/1] overflow-hidden rounded-xl border border-orange-500/30 bg-muted">
+      <div className="relative aspect-[3/1] overflow-hidden rounded-xl border border-teal-500/30 bg-muted">
         {crew.banner_url ? (
           <Image
             src={crew.banner_url}
@@ -68,7 +68,7 @@ export function PublicCrewDetailClient({
       </div>
 
       <p className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Users className="size-4 text-orange-400" />
+        <Users className="size-4 text-teal-600" />
         {crew.member_count} member{crew.member_count === 1 ? "" : "s"}
       </p>
 

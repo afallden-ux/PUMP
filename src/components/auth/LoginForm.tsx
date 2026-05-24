@@ -61,7 +61,7 @@ export function LoginForm() {
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         New here?{" "}
-        <Link href="/signup" className="font-semibold text-orange-400 hover:underline">
+        <Link href="/signup" className="font-semibold text-teal-600 hover:underline">
           Join ClimbCompare
         </Link>
       </p>

@@ -20,7 +20,7 @@ export function BadgeShowcase({ counts, max = 5, size = "sm" }: BadgeShowcasePro
         <span
           key={tier.id}
           title={`${track.label}: ${tier.name} (${tier.threshold}+) — ${tier.tagline}`}
-          className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-2 py-1"
+          className="rounded-lg border border-teal-500/30 bg-teal-500/10 px-2 py-1"
         >
           <span className={emojiSize}>{tier.emoji}</span>
         </span>

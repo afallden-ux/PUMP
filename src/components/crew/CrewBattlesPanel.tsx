@@ -175,7 +175,7 @@ export function CrewBattlesPanel({
                   <div className="mt-2 flex gap-2">
                     <Button
                       size="sm"
-                      className="bg-orange-600"
+                      className="bg-teal-600"
                       onClick={() => acceptBattle(battle.id)}
                       disabled={busy}
                     >
@@ -222,14 +222,14 @@ export function CrewBattlesPanel({
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-center">
                     <div
-                      className={`rounded-lg p-2 ${winning ? "bg-orange-500/20 ring-1 ring-orange-500" : "bg-muted/30"}`}
+                      className={`rounded-lg p-2 ${winning ? "bg-teal-500/20 ring-1 ring-teal-500" : "bg-muted/30"}`}
                     >
                       <p className="text-[10px] uppercase text-muted-foreground">{us}</p>
-                      <p className="text-2xl font-black text-orange-400">{usPts}</p>
-                      <Shield className="mx-auto mt-1 size-4 text-orange-400/60" />
+                      <p className="text-2xl font-black text-teal-600">{usPts}</p>
+                      <Shield className="mx-auto mt-1 size-4 text-teal-600/60" />
                     </div>
                     <div
-                      className={`rounded-lg p-2 ${!winning && themPts !== usPts ? "bg-orange-500/20 ring-1 ring-orange-500" : "bg-muted/30"}`}
+                      className={`rounded-lg p-2 ${!winning && themPts !== usPts ? "bg-teal-500/20 ring-1 ring-teal-500" : "bg-muted/30"}`}
                     >
                       <p className="text-[10px] uppercase text-muted-foreground">{them}</p>
                       <p className="text-2xl font-black">{themPts}</p>

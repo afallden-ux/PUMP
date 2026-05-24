@@ -15,7 +15,7 @@ export function CrewDirectoryClient({ crews }: CrewDirectoryClientProps) {
   return (
     <div className="mx-auto max-w-lg space-y-6 px-4 py-6">
       <div>
-        <h1 className="text-2xl font-black text-orange-400">All crews</h1>
+        <h1 className="text-2xl font-black text-teal-600">All crews</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Browse every squad on CC — members, squad badges & banners. Invite codes stay private.
         </p>
@@ -36,7 +36,7 @@ export function CrewDirectoryClient({ crews }: CrewDirectoryClientProps) {
           {crews.map((crew) => (
             <li key={crew.id}>
               <Link href={`/crews/${crew.id}`}>
-                <Card className="overflow-hidden border-border/60 bg-card/80 transition-colors hover:border-orange-500/40">
+                <Card className="overflow-hidden border-border/60 bg-card/80 transition-colors hover:border-teal-500/40">
                   <div className="relative aspect-[3/1] bg-muted">
                     {crew.banner_url ? (
                       <Image

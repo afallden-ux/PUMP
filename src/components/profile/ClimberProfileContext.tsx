@@ -4,11 +4,13 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 import { ClimberProfileSheet } from "@/components/profile/ClimberProfileSheet";
+import { createClient } from "@/lib/supabase/client";
 
 interface ClimberProfileContextValue {
   openProfile: (userId: string) => void;
@@ -21,6 +23,14 @@ const ClimberProfileContext = createContext<ClimberProfileContextValue | null>(
 
 export function ClimberProfileProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setCurrentUserId(data.user?.id ?? null);
+    });
+  }, []);
 
   const openProfile = useCallback((id: string) => {
     setUserId(id);
@@ -38,7 +48,11 @@ export function ClimberProfileProvider({ children }: { children: ReactNode }) {
   return (
     <ClimberProfileContext.Provider value={value}>
       {children}
-      <ClimberProfileSheet userId={userId} onClose={closeProfile} />
+      <ClimberProfileSheet
+        userId={userId}
+        currentUserId={currentUserId}
+        onClose={closeProfile}
+      />
     </ClimberProfileContext.Provider>
   );
 }

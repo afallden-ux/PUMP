@@ -75,7 +75,7 @@ export function CrewOnboarding({ onLoneWolf, onSuccess, compact }: CrewOnboardin
 
   if (mode === "create") {
     return (
-      <Card className="border-orange-500/30">
+      <Card className="border-teal-500/30">
         <CardHeader>
           <CardTitle className="text-lg font-black">Create private crew</CardTitle>
         </CardHeader>
@@ -106,7 +106,7 @@ export function CrewOnboarding({ onLoneWolf, onSuccess, compact }: CrewOnboardin
               <Button type="button" variant="outline" onClick={() => setMode("choose")}>
                 Back
               </Button>
-              <Button type="submit" className="flex-1 bg-orange-600" disabled={loading}>
+              <Button type="submit" className="flex-1 bg-teal-600" disabled={loading}>
                 {loading ? "Creating..." : "Create & get invite code"}
               </Button>
             </div>
@@ -118,7 +118,7 @@ export function CrewOnboarding({ onLoneWolf, onSuccess, compact }: CrewOnboardin
 
   if (mode === "join") {
     return (
-      <Card className="border-orange-500/30">
+      <Card className="border-teal-500/30">
         <CardHeader>
           <CardTitle className="text-lg font-black">Join with invite code</CardTitle>
         </CardHeader>
@@ -145,7 +145,7 @@ export function CrewOnboarding({ onLoneWolf, onSuccess, compact }: CrewOnboardin
               <Button type="button" variant="outline" onClick={() => setMode("choose")}>
                 Back
               </Button>
-              <Button type="submit" className="flex-1 bg-orange-600" disabled={loading}>
+              <Button type="submit" className="flex-1 bg-teal-600" disabled={loading}>
                 {loading ? "Joining..." : "Join crew"}
               </Button>
             </div>
@@ -159,12 +159,12 @@ export function CrewOnboarding({ onLoneWolf, onSuccess, compact }: CrewOnboardin
     <Card
       className={
         compact
-          ? "border-orange-500/30"
-          : "border-orange-500/40 bg-gradient-to-b from-orange-500/10 to-transparent"
+          ? "border-teal-500/30"
+          : "border-teal-500/40 bg-gradient-to-b from-teal-500/10 to-transparent"
       }
     >
       <CardHeader className={compact ? "pb-2" : "text-center"}>
-        {!compact && <Shield className="mx-auto size-10 text-orange-400" />}
+        {!compact && <Shield className="mx-auto size-10 text-teal-600" />}
         <CardTitle className={compact ? "text-lg font-black" : "text-xl font-black"}>
           {compact ? "Join a private crew" : "Optional: private crew"}
         </CardTitle>
@@ -177,7 +177,7 @@ export function CrewOnboarding({ onLoneWolf, onSuccess, compact }: CrewOnboardin
       <CardContent className="flex flex-col gap-2">
         <Button
           type="button"
-          className="w-full bg-orange-600 font-bold"
+          className="w-full bg-teal-600 font-bold"
           onClick={() => {
             setFormError(null);
             setMode("create");

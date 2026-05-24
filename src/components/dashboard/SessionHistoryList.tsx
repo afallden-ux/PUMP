@@ -118,7 +118,7 @@ export function SessionHistoryList({
                     {meta.emoji} {meta.label}
                   </span>
                   <p
-                    className={`text-sm font-bold ${log.total_points >= 0 ? "text-orange-400" : "text-zinc-400"}`}
+                    className={`text-sm font-bold ${log.total_points >= 0 ? "text-teal-600" : "text-zinc-400"}`}
                   >
                     {log.total_points >= 0 ? "+" : ""}
                     {log.total_points} pts

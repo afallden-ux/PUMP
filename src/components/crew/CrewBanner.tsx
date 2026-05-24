@@ -85,11 +85,11 @@ export function CrewBanner({ membership }: CrewBannerProps) {
   }
 
   return (
-    <Card className="border-orange-500/30 bg-orange-500/5">
+    <Card className="border-teal-500/30 bg-teal-500/5">
       <CardContent className="space-y-3 pt-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Shield className="size-5 shrink-0 text-orange-400" />
+            <Shield className="size-5 shrink-0 text-teal-600" />
             <div>
               <p className="font-black text-foreground">{membership.crew.name}</p>
               <p className="text-xs text-muted-foreground">
@@ -108,17 +108,17 @@ export function CrewBanner({ membership }: CrewBannerProps) {
           )}
         </div>
 
-        <div className="rounded-lg border border-dashed border-orange-500/40 bg-background/50 p-3">
+        <div className="rounded-lg border border-dashed border-teal-500/40 bg-background/50 p-3">
           <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             Invite code — share with your squad
           </p>
-          <p className="mt-1 font-mono text-2xl font-black tracking-[0.2em] text-orange-400">
+          <p className="mt-1 font-mono text-2xl font-black tracking-[0.2em] text-teal-600">
             {code}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             <Link
               href="/crew"
-              className={cn(buttonVariants({ size: "sm" }), "bg-orange-600 text-white")}
+              className={cn(buttonVariants({ size: "sm" }), "bg-teal-600 text-white")}
             >
               <Users className="size-3.5" />
               Crew page
