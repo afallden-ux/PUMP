@@ -513,6 +513,47 @@ export interface Database {
           },
         ];
       };
+      crags27_ascent_tree: {
+        Row: {
+          user_id: string;
+          grade: string;
+          total: number;
+          onsight: number;
+          flash: number;
+          redpoint: number;
+          toprope: number;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          grade: string;
+          total?: number;
+          onsight?: number;
+          flash?: number;
+          redpoint?: number;
+          toprope?: number;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          grade?: string;
+          total?: number;
+          onsight?: number;
+          flash?: number;
+          redpoint?: number;
+          toprope?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "crags27_ascent_tree_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       crags27_ascents: {
         Row: {
           id: string;

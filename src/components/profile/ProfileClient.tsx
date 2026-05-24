@@ -70,7 +70,7 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
       </AppCard>
 
       <AppCard className="p-5">
-        <Crags27Panel userId={profile.id} />
+        <Crags27Panel />
       </AppCard>
 
       <AppCard className="p-5">

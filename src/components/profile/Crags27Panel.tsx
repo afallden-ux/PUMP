@@ -2,29 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Loader2, Mountain, RefreshCw, Unplug } from "lucide-react";
+import { Crags27AscentTree } from "@/components/profile/Crags27AscentTree";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Crags27Summary } from "@/lib/crags27/types";
-import { createClient } from "@/lib/supabase/client";
 
-interface Crags27AscentRow {
-  id: string;
-  climb_name: string;
-  climbed_at: string;
-  grade_display: string | null;
-  crag_name: string | null;
-  ascent_style: string | null;
-}
-
-interface Crags27PanelProps {
-  userId: string;
-}
-
-export function Crags27Panel({ userId }: Crags27PanelProps) {
+export function Crags27Panel() {
   const [summary, setSummary] = useState<Crags27Summary | null>(null);
-  const [recent, setRecent] = useState<Crags27AscentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -45,7 +31,6 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
           }
         }
         setSummary(null);
-        setRecent([]);
         setLoading(false);
         return;
       }
@@ -53,29 +38,11 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
       const data = (await res.json()) as Crags27Summary;
       setSummary(data);
       if (data.profileSlug) setProfileSlug(data.profileSlug);
-
-      if (data.connected) {
-        const supabase = createClient();
-        const { data: rows, error } = await supabase
-          .from("crags27_ascents")
-          .select("id, climb_name, climbed_at, grade_display, crag_name, ascent_style")
-          .eq("user_id", userId)
-          .order("climbed_at", { ascending: false })
-          .limit(12);
-        if (error?.message.includes("crags27_ascents")) {
-          setSchemaMissing(true);
-          setRecent([]);
-        } else {
-          setRecent((rows ?? []) as Crags27AscentRow[]);
-        }
-      } else {
-        setRecent([]);
-      }
     } catch {
       toast.error("Could not load 27crags status");
     }
     setLoading(false);
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     refresh();
@@ -118,7 +85,9 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
         await refresh();
         return;
       }
-      toast.success(`Imported ${json.imported} ascents from 27crags`);
+      toast.success(
+        `Synced ascent tree — ${json.totalAscents ?? json.imported} total ascents`
+      );
       await refresh();
     } finally {
       setSyncing(false);
@@ -150,8 +119,8 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
         <p className="font-semibold">27crags tables not set up</p>
         <p className="mt-1 text-xs">
           Run <code className="rounded bg-amber-100 px-1">supabase/RUN_CRAGS27.sql</code> in
-          Supabase. Reuse <code className="rounded bg-amber-100 px-1">MOONBOARD_SESSION_SECRET</code>{" "}
-          or set <code className="rounded bg-amber-100 px-1">LOGBOOK_SESSION_SECRET</code> on Vercel.
+          Supabase (includes ascent tree). Set{" "}
+          <code className="rounded bg-amber-100 px-1">LOGBOOK_SESSION_SECRET</code> on Vercel.
         </p>
       </div>
     );
@@ -168,8 +137,8 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-slate-800">27crags</h3>
           <p className="text-xs text-slate-500">
-            Sync your tick list from 27crags.com (The Topo). Password is never stored — only an
-            encrypted session.
+            Syncs your <strong>ascent tree</strong> (grade × flash / redpoint counts) from
+            thetopo.com — not individual ticks. Password is never stored.
           </p>
         </div>
       </div>
@@ -195,7 +164,7 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
               id="c27-slug"
               value={profileSlug}
               onChange={(e) => setProfileSlug(e.target.value)}
-              placeholder="alex — from thetopo.com/climbers/alex"
+              placeholder="alex or paste https://thetopo.com/climbers/alex"
               required
             />
           </div>
@@ -238,7 +207,7 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
               ) : (
                 <RefreshCw className="size-4" />
               )}
-              <span className="ml-1.5">Sync now</span>
+              <span className="ml-1.5">Sync tree</span>
             </Button>
             <Button
               type="button"
@@ -261,47 +230,16 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
             </p>
           )}
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             <Stat label="Total ascents" value={String(summary.totalAscents)} />
-            <Stat label="Last 30 days" value={String(summary.ascentsLast30Days)} />
-            <Stat label="Hardest send" value={summary.hardestGrade ?? "—"} />
             <Stat
-              label="Latest"
-              value={summary.latestAscent?.grade ?? "—"}
-              sub={summary.latestAscent?.climbName.slice(0, 18)}
+              label="Hardest (tree)"
+              value={summary.hardestGradeDisplay ?? summary.hardestGrade ?? "—"}
             />
+            <Stat label="Grade bands" value={String(summary.tree.filter((r) => r.total > 0).length)} />
           </div>
 
-          {recent.length > 0 ? (
-            <div className="overflow-hidden rounded-lg border border-slate-200">
-              <p className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Recent ascents
-              </p>
-              <ul className="max-h-64 divide-y divide-slate-100 overflow-y-auto">
-                {recent.map((row) => (
-                  <li
-                    key={row.id}
-                    className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate font-medium text-slate-800">{row.climb_name}</p>
-                      <p className="text-[10px] text-slate-400">
-                        {row.crag_name ?? "—"} · {row.climbed_at}
-                        {row.ascent_style ? ` · ${row.ascent_style}` : ""}
-                      </p>
-                    </div>
-                    <span className="shrink-0 font-semibold tabular-nums text-teal-700">
-                      {row.grade_display ?? "—"}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="py-4 text-center text-sm text-slate-500">
-              No ascents yet — tap Sync now to import your tick list.
-            </p>
-          )}
+          <Crags27AscentTree rows={summary.tree} />
         </>
       )}
     </div>
@@ -311,11 +249,9 @@ export function Crags27Panel({ userId }: Crags27PanelProps) {
 function Stat({
   label,
   value,
-  sub,
 }: {
   label: string;
   value: string;
-  sub?: string;
 }) {
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-2.5 text-center shadow-sm">
@@ -323,7 +259,6 @@ function Stat({
         {label}
       </p>
       <p className="mt-0.5 text-lg font-bold text-slate-800">{value}</p>
-      {sub && <p className="truncate text-[10px] text-slate-400">{sub}</p>}
     </div>
   );
 }

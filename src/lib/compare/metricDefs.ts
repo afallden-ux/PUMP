@@ -170,19 +170,11 @@ export const COMPARE_METRICS: CompareMetricDef[] = [
   {
     id: "c27_total",
     label: "27crags ascents",
-    sublabel: "Synced tick list",
+    sublabel: "Ascent tree total",
     category: "activity",
     higherIsBetter: true,
     getValue: (s) => s.crags27TotalAscents,
     display: (s) => String(s.crags27TotalAscents),
-  },
-  {
-    id: "c27_30d",
-    label: "27crags (30d)",
-    category: "activity",
-    higherIsBetter: true,
-    getValue: (s) => s.crags27Ascents30d,
-    display: (s) => String(s.crags27Ascents30d),
   },
   {
     id: "c27_grade",

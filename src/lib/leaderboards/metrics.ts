@@ -137,20 +137,11 @@ export const LEADERBOARD_METRICS: LeaderboardMetricDef[] = [
   {
     id: "c27_total",
     label: "27crags ascents",
-    description: "Total ticks synced from 27crags",
+    description: "Total ascents from 27crags ascent tree",
     category: "crags27",
     higherIsBetter: true,
     getValue: (a) => (a.crags27TotalAscents > 0 ? a.crags27TotalAscents : null),
     formatValue: (a) => String(a.crags27TotalAscents),
-  },
-  {
-    id: "c27_30d",
-    label: "27crags (30d)",
-    description: "27crags ticks in the last 30 days",
-    category: "crags27",
-    higherIsBetter: true,
-    getValue: (a) => (a.crags27Ascents30d > 0 ? a.crags27Ascents30d : null),
-    formatValue: (a) => String(a.crags27Ascents30d),
   },
   {
     id: "8a_grade",

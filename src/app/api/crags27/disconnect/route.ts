@@ -10,6 +10,7 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  await supabase.from("crags27_ascent_tree").delete().eq("user_id", user.id);
   await supabase.from("crags27_ascents").delete().eq("user_id", user.id);
   await supabase.from("crags27_connections").delete().eq("user_id", user.id);
 

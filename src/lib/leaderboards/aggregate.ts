@@ -7,6 +7,8 @@ import type { AssessmentType } from "@/lib/constants/assessments";
 import type { FontGrade } from "@/lib/constants/fontGrades";
 import type { LeaderboardAthlete } from "@/lib/leaderboards/types";
 import { pctBodyWeight, pctHeight } from "@/lib/assessments/format";
+import { statsFromTreeRows } from "@/lib/crags27/ascentTree";
+import type { Crags27TreeRow } from "@/lib/crags27/types";
 import { maxHardestGrade } from "@/lib/utils/hardestGrade";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile } from "@/types/app";
@@ -48,6 +50,43 @@ function ascentStats(
   }
 
   return { hardest, total, last30 };
+}
+
+function crags27TreeStats(
+  rows: {
+    user_id: string;
+    grade: string;
+    total: number;
+    onsight: number;
+    flash: number;
+    redpoint: number;
+    toprope: number;
+  }[]
+) {
+  const byUser = new Map<string, Crags27TreeRow[]>();
+  for (const row of rows) {
+    const list = byUser.get(row.user_id) ?? [];
+    list.push({
+      grade: row.grade,
+      total: row.total,
+      onsight: row.onsight,
+      flash: row.flash,
+      redpoint: row.redpoint,
+      toprope: row.toprope,
+    });
+    byUser.set(row.user_id, list);
+  }
+
+  const hardest = new Map<string, FontGrade | null>();
+  const total = new Map<string, number>();
+
+  for (const [userId, tree] of byUser) {
+    const stats = statsFromTreeRows(tree);
+    hardest.set(userId, stats.hardestGrade);
+    total.set(userId, stats.totalAscents);
+  }
+
+  return { hardest, total };
 }
 
 function latestAssessments(
@@ -176,7 +215,9 @@ export async function fetchLeaderboardAthletes(
     supabase
       .from("moonboard_ascents")
       .select("user_id, climbed_at, grade_display, grade_logged"),
-    supabase.from("crags27_ascents").select("user_id, climbed_at, grade_display"),
+    supabase
+      .from("crags27_ascent_tree")
+      .select("user_id, grade, total, onsight, flash, redpoint, toprope"),
     supabase.from("eighta_ascents").select("user_id, climbed_at, grade_display"),
   ]);
 
@@ -227,13 +268,17 @@ export async function fetchLeaderboardAthletes(
           grade_display: (r.grade_logged ?? r.grade_display) as string | null,
         }));
 
-  const crags27Rows =
+  const crags27TreeRows =
     crags27Res.error?.message?.includes("crags27") || !crags27Res.data
       ? []
       : (crags27Res.data as {
           user_id: string;
-          climbed_at: string;
-          grade_display: string | null;
+          grade: string;
+          total: number;
+          onsight: number;
+          flash: number;
+          redpoint: number;
+          toprope: number;
         }[]);
 
   const eightaRows =
@@ -246,7 +291,7 @@ export async function fetchLeaderboardAthletes(
         }[]);
 
   const moonStats = ascentStats(moonRows);
-  const crags27Stats = ascentStats(crags27Rows);
+  const crags27Stats = crags27TreeStats(crags27TreeRows);
   const eightaStats = ascentStats(eightaRows);
 
   const realAthletes: LeaderboardAthlete[] = profiles
@@ -289,7 +334,7 @@ export async function fetchLeaderboardAthletes(
         moonboardAscents30d: moonStats.last30.get(profile.id) ?? 0,
         crags27HardestGrade: crags27Stats.hardest.get(profile.id) ?? null,
         crags27TotalAscents: crags27Stats.total.get(profile.id) ?? 0,
-        crags27Ascents30d: crags27Stats.last30.get(profile.id) ?? 0,
+        crags27Ascents30d: 0,
         eightaHardestGrade: eightaStats.hardest.get(profile.id) ?? null,
         eightaTotalAscents: eightaStats.total.get(profile.id) ?? 0,
         eightaAscents30d: eightaStats.last30.get(profile.id) ?? 0,

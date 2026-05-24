@@ -2,15 +2,14 @@ import type { FontGrade } from "@/lib/constants/fontGrades";
 
 export const CRAGS27_HOST = "https://thetopo.com";
 
-export interface Crags27Ascent {
-  externalKey: string;
-  climbName: string;
-  climbedAt: string;
-  gradeDisplay: string | null;
-  ascentStyle: string | null;
-  cragName: string | null;
-  routeType: string | null;
-  comment: string | null;
+/** One row of the 27crags ascent tree (grade × style counts). */
+export interface Crags27TreeRow {
+  grade: string;
+  total: number;
+  onsight: number;
+  flash: number;
+  redpoint: number;
+  toprope: number;
 }
 
 export interface Crags27Summary {
@@ -21,11 +20,7 @@ export interface Crags27Summary {
   lastSyncStatus: string;
   lastSyncError: string | null;
   totalAscents: number;
-  ascentsLast30Days: number;
   hardestGrade: FontGrade | null;
-  latestAscent: {
-    climbName: string;
-    grade: string | null;
-    climbedAt: string;
-  } | null;
+  hardestGradeDisplay: string | null;
+  tree: Crags27TreeRow[];
 }

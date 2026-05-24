@@ -1,13 +1,34 @@
-import { crags27Login, fetchCrags27Ascents } from "@/lib/crags27/client";
-import type { Crags27Summary } from "@/lib/crags27/types";
+import { statsFromTreeRows } from "@/lib/crags27/ascentTree";
+import {
+  crags27Login,
+  fetchCrags27AscentTree,
+  normalizeProfileSlug,
+} from "@/lib/crags27/client";
+import type { Crags27Summary, Crags27TreeRow } from "@/lib/crags27/types";
 import {
   decryptSessionCookies,
   encryptSessionCookies,
 } from "@/lib/logbook/sessionCrypto";
 import { getLogbookSessionSecret } from "@/lib/logbook/sessionSecret";
-import { maxHardestGrade } from "@/lib/utils/hardestGrade";
-import type { FontGrade } from "@/lib/constants/fontGrades";
 import type { SupabaseClient } from "@supabase/supabase-js";
+
+function mapDbTreeRow(row: {
+  grade: string;
+  total: number;
+  onsight: number;
+  flash: number;
+  redpoint: number;
+  toprope: number;
+}): Crags27TreeRow {
+  return {
+    grade: row.grade,
+    total: row.total,
+    onsight: row.onsight,
+    flash: row.flash,
+    redpoint: row.redpoint,
+    toprope: row.toprope,
+  };
+}
 
 export async function connectCrags27(
   supabase: SupabaseClient,
@@ -23,13 +44,27 @@ export async function connectCrags27(
     );
   }
 
-  const slug = profileSlug.trim();
+  let slug = normalizeProfileSlug(profileSlug);
+  const login = await crags27Login(loginUsername.trim(), password);
+
+  if (!slug && login.detectedSlug) {
+    slug = login.detectedSlug;
+  }
   if (!slug) {
-    throw new Error("Profile slug is required (e.g. alex from thetopo.com/climbers/alex)");
+    throw new Error(
+      "Profile slug is required — paste your profile URL or slug (e.g. alex from thetopo.com/climbers/alex)"
+    );
   }
 
-  const cookies = await crags27Login(loginUsername.trim(), password);
-  const encrypted = encryptSessionCookies(cookies, secret);
+  const tree = await fetchCrags27AscentTree(login.cookies, slug);
+  const { totalAscents } = statsFromTreeRows(tree);
+  if (totalAscents === 0) {
+    throw new Error(
+      `Connected to 27crags but the ascent tree for "${slug}" is empty. Check your profile slug.`
+    );
+  }
+
+  const encrypted = encryptSessionCookies(login.cookies, secret);
 
   const { error } = await supabase.from("crags27_connections").upsert({
     user_id: userId,
@@ -47,7 +82,7 @@ export async function connectCrags27(
 export async function syncCrags27Logbook(
   supabase: SupabaseClient,
   userId: string
-): Promise<{ imported: number }> {
+): Promise<{ imported: number; totalAscents: number }> {
   const secret = getLogbookSessionSecret();
   if (!secret) {
     throw new Error("LOGBOOK_SESSION_SECRET not configured");
@@ -76,25 +111,37 @@ export async function syncCrags27Logbook(
     .eq("user_id", userId);
 
   try {
-    const ascents = await fetchCrags27Ascents(cookies, conn.profile_slug);
+    const tree = await fetchCrags27AscentTree(cookies, conn.profile_slug);
+    const { totalAscents } = statsFromTreeRows(tree);
 
+    if (totalAscents === 0) {
+      throw new Error(
+        "Ascent tree is empty. Check your profile slug (thetopo.com/climbers/YOUR-SLUG)."
+      );
+    }
+
+    await supabase.from("crags27_ascent_tree").delete().eq("user_id", userId);
     await supabase.from("crags27_ascents").delete().eq("user_id", userId);
 
-    const batchSize = 100;
-    for (let i = 0; i < ascents.length; i += batchSize) {
-      const chunk = ascents.slice(i, i + batchSize).map((a) => ({
+    const { error } = await supabase.from("crags27_ascent_tree").insert(
+      tree.map((row) => ({
         user_id: userId,
-        external_key: a.externalKey,
-        climb_name: a.climbName,
-        climbed_at: a.climbedAt,
-        grade_display: a.gradeDisplay,
-        ascent_style: a.ascentStyle,
-        crag_name: a.cragName,
-        route_type: a.routeType,
-        comment: a.comment,
-      }));
-      const { error } = await supabase.from("crags27_ascents").insert(chunk);
-      if (error) throw new Error(error.message);
+        grade: row.grade,
+        total: row.total,
+        onsight: row.onsight,
+        flash: row.flash,
+        redpoint: row.redpoint,
+        toprope: row.toprope,
+        updated_at: new Date().toISOString(),
+      }))
+    );
+    if (error) {
+      if (error.message.includes("crags27_ascent_tree")) {
+        throw new Error(
+          "27crags ascent tree table missing — run supabase/RUN_CRAGS27.sql (includes ascent tree migration)."
+        );
+      }
+      throw new Error(error.message);
     }
 
     await supabase
@@ -107,7 +154,7 @@ export async function syncCrags27Logbook(
       })
       .eq("user_id", userId);
 
-    return { imported: ascents.length };
+    return { imported: tree.length, totalAscents };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Sync failed";
     await supabase
@@ -134,9 +181,9 @@ export async function getCrags27Summary(
     lastSyncStatus: "never",
     lastSyncError: null,
     totalAscents: 0,
-    ascentsLast30Days: 0,
     hardestGrade: null,
-    latestAscent: null,
+    hardestGradeDisplay: null,
+    tree: [],
   };
 
   const { data: conn, error: connErr } = await supabase
@@ -150,20 +197,17 @@ export async function getCrags27Summary(
   if (connErr?.message.includes("crags27")) return empty;
   if (!conn) return empty;
 
-  const { data: ascents } = await supabase
-    .from("crags27_ascents")
-    .select("climb_name, climbed_at, grade_display")
-    .eq("user_id", userId)
-    .order("climbed_at", { ascending: false });
+  const { data: treeRows, error: treeErr } = await supabase
+    .from("crags27_ascent_tree")
+    .select("grade, total, onsight, flash, redpoint, toprope")
+    .eq("user_id", userId);
 
-  const rows = ascents ?? [];
-  const thirtyAgo = new Date();
-  thirtyAgo.setDate(thirtyAgo.getDate() - 30);
-  const cutoff = thirtyAgo.toISOString().slice(0, 10);
+  if (treeErr?.message.includes("crags27_ascent_tree")) {
+    return { ...empty, connected: true, profileSlug: conn.profile_slug };
+  }
 
-  const grades = rows.map((r) => r.grade_display as FontGrade | null).filter(Boolean);
-  const hardest = maxHardestGrade(grades);
-  const latest = rows[0];
+  const tree = (treeRows ?? []).map(mapDbTreeRow);
+  const stats = statsFromTreeRows(tree);
 
   return {
     connected: true,
@@ -172,15 +216,9 @@ export async function getCrags27Summary(
     lastSyncAt: conn.last_sync_at,
     lastSyncStatus: conn.last_sync_status,
     lastSyncError: conn.last_sync_error,
-    totalAscents: rows.length,
-    ascentsLast30Days: rows.filter((r) => r.climbed_at >= cutoff).length,
-    hardestGrade: hardest,
-    latestAscent: latest
-      ? {
-          climbName: latest.climb_name,
-          grade: latest.grade_display,
-          climbedAt: latest.climbed_at,
-        }
-      : null,
+    totalAscents: stats.totalAscents,
+    hardestGrade: stats.hardestGrade,
+    hardestGradeDisplay: stats.hardestGradeDisplay,
+    tree,
   };
 }
