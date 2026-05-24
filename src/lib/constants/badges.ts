@@ -119,9 +119,9 @@ export const BADGE_TRACKS: BadgeTrack[] = [
       { threshold: 10, id: "tt-10", name: "Log Rookie", emoji: "📝", tagline: "The pump begins" },
       { threshold: 25, id: "tt-25", name: "Session Gremlin", emoji: "👺", tagline: "Can't stop won't stop" },
       { threshold: 50, id: "tt-50", name: "Consistency Gremlin", emoji: "📈", tagline: "Charts fear you" },
-      { threshold: 100, id: "tt-100", name: "Pump Centurion", emoji: "🛡️", tagline: "Triple digits of suffering" },
+      { threshold: 100, id: "tt-100", name: "CC Centurion", emoji: "🛡️", tagline: "Triple digits of suffering" },
       { threshold: 500, id: "tt-500", name: "Forearm Legend", emoji: "🌟", tagline: "Vascularity visible from space" },
-      { threshold: 1000, id: "tt-1000", name: "PUMP Immortal", emoji: "♾️", tagline: "The couch fears your name" },
+      { threshold: 1000, id: "tt-1000", name: "CC Immortal", emoji: "♾️", tagline: "The couch fears your name" },
     ],
   },
 ];

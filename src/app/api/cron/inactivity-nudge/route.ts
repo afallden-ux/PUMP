@@ -5,6 +5,7 @@ import {
   type InactivityCandidate,
   type PlatformActivityRow,
 } from "@/lib/email/inactivityNudge";
+import { APP_NAME } from "@/lib/brand";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
 
   const resendKey = process.env.RESEND_API_KEY;
   const from =
-    process.env.EMAIL_FROM ?? "PUMP <onboarding@resend.dev>";
+    process.env.EMAIL_FROM ?? `${APP_NAME} <onboarding@resend.dev>`;
 
   if (!resendKey) {
     return NextResponse.json(

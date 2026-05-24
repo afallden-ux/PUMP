@@ -114,7 +114,7 @@ export function CrewPageClient({
         href="/crews"
         className={cn(buttonVariants({ variant: "outline" }), "w-full")}
       >
-        Browse all crews on PUMP
+        Browse all crews on CC
       </Link>
 
       <Link

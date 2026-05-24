@@ -21,7 +21,7 @@ export function LeaderboardsPanel({
         <Trophy className="size-6 text-amber-400" />
         <div>
           <h2 className="text-lg font-black">Leaderboards</h2>
-          <p className="text-xs text-muted-foreground">Everyone on PUMP</p>
+          <p className="text-xs text-muted-foreground">Everyone on CC</p>
         </div>
       </div>
 
@@ -35,7 +35,7 @@ export function LeaderboardsPanel({
       <div className="border-t border-border/50 pt-4">
         <div className="mb-2 flex items-center gap-2">
           <Crown className="size-5 text-orange-400" />
-          <h3 className="text-lg font-black">Lifetime pump</h3>
+          <h3 className="text-lg font-black">Lifetime CC</h3>
         </div>
         <Leaderboard
           entries={lifetimeEntries}

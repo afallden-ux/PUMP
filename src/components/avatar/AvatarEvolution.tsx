@@ -19,7 +19,7 @@ export function AvatarEvolution({ profile, sessionCounts }: AvatarEvolutionProps
       animate={{ opacity: 1, y: 0 }}
     >
       <p className="text-xs font-bold uppercase tracking-widest text-orange-400">
-        Lifetime Pump
+        Lifetime CC
       </p>
       <AvatarFrame
         username={profile.username}

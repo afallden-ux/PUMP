@@ -23,6 +23,7 @@ import { isOnCouchOfShame } from "@/lib/utils/couchOfShame";
 import { useLeaderboard } from "@/lib/hooks/useLeaderboard";
 import { useWorkoutHistory } from "@/lib/hooks/useWorkoutHistory";
 import type { SessionCounts, SessionCountsMap } from "@/lib/data/sessionBadges";
+import { APP_SHORT } from "@/lib/brand";
 import type { LeaderboardEntry, Profile } from "@/types/app";
 
 interface DashboardClientProps {
@@ -74,7 +75,7 @@ export function DashboardClient({
       <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            PUMP board
+            {APP_SHORT} board
           </p>
           <h1 className="text-2xl font-black lg:text-3xl">{currentProfile.username}</h1>
           <p className="mt-1 text-sm text-muted-foreground">

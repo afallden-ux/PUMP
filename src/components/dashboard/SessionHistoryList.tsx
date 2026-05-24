@@ -46,7 +46,7 @@ export function SessionHistoryList({
   async function handleDelete(log: WorkoutLog) {
     if (
       !confirm(
-        `Delete this ${SESSION_TYPE_META[log.session_type]?.label ?? "session"}? Your pump score will be adjusted.`
+        `Delete this ${SESSION_TYPE_META[log.session_type]?.label ?? "session"}? Your CC score will be adjusted.`
       )
     ) {
       return;

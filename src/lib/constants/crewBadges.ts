@@ -31,9 +31,9 @@ export const CREW_BADGE_TRACKS: CrewBadgeTrack[] = [
       { threshold: 10, id: "ct-10", name: "Warm-up Circle", emoji: "⭕", tagline: "The couch is nervous" },
       { threshold: 25, id: "ct-25", name: "Chalk Syndicate", emoji: "🤝", tagline: "Shared suffering begins" },
       { threshold: 50, id: "ct-50", name: "Pad Mafia", emoji: "🛡️", tagline: "Territory established" },
-      { threshold: 100, id: "ct-100", name: "Pump Battalion", emoji: "🎖️", tagline: "Triple-digit crew violence" },
+      { threshold: 100, id: "ct-100", name: "CC Battalion", emoji: "🎖️", tagline: "Triple-digit crew violence" },
       { threshold: 500, id: "ct-500", name: "Forearm Federation", emoji: "🌐", tagline: "NASA tracks your veins" },
-      { threshold: 1000, id: "ct-1000", name: "PUMP Legion", emoji: "⚔️", tagline: "The mountain files a complaint" },
+      { threshold: 1000, id: "ct-1000", name: "CC Legion", emoji: "⚔️", tagline: "The mountain files a complaint" },
     ],
   },
   {

@@ -82,7 +82,7 @@ export function HoursComparisonChart({
           Training hours vs climbers
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          Compare anyone on PUMP — tap names to add/remove lines (max 6).
+          Compare anyone on CC — tap names to add/remove lines (max 6).
         </p>
         <div className="flex gap-1 pt-2">
           {RANGES.map((r) => (

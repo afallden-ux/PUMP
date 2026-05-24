@@ -23,7 +23,7 @@ export function BadgeGallery({ counts, hideHeader }: BadgeGalleryProps) {
       {!hideHeader && (
         <SectionHeader
           icon={Award}
-          title="Pump badges"
+          title="CC badges"
           subtitle={`${totalEarned} earned. Stretching badges get more shameful; outdoors goes Jug-Hugger → 9A Downgrader. Milestones: 10 · 25 · 50 · 100 · 500 · 1000.`}
         />
       )}

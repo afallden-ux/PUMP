@@ -65,7 +65,7 @@ export function TrainingHistoryChart({ logs, loading }: TrainingHistoryChartProp
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg font-black">
           <TrendingUp className="size-5 text-orange-400" />
-          Your pump history
+          Your training history
         </CardTitle>
         <p className="text-xs text-muted-foreground">
           Bar colour = session type. Climbing splits into gym wall, board, and outdoors.

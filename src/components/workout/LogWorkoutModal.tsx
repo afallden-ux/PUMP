@@ -133,7 +133,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
 
     if (error) {
       setSaving(false);
-      toast.error("Pump failed", { description: error.message });
+      toast.error("Log failed", { description: error.message });
       return;
     }
 
@@ -352,7 +352,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
             <div className="flex items-center justify-between gap-2">
               <Label className="flex items-center gap-2 font-semibold">
                 <Flame className="size-4 text-orange-400" />
-                {sessionType === "stretching" ? "Laziness level" : "Pump / Intensity"}
+                {sessionType === "stretching" ? "Laziness level" : "Intensity"}
               </Label>
               <span className="text-xs font-bold text-orange-400">Level {intensity}</span>
             </div>
@@ -385,7 +385,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
             )}
           >
             {previewPoints >= 0 ? "+" : ""}
-            {previewPoints} pump points total
+            {previewPoints} CC points total
           </p>
         </div>
 
@@ -395,7 +395,7 @@ export function LogWorkoutModal({ userId, onLogged, trigger }: LogWorkoutModalPr
             onClick={handleSave}
             disabled={saving}
           >
-            {saving ? "Pumping..." : "SAVE & FLEX"}
+            {saving ? "Saving..." : "SAVE & FLEX"}
           </Button>
         </DialogFooter>
       </DialogContent>

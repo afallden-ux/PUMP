@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { APP_NAME } from "@/lib/brand";
 import { getAuthCallbackUrl } from "@/lib/siteUrl";
 
 export function SignupForm() {
@@ -36,7 +37,7 @@ export function SignupForm() {
       return;
     }
 
-    toast.success("Welcome to PUMP!", {
+    toast.success(`Welcome to ${APP_NAME}!`, {
       description:
         "Check your email to confirm — the link goes to this app, not localhost (if SITE_URL is set in production).",
     });
@@ -85,7 +86,7 @@ export function SignupForm() {
         {loading ? "Creating forearms..." : "Sign up & flex"}
       </Button>
       <p className="text-center text-sm text-muted-foreground">
-        Already pumping?{" "}
+        Already on CC?{" "}
         <Link href="/login" className="font-semibold text-orange-400 hover:underline">
           Log in
         </Link>

@@ -37,7 +37,7 @@ export function Leaderboard({
             {crewName
               ? `${crewName} — ${isLifetime ? "lifetime" : "week"}`
               : isLifetime
-                ? "Lifetime pump"
+                ? "Lifetime CC"
                 : "Winner of the Week"}
           </h3>
           <span className="text-xs text-muted-foreground">

@@ -9,6 +9,7 @@ import { BodyMetricsPanel } from "@/components/profile/BodyMetricsPanel";
 import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
+import { APP_SHORT } from "@/lib/brand";
 import type { SessionCounts } from "@/lib/data/sessionBadges";
 import type { Profile } from "@/types/app";
 
@@ -46,7 +47,7 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Pump badges"
+        title="CC badges"
         subtitle="Earned milestones per session type"
         icon={Award}
         defaultOpen={false}
@@ -60,7 +61,7 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
       <ProfileForm profile={profile} />
       <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-sm text-muted-foreground">
         <p>
-          <strong className="text-foreground">Lifetime pump:</strong>{" "}
+          <strong className="text-foreground">Lifetime {APP_SHORT} score:</strong>{" "}
           {profile.current_pump_score.toLocaleString()} pts
         </p>
         <p className="mt-1">

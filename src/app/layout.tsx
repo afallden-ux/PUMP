@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { APP_NAME, APP_TAGLINE, BRAND_LOGO_PATH } from "@/lib/brand";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,9 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PUMP — Bouldering Accountability",
-  description:
-    "Log sessions in 3 seconds. Grow your avatar. Shame the couch. Panic responsibly.",
+  title: `${APP_NAME} — Climbing analytics & crew compare`,
+  description: `${APP_TAGLINE} Log sessions, compare friends, track baselines.`,
+  icons: {
+    icon: BRAND_LOGO_PATH,
+    apple: BRAND_LOGO_PATH,
+  },
 };
 
 export default function RootLayout({

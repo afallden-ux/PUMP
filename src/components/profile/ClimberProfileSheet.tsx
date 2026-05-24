@@ -169,7 +169,7 @@ export function ClimberProfileSheet({ userId, onClose }: ClimberProfileSheetProp
                 />
                 <StatCard
                   icon={Trophy}
-                  label="Lifetime pump"
+                  label="Lifetime CC"
                   value={profile.current_pump_score.toLocaleString()}
                   sub="pts"
                 />

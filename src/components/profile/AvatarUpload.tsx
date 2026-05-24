@@ -61,7 +61,7 @@ export function AvatarUpload({ profile, onUpdated }: AvatarUploadProps) {
     }
 
     onUpdated(cacheBusted);
-    toast.success("Face of the pump updated");
+    toast.success("Profile photo updated");
   }
 
   return (

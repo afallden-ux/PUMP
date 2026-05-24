@@ -17,7 +17,7 @@ export function CrewDirectoryClient({ crews }: CrewDirectoryClientProps) {
       <div>
         <h1 className="text-2xl font-black text-orange-400">All crews</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Browse every squad on PUMP — members, squad badges & banners. Invite codes stay private.
+          Browse every squad on CC — members, squad badges & banners. Invite codes stay private.
         </p>
       </div>
 

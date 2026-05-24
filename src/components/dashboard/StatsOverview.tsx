@@ -44,7 +44,7 @@ export function StatsOverview({
       accent: "text-orange-400",
     },
     {
-      label: "Lifetime pump",
+      label: "Lifetime CC",
       value: profile.current_pump_score.toLocaleString(),
       sub: "All-time score",
       icon: Target,

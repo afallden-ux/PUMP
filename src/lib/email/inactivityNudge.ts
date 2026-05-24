@@ -1,3 +1,5 @@
+import { APP_NAME, APP_SHORT } from "@/lib/brand";
+
 export interface InactivityCandidate {
   user_id: string;
   email: string;
@@ -52,10 +54,10 @@ ${activity
 <html>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:system-ui,sans-serif;color:#fafafa;">
   <div style="max-width:520px;margin:0 auto;padding:32px 24px;">
-    <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#fb923c;">PUMP</p>
+    <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#fb923c;">${APP_NAME} (${APP_SHORT})</p>
     <h1 style="margin:0 0 16px;font-size:22px;font-weight:800;color:#fafafa;">Are you still a climber?</h1>
     <p style="margin:0 0 20px;line-height:1.5;color:#d4d4d4;">
-      Hey <strong style="color:#fb923c;">${escapeHtml(username)}</strong> — your last session on PUMP was
+      Hey <strong style="color:#fb923c;">${escapeHtml(username)}</strong> — your last session on ${APP_NAME} was
       <strong>${timeLabel} ago</strong>. The forearms don't grow on the couch (unfortunately).
     </p>
     <div style="margin:0 0 24px;padding:16px;border-radius:12px;border:1px solid #ea580c33;background:#ea580c14;">
@@ -70,14 +72,14 @@ ${activity
 
   const text = `Still a climber, ${username}?
 
-It's been ${timeLabel} since your last PUMP session.
+It's been ${timeLabel} since your last ${APP_NAME} session.
 
 While you were away, real climbers logged:
 ${activityText}
 
 Log in and send a session: ${loginUrl}
 
-— PUMP`;
+— ${APP_NAME}`;
 
   return { subject, html, text };
 }

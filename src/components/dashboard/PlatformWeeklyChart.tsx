@@ -37,7 +37,7 @@ export function PlatformWeeklyChart({ entries }: PlatformWeeklyChartProps) {
           7-day points — all climbers
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          Who&apos;s putting in work this week on PUMP.
+          Who&apos;s putting in work this week on CC.
         </p>
       </CardHeader>
       <CardContent>
