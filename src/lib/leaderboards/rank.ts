@@ -50,3 +50,24 @@ export function barWidthPct(
   const ratio = value / leaderValue;
   return Math.min(100, Math.round((higherIsBetter ? ratio : 2 - ratio) * 100));
 }
+
+/** Top percentile (100 = best). */
+export function rankPercentile(rank: number, total: number): number {
+  if (total <= 0) return 0;
+  if (total === 1) return 100;
+  return Math.round(((total - rank) / (total - 1)) * 100);
+}
+
+/** Gap from leader as % of leader value (0 = tied for first). */
+export function gapFromLeaderPct(
+  value: number,
+  leaderValue: number,
+  higherIsBetter: boolean
+): number {
+  if (leaderValue <= 0) return 0;
+  if (value === leaderValue) return 0;
+  if (higherIsBetter) {
+    return Math.round(((leaderValue - value) / leaderValue) * 100);
+  }
+  return Math.round(((value - leaderValue) / leaderValue) * 100);
+}

@@ -18,7 +18,7 @@ export function AssessmentCard({ type, summary }: AssessmentCardProps) {
 
   return (
     <Link
-      href={`/profile/assessments/${type}`}
+      href={`/assessments/${type}`}
       className="group flex flex-col rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="flex items-start gap-3">

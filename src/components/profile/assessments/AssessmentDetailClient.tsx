@@ -42,11 +42,11 @@ export function AssessmentDetailClient({ profile, type }: AssessmentDetailClient
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <Link
-        href="/profile"
+        href="/assessments"
         className="inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 hover:underline"
       >
         <ArrowLeft className="size-4" />
-        Back to profile
+        Back to assessments
       </Link>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

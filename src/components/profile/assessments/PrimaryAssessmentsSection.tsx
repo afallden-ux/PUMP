@@ -121,7 +121,7 @@ export function PrimaryAssessmentsSection({
 
       <p className="mt-3 text-center text-xs text-slate-500">
         Tap a test to view progress, log a session, and see history.{" "}
-        <Link href="/profile/assessments/weighted_pullup" className="text-teal-600 underline">
+        <Link href="/assessments/weighted_pullup" className="text-teal-600 underline">
           Example: pull-up test
         </Link>
       </p>

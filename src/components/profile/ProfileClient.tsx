@@ -1,12 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { Award } from "lucide-react";
+import { Award, ClipboardList, ChevronRight } from "lucide-react";
 import { Crags27Panel } from "@/components/profile/Crags27Panel";
 import { EightAPanel } from "@/components/profile/EightAPanel";
 import { MoonboardPanel } from "@/components/profile/MoonboardPanel";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
-import { PrimaryAssessmentsSection } from "@/components/profile/assessments/PrimaryAssessmentsSection";
 import { BadgeGallery } from "@/components/profile/BadgeGallery";
 import { BadgeShowcase } from "@/components/profile/BadgeShowcase";
 import { DeleteAccountSection } from "@/components/profile/DeleteAccountSection";
@@ -31,10 +31,7 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
       <PageHeader
         eyebrow="Account"
         title={profile.username}
-        subtitle={
-          profile.title ||
-          "Log assessments so friends can compare you side by side"
-        }
+        subtitle={profile.title || "Account, logbooks, and settings"}
       />
       <AppCard className="p-5">
       <AvatarUpload
@@ -50,12 +47,23 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
       )}
       </AppCard>
 
-      <AppCard className="p-5">
-        <PrimaryAssessmentsSection
-          profile={profile}
-          onHeightSaved={(height_cm) => setProfile((p) => ({ ...p, height_cm }))}
-        />
-      </AppCard>
+      <Link
+        href="/assessments"
+        className="block rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:border-teal-200 hover:bg-teal-50/40"
+      >
+        <div className="flex items-center gap-3">
+          <span className="flex size-10 items-center justify-center rounded-full bg-teal-100 text-teal-700">
+            <ClipboardList className="size-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-slate-800">Primary assessments</p>
+            <p className="text-xs text-slate-500">
+              Max hang, pull-up, endurance, hip flexibility
+            </p>
+          </div>
+          <ChevronRight className="size-5 shrink-0 text-teal-600" />
+        </div>
+      </Link>
 
       <AppCard className="p-5">
         <MoonboardPanel userId={profile.id} />
@@ -90,7 +98,7 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
           {profile.current_pump_score.toLocaleString()} pts
         </p>
         <p className="mt-1">
-          Badges unlock at 10–1000 logs per track. Compare yourself on Home and Analytics.
+          Badges unlock at 10–1000 logs per track. Log benchmarks under Assessments.
         </p>
       </AppCard>
       <DeleteAccountSection />

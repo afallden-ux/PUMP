@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
+  ClipboardList,
   GitCompare,
   Home,
   LogOut,
@@ -36,6 +37,12 @@ const NAV = [
     label: "Analytics",
     icon: BarChart3,
     match: (p: string) => p.startsWith("/arena"),
+  },
+  {
+    href: "/assessments",
+    label: "Assessments",
+    icon: ClipboardList,
+    match: (p: string) => p.startsWith("/assessments"),
   },
   { href: "/profile", label: "Profile", icon: User, match: (p: string) => p === "/profile" },
 ] as const;
