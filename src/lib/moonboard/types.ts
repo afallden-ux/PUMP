@@ -46,6 +46,10 @@ export interface MoonboardAscent {
   comment: string | null;
 }
 
+import type { MoonboardLogbookRow } from "@/lib/moonboard/logbook";
+
+export type { MoonboardLogbookRow };
+
 export interface MoonboardSummary {
   connected: boolean;
   moonUsername: string | null;
@@ -61,4 +65,10 @@ export interface MoonboardSummary {
     climbedAt: string;
     boardKey: string;
   } | null;
+  logbookImported: boolean;
+  logbookImportedAt: string | null;
+  logbookTotalEntries: number | null;
+  logbookTotalProblems: number | null;
+  logbookScreenshotUrl: string | null;
+  logbook: MoonboardLogbookRow[];
 }

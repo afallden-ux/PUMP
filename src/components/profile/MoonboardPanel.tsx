@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MoonboardLogbookChart } from "@/components/profile/MoonboardLogbookChart";
+import { MoonboardLogbookImport } from "@/components/profile/MoonboardLogbookImport";
 import { MOONBOARD_BOARDS, type MoonboardSummary } from "@/lib/moonboard/types";
 import { createClient } from "@/lib/supabase/client";
 
@@ -33,6 +35,7 @@ export function MoonboardPanel({ userId }: MoonboardPanelProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [schemaMissing, setSchemaMissing] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -94,7 +97,7 @@ export function MoonboardPanel({ userId }: MoonboardPanelProps) {
       });
       const json = await res.json();
       if (!res.ok) {
-        toast.error("MoonBoard connect failed", { description: json.error });
+        toast.error("MoonBoard connect failed", { description: json.error, duration: 10000 });
         return;
       }
       toast.success("MoonBoard connected");
@@ -156,6 +159,7 @@ export function MoonboardPanel({ userId }: MoonboardPanelProps) {
   }
 
   const connected = summary?.connected;
+  const hasLogbook = summary?.logbookImported && (summary.logbook?.length ?? 0) > 0;
 
   return (
     <div className="space-y-4">
@@ -166,143 +170,159 @@ export function MoonboardPanel({ userId }: MoonboardPanelProps) {
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-slate-800">MoonBoard</h3>
           <p className="text-xs text-slate-500">
-            Connect your MoonBoard account to sync ascents into ClimbCompare. Your password is
-            never stored — only an encrypted session.
+            Import your in-app Logbook chart (recommended) or try linking moonboard.com — login
+            often fails from our servers due to bot protection.
           </p>
         </div>
       </div>
 
-      {!connected ? (
-        <form onSubmit={handleConnect} className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/80 p-4">
-          <div className="space-y-2">
-            <Label htmlFor="mb-user">MoonBoard username / email</Label>
-            <Input
-              id="mb-user"
-              autoComplete="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Same as moonboard.com login"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="mb-pass">Password</Label>
-            <Input
-              id="mb-pass"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            className="w-full bg-teal-600 hover:bg-teal-700"
-            disabled={connecting}
-          >
-            {connecting ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
-                Connecting…
-              </>
-            ) : (
-              "Connect MoonBoard"
+      <MoonboardLogbookImport summary={summary} onSaved={refresh} />
+
+      {hasLogbook && summary && (
+        <div className="space-y-2">
+          <p className="text-xs text-slate-500">
+            {summary.logbookTotalEntries != null && (
+              <span>{summary.logbookTotalEntries} entries · </span>
             )}
-          </Button>
-        </form>
-      ) : (
-        <>
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm text-slate-600">
-              Linked as{" "}
-              <strong className="text-slate-800">{summary.moonUsername}</strong>
-            </p>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={handleSync}
-              disabled={syncing}
-            >
-              {syncing ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <RefreshCw className="size-4" />
-              )}
-              <span className="ml-1.5">Sync now</span>
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="text-slate-500"
-              onClick={handleDisconnect}
-            >
-              <Unplug className="size-4" />
-              <span className="ml-1">Disconnect</span>
-            </Button>
-          </div>
-
-          {summary.lastSyncError && (
-            <p className="text-xs text-red-600">Last sync: {summary.lastSyncError}</p>
-          )}
-          {summary.lastSyncAt && (
-            <p className="text-[10px] text-slate-400">
-              Last synced {new Date(summary.lastSyncAt).toLocaleString()}
-            </p>
-          )}
-
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Stat label="Total ascents" value={String(summary.totalAscents)} />
-            <Stat label="Last 30 days" value={String(summary.ascentsLast30Days)} />
+            {summary.logbookTotalProblems ?? summary.totalAscents} problems
+            {summary.logbookImportedAt && (
+              <span>
+                {" "}
+                · imported {new Date(summary.logbookImportedAt).toLocaleDateString()}
+              </span>
+            )}
+          </p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <Stat label="Problems" value={String(summary.totalAscents)} />
             <Stat label="Hardest send" value={summary.hardestGrade ?? "—"} />
-            <Stat
-              label="Latest"
-              value={
-                summary.latestAscent
-                  ? summary.latestAscent.grade ?? "—"
-                  : "—"
-              }
-              sub={
-                summary.latestAscent
-                  ? summary.latestAscent.climbName.slice(0, 18)
-                  : undefined
-              }
-            />
+            <Stat label="Grade bands" value={String(summary.logbook.length)} />
           </div>
-
-          {recent.length > 0 ? (
-            <div className="overflow-hidden rounded-lg border border-slate-200">
-              <p className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Recent ascents
-              </p>
-              <ul className="max-h-64 divide-y divide-slate-100 overflow-y-auto">
-                {recent.map((row) => (
-                  <li key={row.id} className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
-                    <div className="min-w-0">
-                      <p className="truncate font-medium text-slate-800">{row.climb_name}</p>
-                      <p className="text-[10px] text-slate-400">
-                        {MOONBOARD_BOARDS[row.board_key as keyof typeof MOONBOARD_BOARDS]
-                          ?.label ?? row.board_key}{" "}
-                        · {row.climbed_at}
-                        {row.tries ? ` · ${row.tries} try` : ""}
-                      </p>
-                    </div>
-                    <span className="shrink-0 font-semibold tabular-nums text-teal-700">
-                      {row.grade_logged ?? row.grade_display ?? "—"}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="text-center text-sm text-slate-500 py-4">
-              No ascents yet — tap Sync now to import your logbook.
-            </p>
-          )}
-        </>
+          <MoonboardLogbookChart rows={summary.logbook} height={240} />
+        </div>
       )}
+
+      <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+        <button
+          type="button"
+          className="text-xs font-semibold text-slate-600 hover:text-slate-800"
+          onClick={() => setShowLogin((v) => !v)}
+        >
+          {showLogin ? "Hide" : "Show"} moonboard.com login (often blocked)
+        </button>
+
+        {showLogin && !connected && (
+          <form onSubmit={handleConnect} className="mt-3 space-y-3">
+            <div className="space-y-2">
+              <Label htmlFor="mb-user">MoonBoard username / email</Label>
+              <Input
+                id="mb-user"
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Same as moonboard.com login"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="mb-pass">Password</Label>
+              <Input
+                id="mb-pass"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              variant="outline"
+              className="w-full"
+              disabled={connecting}
+            >
+              {connecting ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Connecting…
+                </>
+              ) : (
+                "Connect MoonBoard"
+              )}
+            </Button>
+          </form>
+        )}
+
+        {showLogin && connected && summary && (
+          <>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <p className="text-sm text-slate-600">
+                Linked as{" "}
+                <strong className="text-slate-800">{summary.moonUsername}</strong>
+              </p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={handleSync}
+                disabled={syncing}
+              >
+                {syncing ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="size-4" />
+                )}
+                <span className="ml-1.5">Sync now</span>
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="text-slate-500"
+                onClick={handleDisconnect}
+              >
+                <Unplug className="size-4" />
+                <span className="ml-1">Disconnect</span>
+              </Button>
+            </div>
+
+            {summary.lastSyncError && (
+              <p className="mt-2 text-xs text-red-600">Last sync: {summary.lastSyncError}</p>
+            )}
+
+            {recent.length > 0 ? (
+              <div className="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white">
+                <p className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Recent ascents (API sync)
+                </p>
+                <ul className="max-h-48 divide-y divide-slate-100 overflow-y-auto">
+                  {recent.map((row) => (
+                    <li
+                      key={row.id}
+                      className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-slate-800">{row.climb_name}</p>
+                        <p className="text-[10px] text-slate-400">
+                          {MOONBOARD_BOARDS[row.board_key as keyof typeof MOONBOARD_BOARDS]
+                            ?.label ?? row.board_key}{" "}
+                          · {row.climbed_at}
+                        </p>
+                      </div>
+                      <span className="shrink-0 font-semibold tabular-nums text-teal-700">
+                        {row.grade_logged ?? row.grade_display ?? "—"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="mt-2 text-center text-xs text-slate-500">
+                No API ascents — use logbook import above.
+              </p>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -9,6 +9,8 @@ import type { LeaderboardAthlete } from "@/lib/leaderboards/types";
 import { pctBodyWeight, pctHeight } from "@/lib/assessments/format";
 import { statsFromTreeRows } from "@/lib/crags27/ascentTree";
 import type { Crags27TreeRow } from "@/lib/crags27/types";
+import { statsFromLogbookRows } from "@/lib/moonboard/logbook";
+import type { MoonboardLogbookRow } from "@/lib/moonboard/logbook";
 import { maxHardestGrade } from "@/lib/utils/hardestGrade";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile } from "@/types/app";
@@ -84,6 +86,48 @@ function crags27TreeStats(
     const stats = statsFromTreeRows(tree);
     hardest.set(userId, stats.hardestGrade);
     total.set(userId, stats.totalAscents);
+  }
+
+  return { hardest, total };
+}
+
+function moonboardLogbookStats(
+  rows: {
+    user_id: string;
+    grade: string;
+    flashed: number;
+    second_try: number;
+    third_try: number;
+    more_tries: number;
+    total: number;
+  }[],
+  metaByUser: Map<string, number | null>
+) {
+  const byUser = new Map<string, MoonboardLogbookRow[]>();
+  for (const row of rows) {
+    const list = byUser.get(row.user_id) ?? [];
+    list.push({
+      grade: row.grade,
+      flashed: row.flashed,
+      secondTry: row.second_try,
+      thirdTry: row.third_try,
+      moreTries: row.more_tries,
+      total: row.total,
+    });
+    byUser.set(row.user_id, list);
+  }
+
+  const hardest = new Map<string, FontGrade | null>();
+  const total = new Map<string, number>();
+
+  for (const [userId, logbook] of byUser) {
+    const stats = statsFromLogbookRows(logbook);
+    const metaTotal = metaByUser.get(userId);
+    hardest.set(userId, stats.hardestGrade);
+    total.set(
+      userId,
+      metaTotal != null && metaTotal > 0 ? metaTotal : stats.totalProblems
+    );
   }
 
   return { hardest, total };
@@ -191,6 +235,8 @@ export async function fetchLeaderboardAthletes(
     logCountsRes,
     leaderboardRes,
     moonRes,
+    moonLogbookStatsRes,
+    moonLogbookMetaRes,
     crags27Res,
     eightaRes,
   ] = await Promise.all([
@@ -215,6 +261,10 @@ export async function fetchLeaderboardAthletes(
     supabase
       .from("moonboard_ascents")
       .select("user_id, climbed_at, grade_display, grade_logged"),
+    supabase
+      .from("moonboard_logbook_stats")
+      .select("user_id, grade, flashed, second_try, third_try, more_tries, total"),
+    supabase.from("moonboard_logbook_meta").select("user_id, total_problems"),
     supabase
       .from("crags27_ascent_tree")
       .select("user_id, grade, total, onsight, flash, redpoint, toprope"),
@@ -291,6 +341,39 @@ export async function fetchLeaderboardAthletes(
         }[]);
 
   const moonStats = ascentStats(moonRows);
+
+  const moonLogbookMetaByUser = new Map<string, number | null>();
+  if (
+    !moonLogbookMetaRes.error?.message?.includes("moonboard_logbook") &&
+    moonLogbookMetaRes.data
+  ) {
+    for (const row of moonLogbookMetaRes.data) {
+      moonLogbookMetaByUser.set(
+        row.user_id as string,
+        row.total_problems as number | null
+      );
+    }
+  }
+
+  const moonLogbookRows =
+    moonLogbookStatsRes.error?.message?.includes("moonboard_logbook") ||
+    !moonLogbookStatsRes.data
+      ? []
+      : (moonLogbookStatsRes.data as {
+          user_id: string;
+          grade: string;
+          flashed: number;
+          second_try: number;
+          third_try: number;
+          more_tries: number;
+          total: number;
+        }[]);
+
+  const moonLogbookAgg = moonboardLogbookStats(
+    moonLogbookRows,
+    moonLogbookMetaByUser
+  );
+
   const crags27Stats = crags27TreeStats(crags27TreeRows);
   const eightaStats = ascentStats(eightaRows);
 
@@ -329,8 +412,16 @@ export async function fetchLeaderboardAthletes(
         hipFlexibilityCm: hipCm,
         hipFlexibilityPctHeight: pctHeight(hipCm, heightCm),
         hardestGradeOutdoor: maxHardestGrade(outdoorGrades.get(profile.id) ?? []),
-        moonboardHardestGrade: moonStats.hardest.get(profile.id) ?? null,
-        moonboardTotalAscents: moonStats.total.get(profile.id) ?? 0,
+        moonboardHardestGrade: maxHardestGrade(
+          [
+            moonStats.hardest.get(profile.id) ?? null,
+            moonLogbookAgg.hardest.get(profile.id) ?? null,
+          ].filter(Boolean) as FontGrade[]
+        ),
+        moonboardTotalAscents: Math.max(
+          moonStats.total.get(profile.id) ?? 0,
+          moonLogbookAgg.total.get(profile.id) ?? 0
+        ),
         moonboardAscents30d: moonStats.last30.get(profile.id) ?? 0,
         crags27HardestGrade: crags27Stats.hardest.get(profile.id) ?? null,
         crags27TotalAscents: crags27Stats.total.get(profile.id) ?? 0,

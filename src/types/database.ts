@@ -413,6 +413,82 @@ export interface Database {
           },
         ];
       };
+      moonboard_logbook_meta: {
+        Row: {
+          user_id: string;
+          total_entries: number | null;
+          total_problems: number | null;
+          screenshot_url: string | null;
+          imported_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          total_entries?: number | null;
+          total_problems?: number | null;
+          screenshot_url?: string | null;
+          imported_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          total_entries?: number | null;
+          total_problems?: number | null;
+          screenshot_url?: string | null;
+          imported_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "moonboard_logbook_meta_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      moonboard_logbook_stats: {
+        Row: {
+          user_id: string;
+          grade: string;
+          flashed: number;
+          second_try: number;
+          third_try: number;
+          more_tries: number;
+          total: number;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          grade: string;
+          flashed?: number;
+          second_try?: number;
+          third_try?: number;
+          more_tries?: number;
+          total?: number;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          grade?: string;
+          flashed?: number;
+          second_try?: number;
+          third_try?: number;
+          more_tries?: number;
+          total?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "moonboard_logbook_stats_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       moonboard_ascents: {
         Row: {
           id: string;

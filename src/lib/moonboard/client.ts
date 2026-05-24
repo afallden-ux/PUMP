@@ -63,6 +63,11 @@ export async function moonboardLogin(
   const jar = new CookieJar();
 
   const loginPage = await fetchWithJar(`${MOONBOARD_HOST}/account/login`, jar);
+  if (loginPage.status === 403 || loginPage.status === 503) {
+    throw new Error(
+      "MoonBoard blocks automated login from ClimbCompare (bot protection). Use Logbook import from a screenshot instead."
+    );
+  }
   if (!loginPage.ok) {
     throw new Error(`MoonBoard login page failed (${loginPage.status})`);
   }

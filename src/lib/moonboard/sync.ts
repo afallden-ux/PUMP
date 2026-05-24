@@ -4,10 +4,118 @@ import {
   getMoonboardSessionSecret,
 } from "@/lib/moonboard/sessionCrypto";
 import { fetchMoonboardAscents, moonboardLogin } from "@/lib/moonboard/client";
+import {
+  sortLogbookRowsDesc,
+  statsFromLogbookRows,
+  type MoonboardLogbookRow,
+} from "@/lib/moonboard/logbook";
 import type { MoonboardSummary } from "@/lib/moonboard/types";
 import { maxHardestGrade } from "@/lib/utils/hardestGrade";
 import type { FontGrade } from "@/lib/constants/fontGrades";
 import type { SupabaseClient } from "@supabase/supabase-js";
+
+type LogbookSummaryPart = Pick<
+  MoonboardSummary,
+  | "logbookImported"
+  | "logbookImportedAt"
+  | "logbookTotalEntries"
+  | "logbookTotalProblems"
+  | "logbookScreenshotUrl"
+  | "logbook"
+>;
+
+const LOGBOOK_EMPTY: LogbookSummaryPart = {
+  logbookImported: false,
+  logbookImportedAt: null,
+  logbookTotalEntries: null,
+  logbookTotalProblems: null,
+  logbookScreenshotUrl: null,
+  logbook: [],
+};
+
+async function fetchLogbookPart(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<LogbookSummaryPart> {
+  const { data: meta, error: metaErr } = await supabase
+    .from("moonboard_logbook_meta")
+    .select("total_entries, total_problems, screenshot_url, imported_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (metaErr?.message.includes("moonboard_logbook")) {
+    return { ...LOGBOOK_EMPTY };
+  }
+
+  const { data: stats, error: statsErr } = await supabase
+    .from("moonboard_logbook_stats")
+    .select("grade, flashed, second_try, third_try, more_tries, total")
+    .eq("user_id", userId);
+
+  if (statsErr?.message.includes("moonboard_logbook")) {
+    return { ...LOGBOOK_EMPTY };
+  }
+
+  const logbook: MoonboardLogbookRow[] = (stats ?? []).map((r) => ({
+    grade: r.grade as string,
+    flashed: r.flashed as number,
+    secondTry: r.second_try as number,
+    thirdTry: r.third_try as number,
+    moreTries: r.more_tries as number,
+    total: r.total as number,
+  }));
+
+  if (!meta && logbook.length === 0) {
+    return { ...LOGBOOK_EMPTY };
+  }
+
+  return {
+    logbookImported: true,
+    logbookImportedAt: (meta?.imported_at as string | null) ?? null,
+    logbookTotalEntries: (meta?.total_entries as number | null) ?? null,
+    logbookTotalProblems: (meta?.total_problems as number | null) ?? null,
+    logbookScreenshotUrl: (meta?.screenshot_url as string | null) ?? null,
+    logbook: sortLogbookRowsDesc(logbook),
+  };
+}
+
+function mergeSummaryTotals(
+  apiTotal: number,
+  apiHardest: FontGrade | null,
+  logbook: MoonboardLogbookRow[],
+  metaProblems: number | null
+): { totalAscents: number; hardestGrade: FontGrade | null } {
+  const fromRows = statsFromLogbookRows(logbook);
+  const logbookTotal =
+    metaProblems != null && metaProblems > 0
+      ? metaProblems
+      : fromRows.totalProblems;
+
+  const totalAscents = Math.max(apiTotal, logbookTotal);
+  const hardestGrade = maxHardestGrade(
+    [apiHardest, fromRows.hardestGrade].filter(Boolean) as FontGrade[]
+  );
+
+  return { totalAscents, hardestGrade };
+}
+
+function summaryWhenNoConnection(logbookPart: LogbookSummaryPart): MoonboardSummary {
+  const fromLogbook = statsFromLogbookRows(logbookPart.logbook);
+  return {
+    connected: false,
+    moonUsername: null,
+    lastSyncAt: null,
+    lastSyncStatus: "never",
+    lastSyncError: null,
+    totalAscents: logbookPart.logbookImported
+      ? (logbookPart.logbookTotalProblems ?? fromLogbook.totalProblems)
+      : 0,
+    ascentsLast30Days: 0,
+    hardestGrade: fromLogbook.hardestGrade,
+    latestAscent: null,
+    ...logbookPart,
+  };
+}
 
 export async function connectMoonboard(
   supabase: SupabaseClient,
@@ -121,6 +229,8 @@ export async function getMoonboardSummary(
   supabase: SupabaseClient,
   userId: string
 ): Promise<MoonboardSummary> {
+  const logbookPart = await fetchLogbookPart(supabase, userId);
+
   const { data: conn, error: connErr } = await supabase
     .from("moonboard_connections")
     .select("moon_username, last_sync_at, last_sync_status, last_sync_error")
@@ -128,38 +238,16 @@ export async function getMoonboardSummary(
     .maybeSingle();
 
   if (connErr?.message.includes("moonboard")) {
-    return {
-      connected: false,
-      moonUsername: null,
-      lastSyncAt: null,
-      lastSyncStatus: "never",
-      lastSyncError: null,
-      totalAscents: 0,
-      ascentsLast30Days: 0,
-      hardestGrade: null,
-      latestAscent: null,
-    };
+    return summaryWhenNoConnection(logbookPart);
   }
 
   if (!conn) {
-    return {
-      connected: false,
-      moonUsername: null,
-      lastSyncAt: null,
-      lastSyncStatus: "never",
-      lastSyncError: null,
-      totalAscents: 0,
-      ascentsLast30Days: 0,
-      hardestGrade: null,
-      latestAscent: null,
-    };
+    return summaryWhenNoConnection(logbookPart);
   }
 
   const { data: ascents } = await supabase
     .from("moonboard_ascents")
-    .select(
-      "climb_name, climbed_at, grade_display, grade_logged, board_key"
-    )
+    .select("climb_name, climbed_at, grade_display, grade_logged, board_key")
     .eq("user_id", userId)
     .order("climbed_at", { ascending: false });
 
@@ -171,8 +259,14 @@ export async function getMoonboardSummary(
   const grades = rows
     .map((r) => (r.grade_logged || r.grade_display) as FontGrade | null)
     .filter(Boolean);
-  const hardest = maxHardestGrade(grades);
+  const apiHardest = maxHardestGrade(grades);
   const latest = rows[0];
+  const merged = mergeSummaryTotals(
+    rows.length,
+    apiHardest,
+    logbookPart.logbook,
+    logbookPart.logbookTotalProblems
+  );
 
   return {
     connected: true,
@@ -180,9 +274,9 @@ export async function getMoonboardSummary(
     lastSyncAt: conn.last_sync_at,
     lastSyncStatus: conn.last_sync_status,
     lastSyncError: conn.last_sync_error,
-    totalAscents: rows.length,
+    totalAscents: merged.totalAscents,
     ascentsLast30Days: rows.filter((r) => r.climbed_at >= cutoff).length,
-    hardestGrade: hardest,
+    hardestGrade: merged.hardestGrade,
     latestAscent: latest
       ? {
           climbName: latest.climb_name,
@@ -191,5 +285,6 @@ export async function getMoonboardSummary(
           boardKey: latest.board_key,
         }
       : null,
+    ...logbookPart,
   };
 }
