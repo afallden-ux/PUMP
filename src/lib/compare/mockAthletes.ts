@@ -75,6 +75,14 @@ function buildSnapshot(
     moonboardAscents30d: rest.moonboardAscents30d ?? 0,
     moonboardHardestGrade: rest.moonboardHardestGrade ?? null,
     moonboardLatestClimb: rest.moonboardLatestClimb ?? null,
+    crags27TotalAscents: rest.crags27TotalAscents ?? 0,
+    crags27Ascents30d: rest.crags27Ascents30d ?? 0,
+    crags27HardestGrade: rest.crags27HardestGrade ?? null,
+    crags27LatestClimb: rest.crags27LatestClimb ?? null,
+    eightaTotalAscents: rest.eightaTotalAscents ?? 0,
+    eightaAscents30d: rest.eightaAscents30d ?? 0,
+    eightaHardestGrade: rest.eightaHardestGrade ?? null,
+    eightaLatestClimb: rest.eightaLatestClimb ?? null,
   };
 }
 
@@ -149,6 +157,14 @@ const MOCK_SNAPSHOTS: Record<string, CompareSnapshot> = {
     moonboardAscents30d: 28,
     moonboardHardestGrade: "8A",
     moonboardLatestClimb: "The Hatchling",
+    crags27TotalAscents: 890,
+    crags27Ascents30d: 14,
+    crags27HardestGrade: "8A",
+    crags27LatestClimb: "La Rustica",
+    eightaTotalAscents: 1204,
+    eightaAscents30d: 9,
+    eightaHardestGrade: "9A",
+    eightaLatestClimb: "Silence",
     assessments: {
       finger_strength: mockLog(MOCK_COMPARE_IDS.paul, "finger_strength", daysAgoIso(45), {
         body_weight_kg: 74,
@@ -189,6 +205,14 @@ const MOCK_SNAPSHOTS: Record<string, CompareSnapshot> = {
     moonboardAscents30d: 12,
     moonboardHardestGrade: "7C+",
     moonboardLatestClimb: "Stretch Armstrong",
+    crags27TotalAscents: 210,
+    crags27Ascents30d: 8,
+    crags27HardestGrade: "7C",
+    crags27LatestClimb: "Panorama",
+    eightaTotalAscents: 340,
+    eightaAscents30d: 5,
+    eightaHardestGrade: "7C+",
+    eightaLatestClimb: "Gecko",
     assessments: {
       finger_strength: mockLog(MOCK_COMPARE_IDS.carl, "finger_strength", daysAgoIso(20), {
         body_weight_kg: 78,
@@ -226,6 +250,14 @@ const MOCK_SNAPSHOTS: Record<string, CompareSnapshot> = {
     moonboardAscents30d: 22,
     moonboardHardestGrade: "7B+",
     moonboardLatestClimb: "Amandla",
+    crags27TotalAscents: 445,
+    crags27Ascents30d: 18,
+    crags27HardestGrade: "7B+",
+    crags27LatestClimb: "Maya Line",
+    eightaTotalAscents: 512,
+    eightaAscents30d: 11,
+    eightaHardestGrade: "7B+",
+    eightaLatestClimb: "Blue Sun",
     assessments: {
       finger_strength: mockLog(MOCK_COMPARE_IDS.maya, "finger_strength", daysAgoIso(120), {
         body_weight_kg: 68,
@@ -264,6 +296,14 @@ const MOCK_SNAPSHOTS: Record<string, CompareSnapshot> = {
     moonboardAscents30d: 6,
     moonboardHardestGrade: "7A",
     moonboardLatestClimb: "Easy Pickings",
+    crags27TotalAscents: 42,
+    crags27Ascents30d: 4,
+    crags27HardestGrade: "7A",
+    crags27LatestClimb: "Warm-up Wall",
+    eightaTotalAscents: 88,
+    eightaAscents30d: 3,
+    eightaHardestGrade: "7A",
+    eightaLatestClimb: "First Steps",
     assessments: {
       finger_strength: mockLog(MOCK_COMPARE_IDS.adam, "finger_strength", daysAgoIso(55), {
         body_weight_kg: 66,

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Award } from "lucide-react";
+import { Crags27Panel } from "@/components/profile/Crags27Panel";
+import { EightAPanel } from "@/components/profile/EightAPanel";
 import { MoonboardPanel } from "@/components/profile/MoonboardPanel";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { PrimaryAssessmentsSection } from "@/components/profile/assessments/PrimaryAssessmentsSection";
@@ -57,6 +59,14 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
 
       <AppCard className="p-5">
         <MoonboardPanel userId={profile.id} />
+      </AppCard>
+
+      <AppCard className="p-5">
+        <Crags27Panel userId={profile.id} />
+      </AppCard>
+
+      <AppCard className="p-5">
+        <EightAPanel userId={profile.id} />
       </AppCard>
 
       <CollapsibleSection

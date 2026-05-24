@@ -7,7 +7,6 @@ import { BarChart3, Clock, MessageCircle, TrendingUp } from "lucide-react";
 import { AvatarEvolution } from "@/components/avatar/AvatarEvolution";
 import { CouchOfShame } from "@/components/dashboard/CouchOfShame";
 import { HoursComparisonChart } from "@/components/dashboard/HoursComparisonChart";
-import { LeaderboardsPanel } from "@/components/dashboard/LeaderboardsPanel";
 import { PlatformWeeklyChart } from "@/components/dashboard/PlatformWeeklyChart";
 import { QuickLogFab } from "@/components/dashboard/QuickLogFab";
 import { SessionHistoryList } from "@/components/dashboard/SessionHistoryList";
@@ -94,21 +93,14 @@ export function DashboardClient({
         />
 
         <div className="grid gap-5 lg:grid-cols-12">
-          <div className="space-y-5 lg:col-span-5">
-            <LeaderboardsPanel
-              weeklyEntries={weeklyEntries}
-              lifetimeEntries={lifetimeEntries}
-              currentUserId={currentProfile.id}
+          <div className="hidden lg:col-span-5 lg:block">
+            <AvatarEvolution
+              profile={currentProfile}
+              sessionCounts={sessionCounts}
             />
-            <div className="hidden lg:block">
-              <AvatarEvolution
-                profile={currentProfile}
-                sessionCounts={sessionCounts}
-              />
-            </div>
           </div>
 
-          <AppCard className="space-y-3 p-4 lg:col-span-7">
+          <AppCard className="space-y-3 p-4 lg:col-span-7 lg:col-start-6">
             <div className="flex items-center justify-between gap-2">
               <p className="text-sm font-semibold text-slate-700">Recent feed</p>
               <Link
@@ -146,11 +138,19 @@ export function DashboardClient({
 
         <CollapsibleSection
           title="Platform weekly"
-          subtitle="7-day leaderboard snapshot"
+          subtitle="7-day points snapshot — full boards on Leaderboards"
           icon={TrendingUp}
           defaultOpen={false}
         >
           <PlatformWeeklyChart entries={weeklyEntries} />
+          <p className="mt-3 text-center text-sm">
+            <Link
+              href="/leaderboards"
+              className="font-semibold text-teal-700 hover:text-teal-800"
+            >
+              Open all leaderboards →
+            </Link>
+          </p>
         </CollapsibleSection>
 
         <CollapsibleSection

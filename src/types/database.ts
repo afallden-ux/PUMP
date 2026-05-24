@@ -469,6 +469,200 @@ export interface Database {
           },
         ];
       };
+      crags27_connections: {
+        Row: {
+          user_id: string;
+          login_username: string;
+          profile_slug: string;
+          session_cookies: string;
+          last_sync_at: string | null;
+          last_sync_status: string;
+          last_sync_error: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          login_username: string;
+          profile_slug: string;
+          session_cookies: string;
+          last_sync_at?: string | null;
+          last_sync_status?: string;
+          last_sync_error?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          login_username?: string;
+          profile_slug?: string;
+          session_cookies?: string;
+          last_sync_at?: string | null;
+          last_sync_status?: string;
+          last_sync_error?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "crags27_connections_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      crags27_ascents: {
+        Row: {
+          id: string;
+          user_id: string;
+          external_key: string;
+          climb_name: string;
+          climbed_at: string;
+          grade_display: string | null;
+          ascent_style: string | null;
+          crag_name: string | null;
+          route_type: string | null;
+          comment: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          external_key: string;
+          climb_name: string;
+          climbed_at: string;
+          grade_display?: string | null;
+          ascent_style?: string | null;
+          crag_name?: string | null;
+          route_type?: string | null;
+          comment?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          external_key?: string;
+          climb_name?: string;
+          climbed_at?: string;
+          grade_display?: string | null;
+          ascent_style?: string | null;
+          crag_name?: string | null;
+          route_type?: string | null;
+          comment?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "crags27_ascents_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      eighta_connections: {
+        Row: {
+          user_id: string;
+          profile_slug: string;
+          login_username: string;
+          session_cookies: string;
+          last_sync_at: string | null;
+          last_sync_status: string;
+          last_sync_error: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          profile_slug: string;
+          login_username: string;
+          session_cookies?: string;
+          last_sync_at?: string | null;
+          last_sync_status?: string;
+          last_sync_error?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          profile_slug?: string;
+          login_username?: string;
+          session_cookies?: string;
+          last_sync_at?: string | null;
+          last_sync_status?: string;
+          last_sync_error?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "eighta_connections_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      eighta_ascents: {
+        Row: {
+          id: string;
+          user_id: string;
+          external_key: string;
+          category: string;
+          climb_name: string;
+          climbed_at: string;
+          grade_display: string | null;
+          ascent_style: string | null;
+          crag_name: string | null;
+          area_name: string | null;
+          comment: string | null;
+          rating: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          external_key: string;
+          category: string;
+          climb_name: string;
+          climbed_at: string;
+          grade_display?: string | null;
+          ascent_style?: string | null;
+          crag_name?: string | null;
+          area_name?: string | null;
+          comment?: string | null;
+          rating?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          external_key?: string;
+          category?: string;
+          climb_name?: string;
+          climbed_at?: string;
+          grade_display?: string | null;
+          ascent_style?: string | null;
+          crag_name?: string | null;
+          area_name?: string | null;
+          comment?: string | null;
+          rating?: number | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "eighta_ascents_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       leaderboard_7d: {

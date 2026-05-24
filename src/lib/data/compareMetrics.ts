@@ -8,6 +8,8 @@ import {
   pctBodyWeight,
   pctHeight,
 } from "@/lib/assessments/format";
+import { getCrags27Summary } from "@/lib/crags27/sync";
+import { getEightaSummary } from "@/lib/eighta/sync";
 import { getMoonboardSummary } from "@/lib/moonboard/sync";
 import { maxHardestGrade } from "@/lib/utils/hardestGrade";
 import type { FontGrade } from "@/lib/constants/fontGrades";
@@ -70,6 +72,8 @@ export async function fetchCompareSnapshot(
     countRes,
     leaderboardRes,
     moonSummary,
+    crags27Summary,
+    eightaSummary,
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -99,6 +103,8 @@ export async function fetchCompareSnapshot(
       .eq("user_id", userId),
     supabase.from("leaderboard_7d").select("*").order("points_7d", { ascending: false }),
     getMoonboardSummary(supabase, userId),
+    getCrags27Summary(supabase, userId),
+    getEightaSummary(supabase, userId),
   ]);
 
   if (profileRes.error || !profileRes.data) return null;
@@ -173,5 +179,13 @@ export async function fetchCompareSnapshot(
     moonboardAscents30d: moonSummary.ascentsLast30Days,
     moonboardHardestGrade: moonSummary.hardestGrade,
     moonboardLatestClimb: moonSummary.latestAscent?.climbName ?? null,
+    crags27TotalAscents: crags27Summary.totalAscents,
+    crags27Ascents30d: crags27Summary.ascentsLast30Days,
+    crags27HardestGrade: crags27Summary.hardestGrade,
+    crags27LatestClimb: crags27Summary.latestAscent?.climbName ?? null,
+    eightaTotalAscents: eightaSummary.totalAscents,
+    eightaAscents30d: eightaSummary.ascentsLast30Days,
+    eightaHardestGrade: eightaSummary.hardestGrade,
+    eightaLatestClimb: eightaSummary.latestAscent?.climbName ?? null,
   };
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Clock, Flame, Target, Trophy } from "lucide-react";
 import type { LeaderboardEntry, Profile, WorkoutLog } from "@/types/app";
 import type { SessionCounts } from "@/lib/data/sessionBadges";
@@ -61,21 +62,41 @@ export function StatsOverview({
 
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {cards.map((c) => (
-        <div
-          key={c.label}
-          className="rounded-lg border border-slate-200/90 bg-white p-3 shadow-sm lg:p-4"
-        >
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 lg:text-xs">
-              {c.label}
-            </p>
-            <c.icon className={`size-4 shrink-0 ${c.accent}`} />
+      {cards.map((c) => {
+        const inner = (
+          <>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 lg:text-xs">
+                {c.label}
+              </p>
+              <c.icon className={`size-4 shrink-0 ${c.accent}`} />
+            </div>
+            <p className="mt-1 text-xl font-bold text-slate-800 lg:text-2xl">{c.value}</p>
+            <p className="text-[10px] text-slate-500 lg:text-xs">{c.sub}</p>
+          </>
+        );
+
+        if (c.label === "7-day rank") {
+          return (
+            <Link
+              key={c.label}
+              href="/leaderboards"
+              className="rounded-lg border border-slate-200/90 bg-white p-3 shadow-sm transition-colors hover:border-teal-200 hover:bg-teal-50/30 lg:p-4"
+            >
+              {inner}
+            </Link>
+          );
+        }
+
+        return (
+          <div
+            key={c.label}
+            className="rounded-lg border border-slate-200/90 bg-white p-3 shadow-sm lg:p-4"
+          >
+            {inner}
           </div>
-          <p className="mt-1 text-xl font-bold text-slate-800 lg:text-2xl">{c.value}</p>
-          <p className="text-[10px] text-slate-500 lg:text-xs">{c.sub}</p>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

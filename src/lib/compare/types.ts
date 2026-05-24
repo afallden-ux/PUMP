@@ -28,4 +28,12 @@ export interface CompareSnapshot {
   moonboardAscents30d: number;
   moonboardHardestGrade: FontGrade | null;
   moonboardLatestClimb: string | null;
+  crags27TotalAscents: number;
+  crags27Ascents30d: number;
+  crags27HardestGrade: FontGrade | null;
+  crags27LatestClimb: string | null;
+  eightaTotalAscents: number;
+  eightaAscents30d: number;
+  eightaHardestGrade: FontGrade | null;
+  eightaLatestClimb: string | null;
 }

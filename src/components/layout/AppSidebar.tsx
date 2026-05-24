@@ -8,6 +8,7 @@ import {
   Home,
   LogOut,
   MessageCircle,
+  Trophy,
   User,
 } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
@@ -22,6 +23,12 @@ const NAV = [
     label: "Compare",
     icon: GitCompare,
     match: (p: string) => p.startsWith("/compare"),
+  },
+  {
+    href: "/leaderboards",
+    label: "Leaderboards",
+    icon: Trophy,
+    match: (p: string) => p.startsWith("/leaderboards"),
   },
   { href: "/feed", label: "Feed", icon: MessageCircle, match: (p: string) => p === "/feed" },
   {
