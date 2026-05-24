@@ -8,6 +8,7 @@ import {
   pctBodyWeight,
   pctHeight,
 } from "@/lib/assessments/format";
+import { getMoonboardSummary } from "@/lib/moonboard/sync";
 import { maxHardestGrade } from "@/lib/utils/hardestGrade";
 import type { FontGrade } from "@/lib/constants/fontGrades";
 import type { Profile } from "@/types/app";
@@ -68,6 +69,7 @@ export async function fetchCompareSnapshot(
     gradesRes,
     countRes,
     leaderboardRes,
+    moonSummary,
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -96,6 +98,7 @@ export async function fetchCompareSnapshot(
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId),
     supabase.from("leaderboard_7d").select("*").order("points_7d", { ascending: false }),
+    getMoonboardSummary(supabase, userId),
   ]);
 
   if (profileRes.error || !profileRes.data) return null;
@@ -166,5 +169,9 @@ export async function fetchCompareSnapshot(
     weeklyPoints: weeklyRow?.points_7d ?? 0,
     weeklyRank: weeklyIdx >= 0 ? weeklyIdx + 1 : null,
     latestByAssessment,
+    moonboardTotalAscents: moonSummary.totalAscents,
+    moonboardAscents30d: moonSummary.ascentsLast30Days,
+    moonboardHardestGrade: moonSummary.hardestGrade,
+    moonboardLatestClimb: moonSummary.latestAscent?.climbName ?? null,
   };
 }

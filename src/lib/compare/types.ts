@@ -24,4 +24,8 @@ export interface CompareSnapshot {
   weeklyPoints: number;
   weeklyRank: number | null;
   latestByAssessment: Record<AssessmentType, AssessmentLog | null>;
+  moonboardTotalAscents: number;
+  moonboardAscents30d: number;
+  moonboardHardestGrade: FontGrade | null;
+  moonboardLatestClimb: string | null;
 }

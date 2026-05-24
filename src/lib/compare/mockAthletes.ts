@@ -71,6 +71,10 @@ function buildSnapshot(
     ...rest,
     lifetimeScore: profile.current_pump_score,
     latestByAssessment,
+    moonboardTotalAscents: rest.moonboardTotalAscents ?? 0,
+    moonboardAscents30d: rest.moonboardAscents30d ?? 0,
+    moonboardHardestGrade: rest.moonboardHardestGrade ?? null,
+    moonboardLatestClimb: rest.moonboardLatestClimb ?? null,
   };
 }
 
@@ -141,6 +145,10 @@ const MOCK_SNAPSHOTS: Record<string, CompareSnapshot> = {
     totalLogs: 186,
     weeklyPoints: 412,
     weeklyRank: 2,
+    moonboardTotalAscents: 412,
+    moonboardAscents30d: 28,
+    moonboardHardestGrade: "8A",
+    moonboardLatestClimb: "The Hatchling",
     assessments: {
       finger_strength: mockLog(MOCK_COMPARE_IDS.paul, "finger_strength", daysAgoIso(45), {
         body_weight_kg: 74,
@@ -177,6 +185,10 @@ const MOCK_SNAPSHOTS: Record<string, CompareSnapshot> = {
     totalLogs: 94,
     weeklyPoints: 198,
     weeklyRank: 5,
+    moonboardTotalAscents: 156,
+    moonboardAscents30d: 12,
+    moonboardHardestGrade: "7C+",
+    moonboardLatestClimb: "Stretch Armstrong",
     assessments: {
       finger_strength: mockLog(MOCK_COMPARE_IDS.carl, "finger_strength", daysAgoIso(20), {
         body_weight_kg: 78,
@@ -210,6 +222,10 @@ const MOCK_SNAPSHOTS: Record<string, CompareSnapshot> = {
     totalLogs: 142,
     weeklyPoints: 356,
     weeklyRank: 3,
+    moonboardTotalAscents: 289,
+    moonboardAscents30d: 22,
+    moonboardHardestGrade: "7B+",
+    moonboardLatestClimb: "Amandla",
     assessments: {
       finger_strength: mockLog(MOCK_COMPARE_IDS.maya, "finger_strength", daysAgoIso(120), {
         body_weight_kg: 68,
@@ -244,6 +260,10 @@ const MOCK_SNAPSHOTS: Record<string, CompareSnapshot> = {
     totalLogs: 28,
     weeklyPoints: 42,
     weeklyRank: 12,
+    moonboardTotalAscents: 64,
+    moonboardAscents30d: 6,
+    moonboardHardestGrade: "7A",
+    moonboardLatestClimb: "Easy Pickings",
     assessments: {
       finger_strength: mockLog(MOCK_COMPARE_IDS.adam, "finger_strength", daysAgoIso(55), {
         body_weight_kg: 66,

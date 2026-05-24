@@ -372,6 +372,103 @@ export interface Database {
           },
         ];
       };
+      moonboard_connections: {
+        Row: {
+          user_id: string;
+          moon_username: string;
+          session_cookies: string;
+          last_sync_at: string | null;
+          last_sync_status: string;
+          last_sync_error: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          moon_username: string;
+          session_cookies: string;
+          last_sync_at?: string | null;
+          last_sync_status?: string;
+          last_sync_error?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          moon_username?: string;
+          session_cookies?: string;
+          last_sync_at?: string | null;
+          last_sync_status?: string;
+          last_sync_error?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "moonboard_connections_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      moonboard_ascents: {
+        Row: {
+          id: string;
+          user_id: string;
+          external_key: string;
+          board_key: string;
+          angle: number | null;
+          climb_name: string;
+          climbed_at: string;
+          grade_display: string | null;
+          grade_logged: string | null;
+          tries: string | null;
+          is_benchmark: boolean;
+          comment: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          external_key: string;
+          board_key: string;
+          angle?: number | null;
+          climb_name: string;
+          climbed_at: string;
+          grade_display?: string | null;
+          grade_logged?: string | null;
+          tries?: string | null;
+          is_benchmark?: boolean;
+          comment?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          external_key?: string;
+          board_key?: string;
+          angle?: number | null;
+          climb_name?: string;
+          climbed_at?: string;
+          grade_display?: string | null;
+          grade_logged?: string | null;
+          tries?: string | null;
+          is_benchmark?: boolean;
+          comment?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "moonboard_ascents_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       leaderboard_7d: {

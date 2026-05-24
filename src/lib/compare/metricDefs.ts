@@ -138,6 +138,35 @@ export const COMPARE_METRICS: CompareMetricDef[] = [
     getValue: (s) => s.totalLogs,
     display: (s) => String(s.totalLogs),
   },
+  {
+    id: "mb_total",
+    label: "MoonBoard ascents",
+    sublabel: "Synced logbook",
+    category: "activity",
+    higherIsBetter: true,
+    getValue: (s) => s.moonboardTotalAscents,
+    display: (s) => String(s.moonboardTotalAscents),
+  },
+  {
+    id: "mb_30d",
+    label: "MoonBoard (30d)",
+    category: "activity",
+    higherIsBetter: true,
+    getValue: (s) => s.moonboardAscents30d,
+    display: (s) => String(s.moonboardAscents30d),
+  },
+  {
+    id: "mb_grade",
+    label: "MoonBoard hardest",
+    category: "activity",
+    higherIsBetter: true,
+    getValue: (s) => {
+      if (!s.moonboardHardestGrade) return null;
+      const i = FONT_GRADES.indexOf(s.moonboardHardestGrade);
+      return i >= 0 ? i : null;
+    },
+    display: (s) => s.moonboardHardestGrade ?? "—",
+  },
 ];
 
 export function metricWinner(
@@ -145,8 +174,10 @@ export function metricWinner(
   left: CompareSnapshot,
   right: CompareSnapshot
 ): CompareWinner {
-  if (def.id === "grade") {
-    return gradeCompareWinner(left.hardestGrade, right.hardestGrade);
+  if (def.id === "grade" || def.id === "mb_grade") {
+    const lg = def.id === "mb_grade" ? left.moonboardHardestGrade : left.hardestGrade;
+    const rg = def.id === "mb_grade" ? right.moonboardHardestGrade : right.hardestGrade;
+    return gradeCompareWinner(lg, rg);
   }
   const lv = def.getValue(left);
   const rv = def.getValue(right);

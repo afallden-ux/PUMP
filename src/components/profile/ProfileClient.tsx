@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Award } from "lucide-react";
+import { MoonboardPanel } from "@/components/profile/MoonboardPanel";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { PrimaryAssessmentsSection } from "@/components/profile/assessments/PrimaryAssessmentsSection";
 import { BadgeGallery } from "@/components/profile/BadgeGallery";
@@ -52,6 +53,10 @@ export function ProfileClient({ profile: initial, sessionCounts }: ProfileClient
           profile={profile}
           onHeightSaved={(height_cm) => setProfile((p) => ({ ...p, height_cm }))}
         />
+      </AppCard>
+
+      <AppCard className="p-5">
+        <MoonboardPanel userId={profile.id} />
       </AppCard>
 
       <CollapsibleSection
